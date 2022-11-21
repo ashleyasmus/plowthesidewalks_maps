@@ -128,6 +128,28 @@ var_ls$disability <-
   select(variable, gender, age, disability_type, disability_status, geography)
 
 
+### vehicle access -----
+var_ls$vehicles <-
+  all_acs_vars %>%
+  filter(concept == "TENURE BY VEHICLES AVAILABLE") %>%
+  separate(label,
+           into = c(NA, NA, "tenure", "num_vehicles"), 
+           sep = "!!|:!!",
+           extra = "drop",
+           fill = "right",
+           remove = TRUE) %>%
+  filter(!is.na(num_vehicles)) %>%
+  mutate(num_vehicles = case_when(num_vehicles == "No vehicle available" ~ "0",
+                                  num_vehicles == "1 vehicle available" ~ "1",
+                                  num_vehicles == "2 vehicles available" ~ "2",
+                                  num_vehicles == "3 vehicles available" ~ "3",
+                                  num_vehicles == "4 vehicles available" ~ "4",
+                                  num_vehicles == "5 or more vehicles available" ~ "5+"))%>%
+  mutate(vehicle_available = case_when(num_vehicles == "0" ~ "no", 
+                                       TRUE ~ "yes")) %>%
+  rename(variable = name) %>%
+  select(-concept)
+
 # store ACS tables ---
 all_acs <- purrr::map(.x = names(var_ls),
                       function(a_vartype) {
@@ -203,7 +225,8 @@ grp_vars <- list(
   "age" = "age",
   "race" = "race",
   "income" = "income",
-  "commute" = "commute"
+  "commute" = "commute",
+  "vehicles" = "vehicle_available"
 )
 
 plow_demo <- list()
