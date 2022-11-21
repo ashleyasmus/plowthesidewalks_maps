@@ -244,5 +244,5 @@ for (plow_geo_type in names(plow_geo)) {
 }
 
 # save data
-saveRDS(object = plow_geo, file = "data/plow_geo.RDS")
-saveRDS(plow_demo, "data/plow_demo.RDS")
+saveRDS(object = plow_geo, file = "data/plow_geo.RDS", compress = "xz")
+saveRDS(plow_demo, "data/plow_demo.RDS", compress = "xz")
