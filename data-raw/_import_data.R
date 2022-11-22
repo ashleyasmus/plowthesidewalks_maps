@@ -31,12 +31,10 @@ plow_geo$wards <-
   separate(Description, into = c(NA, "Name"), sep = "ward: ", remove = F) %>%
   mutate(Name = trimws(Name))
   
-# import ACS census data -----
-# Use 2020 ACS 1-Year Public Use Microdata Sample with Experimental Weights
-# https://www.census.gov/programs-surveys/acs/data/experimental-data/2020-1-year-pums.html
+# import ACS census data (2015-2020 ACS 5-year estimates) -----
 # Choose variables:
 all_acs_vars <-
-  tidycensus::load_variables(year = "2019",
+  tidycensus::load_variables(year = "2020",
                              dataset = "acs5",
                              cache = F)
 ## choose variables ----
@@ -75,7 +73,7 @@ var_ls$age <-
 ### income ----
 var_ls$income <-
   all_acs_vars %>%
-  filter(concept == "HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)") %>%
+  filter(concept == "HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2020 INFLATION-ADJUSTED DOLLARS)") %>%
   separate(label,
            into = c(NA, NA, "income"), 
            sep = "!!|:!!",
@@ -155,12 +153,12 @@ all_acs <- purrr::map(.x = names(var_ls),
                       function(a_vartype) {
                         result <- 
                         suppressMessages(tidycensus::get_acs(
-                          geography = var_ls[[a_vartype]]$geography[[1]],
+                          geography = "tract",
                           variables = var_ls[[a_vartype]]$variable,
                           # weighted total population estimate
                           state = "IL",
                           county = "Cook",
-                          year = 2019,
+                          year = 2020,
                           # get the geometry of the block groups as well:
                           geometry = T
                         ) %>%
