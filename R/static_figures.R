@@ -26,7 +26,7 @@ city$vehicles <-
   ungroup() %>%
   mutate(prop = adj_est / total) %>%
   filter(vehicle_available == "no") %>%
-  select(Name, vehicle_available, prop)
+  select(Name, vehicle_available, prop, adj_est)
 
 plow$vehicles <-
   plow_demo[["pilot_zones"]][["vehicles"]] %>%
@@ -35,7 +35,7 @@ plow$vehicles <-
   ungroup() %>%
   mutate(prop = adj_est / total) %>%
   filter(vehicle_available == "no") %>%
-  select(Name, vehicle_available, prop) %>%
+  select(Name, vehicle_available, prop, adj_est) %>%
   mutate(zone = stringr::str_extract(Name, "(\\d)+")) %>%
   mutate(zone = as.factor(as.numeric(zone))) 
 
@@ -48,7 +48,7 @@ city$disability <-
   ungroup() %>%
   mutate(prop = adj_est / total) %>%
   filter(disability_status == "yes") %>%
-  select(disability_type, prop)
+  select(disability_type, prop, adj_est)
 
 
 plow$disability <-
@@ -59,24 +59,28 @@ plow$disability <-
   ungroup() %>%
   mutate(prop = adj_est / total) %>%
   filter(disability_status == "yes") %>%
-  select(Name, disability_type, prop) %>%
+  select(Name, disability_type, prop, adj_est) %>%
   mutate(zone = stringr::str_extract(Name, "(\\d)+")) %>%
   mutate(zone = as.factor(as.numeric(zone))) 
 
 ggs <- list() 
 
+yvar <- "prop"
+
 ggs$disability <-
-ggplot(plow$disability, aes(x = zone, y = prop, fill = disability_type)) +
+ggplot(plow$disability, aes(x = zone, y = get(yvar), fill = disability_type)) +
   geom_col() +
   scale_x_discrete() +
-  scale_y_continuous(labels = scales::percent_format()) +
+  scale_y_continuous(labels = 
+                       ifelse(yvar == "prop", scales::percent_format(), 
+                              scales::number_format(big.mark = ","))) +
   scale_fill_manual(values = c(colors$vivid_green_cyan, colors$vivid_cyan_blue)) +
-  geom_hline(data = city$disability, aes(yintercept = prop),
+  geom_hline(data = city$disability, aes(yintercept = get(yvar)),
              lwd = 0.5) +
   geom_text(
     data = city$disability,
-    aes(x = 0, y = prop,
-    label = paste0("City-wide: ", round(prop * 100), "%")),
+    aes(x = 0, y = get(yvar),
+    label = paste0("City-wide: ", round(get(yvar) * 100), "%")),
     vjust = -1,
     hjust = 0,
     size = 8
@@ -90,17 +94,17 @@ ggplot(plow$disability, aes(x = zone, y = prop, fill = disability_type)) +
   
 
 ggs$vehicles <-
-  ggplot(plow$vehicles, aes(x = zone, y = prop)) +
+  ggplot(plow$vehicles, aes(x = zone, y = get(yvar))) +
   geom_col(position = "stack", fill = colors$luminous_vivid_amber) +
   scale_x_discrete() +
   scale_y_continuous(labels = scales::percent_format()) +
   geom_hline(data = city$vehicles,
-             aes(yintercept = prop),
+             aes(yintercept = get(yvar)),
              lwd = 0.5) +
   geom_text(
     data = city$vehicles,
-    aes(x = 0, y = prop,
-        label = paste0("City-wide: ", round(prop * 100), "%")),
+    aes(x = 0, y = get(yvar),
+        label = paste0("City-wide: ", round(get(yvar) * 100), "%")),
     vjust = -1,
     hjust = 0,
     size = 8
