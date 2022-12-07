@@ -39,3 +39,5 @@ vignettes/*.pdf
 .Renviron
 
 plowthesidewalks_maps.Rproj
+
+plow_the_sidewalks_criteria_app/rsconnect/
