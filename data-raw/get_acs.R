@@ -275,6 +275,8 @@ acs_summary_ls[["vehicles"]] <-
   select(-vehicle_available)
 
 
+
+
 acs_summary_c <-
 acs_summary_ls %>%
   bind_rows() %>%
@@ -288,17 +290,7 @@ acs_summary_ls %>%
   group_by(var_short, var_long, measure) %>%
   mutate(pctile = ntile(desc(value), 100),
          scaled = scale(value, center = F, scale = T)[,1]) %>%
-  ungroup() %>%
-  mutate(
-   units = case_when(measure == "pop" ~ "people", 
-                     measure == "pct" ~ "% of people"), 
-   var_type = "Demographics",
-   tooltip = paste0("<b>", var_long, "</b>", 
-                    "<br><b>", round(value), " ", units, "</b>",
-                    "<br>In the top ", pctile, "% of Chicago tracts for ", var_short,
-                    "<br>Tract ", GEOID, 
-                    "<br>Source: 2016-2020 American Community Survey"))
-
+  ungroup()
 
 acs_summary_split1 <- split(acs_summary_c, acs_summary_c$var_short, drop = TRUE)
 acs_summary_split2 <- lapply(acs_summary_split1, function(df) split(df, df[["measure"]], drop = T))
