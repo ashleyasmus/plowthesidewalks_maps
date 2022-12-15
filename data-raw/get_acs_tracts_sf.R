@@ -22,6 +22,24 @@ acs_tracts <-
   rename(total_population = estimate) %>%
   mutate(tract_area = st_area(geometry))
 
+## number of households ----
+acs_hh <- 
+tidycensus::get_acs(
+  geography = "tract",
+  variables = "B08201_001", # total households
+  # weighted total population estimate
+  state = "IL",
+  county = "Cook",
+  year = 2020,
+  # get the geometry of the tracts separately: 
+  geometry = F
+)  %>%
+  rename(num_hh = estimate) %>%
+  select(-moe)
+
+acs_tracts <-
+  acs_tracts %>% left_join(acs_hh)
+
 st_agr(acs_tracts) <- "constant"
 
 saveRDS(acs_tracts, file = "data/acs_tracts.RDS", compress = "xz")
