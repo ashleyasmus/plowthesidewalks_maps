@@ -6,7 +6,8 @@ library(sf)
 
 # Load data ----
 # data from https://data.cityofchicago.org/Service-Requests/311-Service-Requests/v6vf-nfxy
-dat311_raw <- read.csv("data-raw/311_Service_Requests.csv") %>%
+# dataset is huge - using data.table to read in
+dat311_raw <- data.table::fread("data-raw/311_Service_Requests.csv") %>%
   janitor::clean_names() 
 
 # Filter data -----
@@ -19,10 +20,11 @@ dat311_filter <-
     # SR_SHORT_CODE: SDO 
   filter(sr_short_code %in% c("BBK", "SDO")) %>%
   ## last 3 years --- (arbitrary)
-  mutate(created_date = as.date(created_date)) %>%
-  filter(created_date >= "2020-01-01") %>%
-  ## open requests -----
-  filter(!status == "Closed")
+  mutate(created_datetime = lubridate::parse_date_time(created_date, orders = c("%m/%d/%Y %I/%M/%S %p"))) %>%
+  mutate(created_date = as.Date(created_datetime)) %>%
+  # filter(created_date >= "2020-01-01") %>%
+  ## canceled requests -----
+  filter(!status == "Canceled") %>%
   ## not a duplicate ----
   filter(duplicate == FALSE)
 
@@ -35,6 +37,7 @@ dat311_select <-
 # Make spatial ----
 dat311_sf <- 
   dat311_select %>%
+  filter(!is.na(longitude) & !is.na(latitude)) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
 
 # Split into list by type -----
@@ -42,16 +45,11 @@ vac <- dat311_sf %>%
   filter(sr_short_code == "BBK")
 
 sno <- dat311_sf %>%
-  filter(sr_short_code == "BBK")
+  filter(sr_short_code == "SDO")
 
 requests311 <- 
   list("vac" = vac,
        "sno" = sno)
 
 # Write data -----
-
-  
-
-  
-
-  
+saveRDS(requests311, "data/311_requests.RDS")
