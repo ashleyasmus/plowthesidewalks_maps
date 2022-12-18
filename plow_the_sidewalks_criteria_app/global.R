@@ -6,6 +6,11 @@ library(tidyr)
 library(leaflet)
 library(RColorBrewer)
 library(dplyr)
+library(leaflet.extras)
+library(geojsonsf)
+library(jsonify)
+library(units)
+
 # devtools::install_github("ricardo-bion/ggradar", 
 #                          dependencies = TRUE)
 # library(ggradar)

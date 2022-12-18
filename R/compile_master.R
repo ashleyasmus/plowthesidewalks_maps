@@ -10,78 +10,71 @@ acs_tracts <- readRDS("data/acs_tracts_chicago.RDS")
 
 
 # Select variables ----
-master_ls <- list()
+acs_var_abbr <-
+  c("amb", "vis", "kid", "old", "bip", "zca", "oca", "inc")
 
-## number of people with ambulatory, vision difficulties ----
-master_ls[["amb"]] <- 
-  acs[["Ambulatory difficulty"]][["pop"]] %>%
-  select(GEOID, value, pctile) %>%
-  rename(pctpop = value) %>%
-  rename_with(.cols = c(pctpop, pctile), ~ paste0("amb_", .x))
+acs_var_long <-
+  c(
+    "Ambulatory difficulty",
+    "Vision difficulty",
+    "Under 5",
+    "65 and older",
+    "BIPOC people",
+    "Zero-car households",
+    "One-car households",
+    "Low-income households"
+  )
 
-master_ls[["vis"]] <-
-  acs[["Vision difficulty"]][["pop"]] %>%
-  select(GEOID, value, pctile) %>%
-  rename(pctpop = value) %>%
-  rename_with(.cols = c(pctpop, pctile), ~ paste0("vis_", .x))
+master_acs <- 
+purrr::map2(
+  .x = acs_var_abbr,
+  .y = acs_var_long,
+  .f = function(abbr, var) {
+    
+    full_join(
+      acs[[var]][["pct"]] %>%
+        select(GEOID, value, pctile) %>%
+        rename(pop = value) %>%
+        rename_with(.cols = c(pop, pctile), ~ paste0(abbr, "_pct_", .x)),
+      
+      acs[[var]][["pop"]] %>%
+        select(GEOID, value, pctile) %>%
+        rename(pop = value) %>%
+        rename_with(.cols = c(pop, pctile), ~ paste0(abbr, "_n_", .x)),
+      
+      by = "GEOID"
+    )
+  }
+)
+
+names(master_acs) <- acs_var_abbr
 
 ## density - people per square mile -----
-master_ls[["den"]] <- acs_tracts %>%
+master_acs[["den"]] <- acs_tracts %>%
   mutate(area_mi2 = as.numeric(tract_area * 3.86102e-7)) %>%
   mutate(den = total_population/area_mi2) %>%
   mutate(den_pctile = ntile(den, 100)) %>%
-  select(GEOID, total_population, area_mi2, den, den_pctile)
-
-
-## % of children under 5 & elders over 65 -----
-master_ls[["old"]] <- 
-  acs[["65 and older"]][["pct"]] %>%
-  select(GEOID, value, pctile) %>%
-  rename(pctpop = value) %>%
-  rename_with(.cols = c(pctpop, pctile), ~ paste0("old_", .x))
-
-master_ls[["kid"]] <- 
-  acs[["Under 5"]][["pct"]] %>%
-  select(GEOID, value, pctile) %>%
-  rename(pctpop = value) %>%
-  rename_with(.cols = c(pctpop, pctile), ~ paste0("kid_", .x))
-
-## % of BIPOC people -----
-master_ls[["bip"]] <- 
-  acs[["BIPOC people"]][["pct"]] %>%
-  select(GEOID, value, pctile) %>%
-  rename(pctpop = value) %>%
-  rename_with(.cols = c(pctpop, pctile), ~ paste0("bip_", .x))
-
-## % of zero-car households ------
-master_ls[["zca"]] <- 
-  acs[["Zero-car households"]][["pct"]] %>%
-  select(GEOID, value, pctile) %>%
-  rename(pcthhs = value) %>%
-  rename_with(.cols = c(pcthhs, pctile), ~ paste0("zca_", .x))
-
-## % of one-car households -----
-master_ls[["oca"]] <- 
-  acs[["One-car households"]][["pct"]] %>%
-  select(GEOID, value, pctile) %>%
-  rename(pcthhs = value) %>%
-  rename_with(.cols = c(pcthhs, pctile), ~ paste0("oca_", .x))
-
-## % of low-income households -----
-master_ls[["inc"]] <- 
-  acs[["Low-income households"]][["pct"]] %>%
-  select(GEOID, value, pctile) %>%
-  rename(pcthhs = value) %>%
-  rename_with(.cols = c(pcthhs, pctile), ~ paste0("inc_", .x))
+  select(GEOID, total_population, num_hh, area_mi2, den, den_pctile)
 
 # compile ----
-master <- master_ls %>% purrr:::reduce(inner_join, by = "GEOID")
+master <- master_acs %>% purrr:::reduce(inner_join, by = "GEOID") %>%
+  # get rid of NAs (three tracts) 
+  filter(!is.na(vis_pct_pop))
 
 
 # make spatial -----
 master <- master %>%
   st_as_sf() %>%
   st_transform(crs = 4326)
+
+# rename, household-based columns to hh vars ----
+master <- master %>%
+  rename(inc_pct_hh = inc_pct_pop,
+         zca_pct_hh = zca_pct_pop,
+         oca_pct_hh = oca_pct_pop,
+         inc_n_hh = inc_n_pop,
+         zca_n_hh = zca_n_pop,
+         oca_n_hh = oca_n_pop)
 
 
 saveRDS(master, file = "data/scoring_master.RDS")

@@ -196,7 +196,7 @@ function(input, output, session) {
   
   observe({
     
-    # Filter by density/disability ----
+    # OFF - Filter by density/disability ----
     # if(input$filter1 == "Density"){
     #   selected_tracts <- master %>%
     #     filter(den_pctile <= 25)
@@ -207,11 +207,12 @@ function(input, output, session) {
     
     updated_scores <-
       master %>%
-      mutate(across(c(contains("pctpop"), contains("pcthhs")),
+      mutate(across(c(matches("pct_pop|pct_hh")),
                     ## get a scaled value for each variable ----
                     ~scale(., center = min(.), scale = diff(range(.)))[,1],
-                    .names = "{sub('pctpop|pcthhs', 'scale', col)}")) %>%
+                    .names = "{sub('pct_pop|pct_hh', 'scale', col)}")) %>%
       mutate(den_scale = scale(den, center = min(den), scale = diff(range(den)))[,1]) %>%
+      select(GEOID, contains("scale")) %>%
       ## calculate a weighted score -----
       mutate(score =
                (amb_scale * weights()$amb_w) +
@@ -236,11 +237,18 @@ function(input, output, session) {
     leaflet() %>%
       addProviderTiles("CartoDB.Positron") %>%
       fitBounds(lat1 = chi_bbox[["ymin"]], lat2 = chi_bbox[["ymax"]], 
-                lng1 = chi_bbox[["xmin"]]+0.15, lng2 = chi_bbox[["xmax"]]+0.15)
+                lng1 = chi_bbox[["xmin"]]+0.17, lng2 = chi_bbox[["xmax"]]+0.17) %>%
+      leaflet.extras::addDrawToolbar(position = "topright", 
+                                     polylineOptions = FALSE,
+                                     circleOptions = FALSE,
+                                     polygonOptions = FALSE,
+                                     # rectangleOptions = FALSE, 
+                                     markerOptions = FALSE,
+                                     circleMarkerOptions =  FALSE,
+                                     singleFeature = TRUE)
   })
   
   # Update map --------
-  
   observe({
     map_data <- scores() %>%
       mutate(helptext = ifelse(score_pctile >50, 
@@ -255,9 +263,17 @@ function(input, output, session) {
     
     
     tooltips <- sprintf(
-      "This tract ranks in the <strong>%s%%</strong><br/>of tracts based on the priorities you selected. Click to see more.",
+      "<h6><section style='font-size:14pt'>
+      This tract ranks in the 
+      <br>
+      <strong><section style='font-size:18pt'>
+      %s%% of tracts</strong>
+      <br>
+      <section style='font-size:14pt'>
+      for the priorities you selected.",
       map_data$helptext
-    ) %>% lapply(htmltools::HTML)
+    ) %>% 
+      lapply(htmltools::HTML)
     
    leafletProxy("mapBuild", data = map_data) %>%
       clearShapes() %>%
@@ -269,33 +285,79 @@ function(input, output, session) {
                 layerId="colorLegend")
   })
   
-  # # Show a popup at the given location
-  # showZipcodePopup <- function(GEOID, lat, lng) {
-  #   selectedZip <- allzips[allzips$GEOID == GEOID,]
-  #   content <- as.character(tagList(
-  #     tags$h4("Score:", as.integer(selectedZip$centile)),
-  #     tags$strong(HTML(sprintf("%s, %s %s",
-  #                              selectedZip$city.x, selectedZip$state.x, selectedZip$GEOID
-  #     ))), tags$br(),
-  #     sprintf("Median household income: %s", dollar(selectedZip$income * 1000)), tags$br(),
-  #     sprintf("Percent of adults with BA: %s%%", as.integer(selectedZip$college)), tags$br(),
-  #     sprintf("Adult population: %s", selectedZip$adultpop)
-  #   ))
-  #   leafletProxy("map") %>% addPopups(lng, lat, content, layerId = GEOID)
-  # }
-  # 
+  # Drawn Pilot Zone ------
+  observeEvent(input$mapBuild_draw_new_feature,{
+    
+    user_rect <- 
+      # get feature: 
+      input$mapBuild_draw_new_feature %>%
+      # translate to JSON: 
+      jsonify::to_json(., unbox = T) %>%
+      # translate to SF: 
+      geojsonsf::geojson_sf()
+    
+    ## Intersect, calculate area stats -----
+    area_summary <-
+      st_intersection(user_rect, master) %>%
+      mutate(intersect_area = st_area(geometry)) %>%
+      mutate(intersect_area_mi2 = units::set_units(intersect_area, "mi^2")) %>%
+      mutate(prop_area = as.numeric(intersect_area_mi2) / area_mi2) %>%
+      # Adjust all population/household counts: 
+      mutate(across(c(matches("n_pop|n_hh"),
+                      "total_population",
+                      "num_hh"),
+                    ~ round(. * prop_area))) %>%
+      # Total for this rectangle: 
+      group_by(X_leaflet_id) %>%
+      summarize(across(c(matches("n_pop|n_hh"),
+                         "total_population",
+                         "num_hh"),
+                       ~sum(.)),
+                geometry = st_union(geometry)) %>%
+      mutate(area = st_area(geometry)) %>%
+      mutate(area_mi2 = units::set_units(area, "mi^2")) %>%
+      mutate(density = total_population/area_mi2) %>%
+      # Refresh proportional data: 
+      # ... population variables: 
+      mutate(across(contains("n_pop"), 
+                      ~./total_population,
+                      .names = "{sub('n_pop', 'pct_pop', col)}")) %>%
+      # ... household-based variables: 
+      mutate(across(contains("n_hh"), 
+                    ~./num_hh,
+                    .names = "{sub('n_hh', 'pct_hh', col)}"))
+  })
+  
+  # Tract popup ------
+  show_tract_info <- function(GEOID, lat, lng) {
+    selected_tract <- master %>%
+      filter(GEOID == GEOID)
+      # left_join(scores())
+    
+    content <- as.character(tagList(
+      # tags$h4("Score:", as.integer(selected_tract$score_pctile)),
+      tags$strong(HTML(sprintf("%s",
+                               selected_tract$GEOID
+      ))), tags$br(),
+      sprintf("Population with an ambulatory diability: %s%%", selected_tract$amb_pct_pop), tags$br(),
+      sprintf("Population with a vision disability: %s%%", as.integer(selected_tract$vis_pct_pop)), tags$br(),
+      sprintf("Population density: %s people per square mile", selected_tract$den)
+    ))
+    leafletProxy("mapBuild") %>% addPopups(lng, lat, content, layerId = GEOID)
+  }
+
   # When map is clicked, show a popup with city info
-  # observe({
-  #   leafletProxy("map") %>% clearPopups()
-  #   event <- input$map_shape_click
-  #   if (is.null(event))
-  #     return()
-  #   
-  #   isolate({
-  #     showZipcodePopup(event$id, event$lat, event$lng)
-  #   })
-  # })
-  # 
+  observe({
+    leafletProxy("mapBuild") %>% clearPopups()
+    event <- input$map_shape_click
+    if (is.null(event))
+      return()
+
+    isolate({
+      show_tract_info(event$id, event$lat, event$lng)
+    })
+  })
+
   
   ## Data Explorer ###########################################
   
@@ -335,7 +397,7 @@ function(input, output, session) {
   #     zip <- input$goto$zip
   #     lat <- input$goto$lat
   #     lng <- input$goto$lng
-  #     showZipcodePopup(zip, lat, lng)
+  #     show_tract_info(zip, lat, lng)
   #     map %>% fitBounds(lng - dist, lat - dist, lng + dist, lat + dist)
   #   })
   # })
