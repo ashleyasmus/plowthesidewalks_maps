@@ -118,7 +118,10 @@ cta_tracts <- st_join(ctadat_sf, acs_tracts, join = st_within) %>%
 master <- master_acs %>%
   left_join(vac_tracts, by = "GEOID") %>%
   left_join(cta_tracts, by = "GEOID") %>%
-  left_join(sno_tracts, by = "GEOID")
+  left_join(sno_tracts, by = "GEOID") %>%
+  # replace missing values for these with zeros
+  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, cta_activity), ~as.numeric(.))) %>%
+  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, cta_activity), ~replace_na(., 0)))
   # left_join(swalk_tracts, by = "GEOID")
 
 
