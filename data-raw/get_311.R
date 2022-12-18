@@ -16,9 +16,9 @@ dat311_filter <-
   ## relevant request types ----
     # SR_TYPE: Vacant/Abandoned Building Complaint 
     # SR_SHORT_CODE: BBK 
-    # SR_TYPE: Ice and Snow Removal Request  
+    # SR_TYPE: Snow – Uncleared Sidewalk Complaint 
     # SR_SHORT_CODE: SDO 
-  filter(sr_short_code %in% c("BBK", "SDO")) %>%
+  filter(sr_short_code %in% c("BBK", "SWSNOREM")) %>%
   ## last 3 years --- (arbitrary)
   mutate(created_datetime = lubridate::parse_date_time(created_date, orders = c("%m/%d/%Y %I/%M/%S %p"))) %>%
   mutate(created_date = as.Date(created_datetime)) %>%
@@ -45,7 +45,7 @@ vac <- dat311_sf %>%
   filter(sr_short_code == "BBK")
 
 sno <- dat311_sf %>%
-  filter(sr_short_code == "SDO")
+  filter(sr_short_code == "SWSNOREM")
 
 requests311 <- 
   list("vac" = vac,
