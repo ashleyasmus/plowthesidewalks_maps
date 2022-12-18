@@ -4,12 +4,16 @@ library(tidyr)
 library(sf)
 library(purrr) 
 
-# Load data ----
+# load tract shapefile
+acs_tracts <- readRDS("data/acs_tracts_chicago.RDS") %>%
+  st_transform(crs = 4326)
+
+# (1) ACS Census data -------
+## Load data ----
 acs <- readRDS("data/acs_summary_chicago.RDS")
-acs_tracts <- readRDS("data/acs_tracts_chicago.RDS")
 
 
-# Select variables ----
+## Select variables ----
 acs_var_abbr <-
   c("amb", "vis", "kid", "old", "bip", "zca", "oca", "inc")
 
@@ -25,7 +29,7 @@ acs_var_long <-
     "Low-income households"
   )
 
-master_acs <- 
+master_acs_ls <- 
 purrr::map2(
   .x = acs_var_abbr,
   .y = acs_var_long,
@@ -47,28 +51,28 @@ purrr::map2(
   }
 )
 
-names(master_acs) <- acs_var_abbr
+names(master_acs_ls) <- acs_var_abbr
 
 ## density - people per square mile -----
-master_acs[["den"]] <- acs_tracts %>%
+master_acs_ls[["den"]] <- acs_tracts %>%
   mutate(area_mi2 = as.numeric(tract_area * 3.86102e-7)) %>%
   mutate(den = total_population/area_mi2) %>%
   mutate(den_pctile = ntile(den, 100)) %>%
   select(GEOID, total_population, num_hh, area_mi2, den, den_pctile)
 
-# compile ----
-master <- master_acs %>% purrr:::reduce(inner_join, by = "GEOID") %>%
+## compile ----
+master_acs <- master_acs_ls %>% purrr:::reduce(inner_join, by = "GEOID") %>%
   # get rid of NAs (three tracts) 
   filter(!is.na(vis_pct_pop))
 
 
-# make spatial -----
-master <- master %>%
+## make spatial -----
+master_acs <- master_acs %>%
   st_as_sf() %>%
   st_transform(crs = 4326)
 
-# rename, household-based columns to hh vars ----
-master <- master %>%
+## rename, household-based columns to hh vars ----
+master_acs <- master_acs %>%
   rename(inc_pct_hh = inc_pct_pop,
          zca_pct_hh = zca_pct_pop,
          oca_pct_hh = oca_pct_pop,
@@ -77,39 +81,47 @@ master <- master %>%
          oca_n_hh = oca_n_pop)
 
 
+
+# (2) 311 Requests -----
+requests311 <- readRDS("data/311_requests.RDS")
+# Snow removal requests per square mile, by tract
+sno_tracts <- st_join(requests311$sno, acs_tracts, join = st_within) %>%
+  group_by(GEOID, tract_area) %>%
+  tally(n = "n_sno") %>%
+  ungroup() %>%
+  mutate(n_sno_permi2 = n_sno/units::set_units(tract_area, "miles^2")) %>%
+  st_drop_geometry() %>%
+  select(-tract_area)
+
+# Vacant building requests per square mile, by tract
+vac_tracts <- st_join(requests311$vac, acs_tracts, join = st_within) %>%
+  group_by(GEOID, tract_area) %>%
+  tally(n = "n_vac") %>%
+  ungroup() %>%
+  mutate(n_vac_permi2 = n_vac/units::set_units(tract_area, "miles^2")) %>%
+  st_drop_geometry()%>%
+  select(-tract_area)
+
+
+# (3) CTA Stop Activity (total, within tract) -----
+ctadat_sf <- readRDS("data/cta_stop_activity.RDS")
+cta_tracts <- st_join(ctadat_sf, acs_tracts, join = st_within) %>%
+  group_by(GEOID) %>%
+  summarize(cta_activity = sum(activity)) %>%
+  ungroup() %>%
+  st_drop_geometry() 
+
+# (4) Sidewalks -----
+
+
+# Compile (1) through (4) ------
+master <- master_acs %>%
+  left_join(vac_tracts, by = "GEOID") %>%
+  left_join(cta_tracts, by = "GEOID") %>%
+  left_join(sno_tracts, by = "GEOID")
+  # left_join(swalk_tracts, by = "GEOID")
+
+
+# Write data -----
 saveRDS(master, file = "data/scoring_master.RDS")
 saveRDS(master, file = "plow_the_sidewalks_criteria_app/data/scoring_master.RDS")
-
-
-# Test scoring method -----
-# weights <- list(
-#   "old_w" = 0.25,
-#   "kid_w" = 0.25,
-#   "zca_w" = 0.2,
-#   "oca_w" = 0.2,
-#   "inc_w" = 0.1
-# )
-# 
-# sum(unlist(weights))
-# 
-# scores <-
-# master %>%
-#   # basic filter:
-#   filter(amb_pctile >=75 | vis_pctile >= 75) %>%
-#   mutate(test = scale(kid_pctpop, center = min(kid_pctpop), scale = diff(range(kid_pctpop)))) %>%
-#   mutate(across(c(contains("pctpop"), contains("pcthhs")),
-#                 # get a scaled value for each variable:
-#                 ~scale(., center = min(.), scale = diff(range(.)))[,1])) %>%
-#   # calculate a weighted score:
-#   mutate(score =
-#            (old_pctpop * weights$old_w) +
-#            (kid_pctpop * weights$kid_w) +
-#            (zca_pcthhs * weights$zca_w) +
-#            (oca_pcthhs * weights$oca_w) +
-#            (inc_pcthhs * weights$inc_w)) %>%
-#   mutate(score_pctile = ntile(score, 100)) %>%
-#   arrange(desc(score))
-# 
-# hist(scores$score_pctile)
-# View(scores)
-# 
