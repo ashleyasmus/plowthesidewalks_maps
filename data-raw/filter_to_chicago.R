@@ -57,8 +57,14 @@ for(n in names(requests311)) {
 
 # trims just a few off.
 
+# import cta boarding/alighting data
+ctadat_sf<- readRDS("data/cta_stop_activity.RDS")
+
+# filter cta boarding/aligting data
+ctadat_chi <- st_intersection(ctadat_sf, chi_city_latlon)
+
 # write data ------
 saveRDS(acs_summary_chi, "data/acs_summary_chicago.RDS")
 saveRDS(acs_tracts_chi, "data/acs_tracts_chicago.RDS")
 saveRDS(requests311_chi, "data/311_requests_chicago.RDS")
-
+saveRDS(ctadat_chi, "data/cta_stop_activity_chicago.RDS")
