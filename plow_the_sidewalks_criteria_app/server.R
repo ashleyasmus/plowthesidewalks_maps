@@ -21,7 +21,8 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]])
+                 input[[slider_o[7]]],
+                 input[[slider_o[8]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -41,7 +42,8 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]])
+                 input[[slider_o[7]]],
+                 input[[slider_o[8]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -50,26 +52,7 @@ function(input, output, session) {
     
   })
   
-  ## den ----
-  observeEvent(input$s_den, {
-    slider_i <- "s_den"
-    remaining <- 100 - input[[slider_i]]
-    slider_o <- sliders[!sliders %in% slider_i]
-    total <- sum(input[[slider_o[1]]],
-                 input[[slider_o[2]]],
-                 input[[slider_o[3]]],
-                 input[[slider_o[4]]],
-                 input[[slider_o[5]]],
-                 input[[slider_o[6]]],
-                 input[[slider_o[7]]])
-    purrr:::map(.x = slider_o,
-                .f = function(sliderid){
-                  updateSliderInput(inputId = sliderid, 
-                                    value = remaining * input[[sliderid]]/total)
-                })
     
-  })
-  
   ## % old ----
   observeEvent(input$s_old, {
     slider_i <- "s_old"
@@ -81,7 +64,8 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]])
+                 input[[slider_o[7]]],
+                 input[[slider_o[8]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -101,7 +85,8 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]])
+                 input[[slider_o[7]]],
+                 input[[slider_o[8]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -109,6 +94,28 @@ function(input, output, session) {
                 })
     
   })
+  
+  ## den ----
+  observeEvent(input$s_den, {
+    slider_i <- "s_den"
+    remaining <- 100 - input[[slider_i]]
+    slider_o <- sliders[!sliders %in% slider_i]
+    total <- sum(input[[slider_o[1]]],
+                 input[[slider_o[2]]],
+                 input[[slider_o[3]]],
+                 input[[slider_o[4]]],
+                 input[[slider_o[5]]],
+                 input[[slider_o[6]]],
+                 input[[slider_o[7]]],
+                 input[[slider_o[8]]])
+    purrr:::map(.x = slider_o,
+                .f = function(sliderid){
+                  updateSliderInput(inputId = sliderid, 
+                                    value = remaining * input[[sliderid]]/total)
+                })
+    
+  })
+  
   
   ## % zero car hhs ----
   observeEvent(input$s_zca, {
@@ -121,7 +128,8 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]])
+                 input[[slider_o[7]]],
+                 input[[slider_o[8]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -131,9 +139,9 @@ function(input, output, session) {
   })
   
   
-  ##  % one car hhs ----
-  observeEvent(input$s_oca, {
-    slider_i <- "s_oca"
+  ## transit activity ----
+  observeEvent(input$s_cta, {
+    slider_i <- "s_cta"
     remaining <- 100 - input[[slider_i]]
     slider_o <- sliders[!sliders %in% slider_i]
     total <- sum(input[[slider_o[1]]],
@@ -142,7 +150,8 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]])
+                 input[[slider_o[7]]],
+                 input[[slider_o[8]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -151,9 +160,9 @@ function(input, output, session) {
     
   })
   
-  ## % low-income hhs -----
-  observeEvent(input$s_inc, {
-    slider_i <- "s_inc"
+  ## vacant buildings -----
+  observeEvent(input$s_vac, {
+    slider_i <- "s_vac"
     remaining <- 100 - input[[slider_i]]
     slider_o <- sliders[!sliders %in% slider_i]
     total <- sum(input[[slider_o[1]]],
@@ -162,7 +171,29 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]])
+                 input[[slider_o[7]]],
+                 input[[slider_o[8]]])
+    purrr:::map(.x = slider_o,
+                .f = function(sliderid){
+                  updateSliderInput(inputId = sliderid, 
+                                    value = remaining * input[[sliderid]]/total)
+                })
+    
+  })
+  
+  ## snow and ice removal requests
+  observeEvent(input$s_sno, {
+    slider_i <- "s_sno"
+    remaining <- 100 - input[[slider_i]]
+    slider_o <- sliders[!sliders %in% slider_i]
+    total <- sum(input[[slider_o[1]]],
+                 input[[slider_o[2]]],
+                 input[[slider_o[3]]],
+                 input[[slider_o[4]]],
+                 input[[slider_o[5]]],
+                 input[[slider_o[6]]],
+                 input[[slider_o[7]]],
+                 input[[slider_o[8]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -182,8 +213,9 @@ function(input, output, session) {
       "old_w" = input$s_old,
       "kid_w" = input$s_kid,
       "zca_w" = input$s_zca,
-      "oca_w" = input$s_oca,
-      "inc_w" = input$s_inc
+      "cta_w" = input$s_cta,
+      "vac_w" = input$s_vac,
+      "sno_w" = input$s_sno
     )
     
     weights(input_weights)
@@ -211,18 +243,25 @@ function(input, output, session) {
                     ## get a scaled value for each variable ----
                     ~scale(., center = min(.), scale = diff(range(.)))[,1],
                     .names = "{sub('pct_pop|pct_hh', 'scale', col)}")) %>%
-      mutate(den_scale = scale(den, center = min(den), scale = diff(range(den)))[,1]) %>%
+      # scale non-demographic variables: 
+      mutate(den_scale = scale(den, center = min(den), scale = diff(range(den)))[,1],
+             sno_scale = scale(n_sno_permi2, center = min(n_sno_permi2), scale = diff(range(n_sno_permi2)))[,1],
+             vac_scale = scale(n_vac_permi2, center = min(n_vac_permi2), scale = diff(range(n_vac_permi2)))[,1], 
+             cta_scale = scale(cta_activity, center = min(cta_activity), scale = diff(range(cta_activity)))[,1]) %>%
       select(GEOID, contains("scale")) %>%
       ## calculate a weighted score -----
       mutate(score =
+               # Demographics
                (amb_scale * weights()$amb_w) +
                (vis_scale * weights()$vis_w) +
-               (den_scale * weights()$den_w) +
                (old_scale * weights()$old_w) +
                (kid_scale * weights()$kid_w) +
                (zca_scale * weights()$zca_w) +
-               (oca_scale * weights()$oca_w) +
-               (inc_scale * weights()$inc_w)) %>%
+               # Land use and transportation 
+               (den_scale * weights()$den_w) +
+               (cta_scale * weights()$cta_w) +
+               (vac_scale * weights()$vac_w) + 
+               (sno_scale * weights()$sno_w)) %>%
       mutate(score_pctile = ntile(desc(score), 100))
 
     
