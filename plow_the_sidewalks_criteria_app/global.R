@@ -22,7 +22,7 @@ master <- readRDS("data/scoring_master.RDS")
 chi_bbox <- st_bbox(master)
 
 # variables ----
-vars <- list("vis", "amb", "old", "kid", "den", "zca", "cta", "vac", "sno")
+vars <- list("vis", "amb", "old", "kid", "den", "zca", "cta", "bad")
 sliders <- unlist(lapply(vars, function(x) paste0("s_", x)))
 
 # initialize weights as equal to start -----
@@ -37,7 +37,6 @@ first_weights <- list(
   "zca_w" = 1/length(vars),
   "den_w" = 1/length(vars),
   "cta_w" = 1/length(vars),
-  "vac_w" = 1/length(vars),
-  "sno_w" = 1/length(vars)
+  "bad_w" = 1/length(vars)
 )
 

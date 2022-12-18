@@ -21,8 +21,7 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]],
-                 input[[slider_o[8]]])
+                 input[[slider_o[7]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -42,8 +41,7 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]],
-                 input[[slider_o[8]]])
+                 input[[slider_o[7]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -64,8 +62,7 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]],
-                 input[[slider_o[8]]])
+                 input[[slider_o[7]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -85,8 +82,7 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]],
-                 input[[slider_o[8]]])
+                 input[[slider_o[7]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -106,8 +102,7 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]],
-                 input[[slider_o[8]]])
+                 input[[slider_o[7]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -128,8 +123,7 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]],
-                 input[[slider_o[8]]])
+                 input[[slider_o[7]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -150,8 +144,7 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]],
-                 input[[slider_o[8]]])
+                 input[[slider_o[7]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -160,9 +153,9 @@ function(input, output, session) {
     
   })
   
-  ## vacant buildings -----
-  observeEvent(input$s_vac, {
-    slider_i <- "s_vac"
+  ## problems: snow removal requests, vacant buildings -----
+  observeEvent(input$s_bad, {
+    slider_i <- "s_bad"
     remaining <- 100 - input[[slider_i]]
     slider_o <- sliders[!sliders %in% slider_i]
     total <- sum(input[[slider_o[1]]],
@@ -171,8 +164,7 @@ function(input, output, session) {
                  input[[slider_o[4]]],
                  input[[slider_o[5]]],
                  input[[slider_o[6]]],
-                 input[[slider_o[7]]],
-                 input[[slider_o[8]]])
+                 input[[slider_o[7]]])
     purrr:::map(.x = slider_o,
                 .f = function(sliderid){
                   updateSliderInput(inputId = sliderid, 
@@ -181,26 +173,7 @@ function(input, output, session) {
     
   })
   
-  ## snow and ice removal requests
-  observeEvent(input$s_sno, {
-    slider_i <- "s_sno"
-    remaining <- 100 - input[[slider_i]]
-    slider_o <- sliders[!sliders %in% slider_i]
-    total <- sum(input[[slider_o[1]]],
-                 input[[slider_o[2]]],
-                 input[[slider_o[3]]],
-                 input[[slider_o[4]]],
-                 input[[slider_o[5]]],
-                 input[[slider_o[6]]],
-                 input[[slider_o[7]]],
-                 input[[slider_o[8]]])
-    purrr:::map(.x = slider_o,
-                .f = function(sliderid){
-                  updateSliderInput(inputId = sliderid, 
-                                    value = remaining * input[[sliderid]]/total)
-                })
-    
-  })
+
   
   # Update Weights ------
   weights <- reactiveVal(first_weights)
@@ -209,13 +182,12 @@ function(input, output, session) {
     input_weights <- list(
       "amb_w" = input$s_amb,
       "vis_w" = input$s_vis,
-      "den_w" = input$s_den,
       "old_w" = input$s_old,
       "kid_w" = input$s_kid,
+      "den_w" = input$s_den,
       "zca_w" = input$s_zca,
       "cta_w" = input$s_cta,
-      "vac_w" = input$s_vac,
-      "sno_w" = input$s_sno
+      "bad_w" = input$s_bad
     )
     
     weights(input_weights)
@@ -245,8 +217,7 @@ function(input, output, session) {
                     .names = "{sub('pct_pop|pct_hh', 'scale', col)}")) %>%
       # scale non-demographic variables: 
       mutate(den_scale = scale(den, center = min(den), scale = diff(range(den)))[,1],
-             sno_scale = scale(n_sno_permi2, center = min(n_sno_permi2), scale = diff(range(n_sno_permi2)))[,1],
-             vac_scale = scale(n_vac_permi2, center = min(n_vac_permi2), scale = diff(range(n_vac_permi2)))[,1], 
+             bad_scale = scale(n_bad_permi2, center = min(n_bad_permi2), scale = diff(range(n_bad_permi2)))[,1],
              cta_scale = scale(cta_activity, center = min(cta_activity), scale = diff(range(cta_activity)))[,1]) %>%
       select(GEOID, contains("scale")) %>%
       ## calculate a weighted score -----
@@ -260,8 +231,7 @@ function(input, output, session) {
                # Land use and transportation 
                (den_scale * weights()$den_w) +
                (cta_scale * weights()$cta_w) +
-               (vac_scale * weights()$vac_w) + 
-               (sno_scale * weights()$sno_w)) %>%
+               (bad_scale * weights()$bad_w)) %>%
       mutate(score_pctile = ntile(desc(score), 100))
 
     

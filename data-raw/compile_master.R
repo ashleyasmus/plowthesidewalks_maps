@@ -90,8 +90,7 @@ sno_tracts <- st_join(requests311$sno, acs_tracts, join = st_within) %>%
   tally(n = "n_sno") %>%
   ungroup() %>%
   mutate(n_sno_permi2 = n_sno/units::set_units(tract_area, "miles^2")) %>%
-  st_drop_geometry() %>%
-  select(-tract_area)
+  st_drop_geometry()
 
 # Vacant building requests per square mile, by tract
 vac_tracts <- st_join(requests311$vac, acs_tracts, join = st_within) %>%
@@ -99,9 +98,13 @@ vac_tracts <- st_join(requests311$vac, acs_tracts, join = st_within) %>%
   tally(n = "n_vac") %>%
   ungroup() %>%
   mutate(n_vac_permi2 = n_vac/units::set_units(tract_area, "miles^2")) %>%
-  st_drop_geometry()%>%
-  select(-tract_area)
+  st_drop_geometry()
 
+bad_tracts <- sno_tracts %>%
+  left_join(vac_tracts) %>%
+  mutate(n_bad = n_sno + n_vac) %>%
+  mutate(n_bad_permi2 = n_bad/units::set_units(tract_area, "miles^2")) %>%
+  select(-tract_area)
 
 # (3) CTA Stop Activity (total, within tract) -----
 ctadat_sf <- readRDS("data/cta_stop_activity.RDS")
@@ -116,12 +119,11 @@ cta_tracts <- st_join(ctadat_sf, acs_tracts, join = st_within) %>%
 
 # Compile (1) through (4) ------
 master <- master_acs %>%
-  left_join(vac_tracts, by = "GEOID") %>%
   left_join(cta_tracts, by = "GEOID") %>%
-  left_join(sno_tracts, by = "GEOID") %>%
+  left_join(bad_tracts, by = "GEOID") %>%
   # replace missing values for these with zeros
-  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, cta_activity), ~as.numeric(.))) %>%
-  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, cta_activity), ~replace_na(., 0)))
+  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity), ~as.numeric(.))) %>%
+  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity), ~replace_na(., 0)))
   # left_join(swalk_tracts, by = "GEOID")
 
 

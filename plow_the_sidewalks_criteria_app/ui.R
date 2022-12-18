@@ -105,7 +105,7 @@ navbarPage(
           ticks = FALSE,
           post = "%"
         ),
-        
+        br(),
         h4("Land use and transportation"), 
         sliderInput(
           "s_den",
@@ -144,20 +144,8 @@ navbarPage(
         ),
         
         sliderInput(
-          "s_vac",
-          label = "Vacant buildings",
-          min = 0,
-          max = 100,
-          value = 20,
-          step = 0.1,
-          width = "300px",
-          ticks = FALSE,
-          post = "%"
-        ),
-        
-        sliderInput(
-          "s_sno",
-          label = "Sidewalk snow and ice remvoal requests",
+          "s_bad",
+          label = "Vacant buildings and unclear sidewalks",
           min = 0,
           max = 100,
           value = 20,
