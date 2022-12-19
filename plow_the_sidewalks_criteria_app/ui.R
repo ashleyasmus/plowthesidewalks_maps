@@ -8,7 +8,7 @@ navbarPage(
       class = "outer",
       
       tags$head(
-        # Include our custom CSS
+        # include our custom CSS
         includeCSS("styles.css"),
         tags$head(
           tags$style(
@@ -57,6 +57,7 @@ navbarPage(
           "Use the sliders to assign importance to each of these criteria:"
         ), 
         # Create sliders ------
+        h4("Demographics"), 
         sliderInput(
           "s_vis",
           label = "People with vision disabilities",
@@ -82,6 +83,31 @@ navbarPage(
         ),
         
         sliderInput(
+          "s_old",
+          label = "Adults 65 and over",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        
+        sliderInput(
+          "s_kid",
+          label = "Children under 5",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        br(),
+        h4("Land use and transportation"), 
+        sliderInput(
           "s_den",
           label = "Population density",
           min = 0,
@@ -94,28 +120,6 @@ navbarPage(
         ),
         
         sliderInput(
-          "s_old",
-          label = "Adults 65 and over",
-          min = 0,
-          max = 100,
-          value = 20,
-          step = 0.1,
-          width = "300px",
-          ticks = FALSE,
-          post = "%"
-        ),
-        sliderInput(
-          "s_kid",
-          label = "Children under 5",
-          min = 0,
-          max = 100,
-          value = 20,
-          step = 0.1,
-          width = "300px",
-          ticks = FALSE,
-          post = "%"
-        ),
-        sliderInput(
           "s_zca",
           label = "Zero-car households",
           min = 0,
@@ -126,9 +130,10 @@ navbarPage(
           ticks = FALSE,
           post = "%"
         ),
+        
         sliderInput(
-          "s_oca",
-          label = "One-car households",
+          "s_cta",
+          label = "Transit activity",
           min = 0,
           max = 100,
           value = 20,
@@ -137,9 +142,10 @@ navbarPage(
           ticks = FALSE,
           post = "%"
         ),
+        
         sliderInput(
-          "s_inc",
-          label = "Low-income households",
+          "s_bad",
+          label = "Vacant buildings and unclear sidewalks",
           min = 0,
           max = 100,
           value = 20,
@@ -148,6 +154,7 @@ navbarPage(
           ticks = FALSE,
           post = "%"
         ),
+        
         h3("Ready to map?"), 
         actionButton(inputId = "go_score", label = "Show results")
         
