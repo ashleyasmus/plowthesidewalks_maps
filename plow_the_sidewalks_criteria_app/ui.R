@@ -8,8 +8,8 @@ navbarPage(
       class = "outer",
       
       tags$head(
-        # vaclude our custom CSS
-        vacludeCSS("styles.css"),
+        # include our custom CSS
+        includeCSS("styles.css"),
         tags$head(
           tags$style(
             HTML(
