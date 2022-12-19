@@ -1,19 +1,41 @@
 # toolbox ----
+# shiny
 library(shiny)
+library(shinyjs)
+
+# scrolly
+library(waypointer)
+library(shticky)
+library(sigmajs)
+
+# icons
+library(fontawesome)
+
+# data
 library(sf)
 library(dplyr)
 library(tidyr)
+library(units)
+
+# mapping
 library(leaflet)
 library(RColorBrewer)
-library(dplyr)
 library(leaflet.extras)
 library(geojsonsf)
 library(jsonify)
-library(units)
 
-# devtools::install_github("ricardo-bion/ggradar", 
-#                          dependencies = TRUE)
-# library(ggradar)
+# creates 100vh div
+longdiv <- function(...){
+  div(
+    ...,
+    class = "container",
+    style = "height:100vh;z-index:500;"
+  )
+}
+
+my_offset <- "50%"
+my_animation <- "slideInUp"
+
 
 # data ----
 master <- readRDS("data/scoring_master.RDS")
@@ -39,4 +61,26 @@ first_weights <- list(
   "cta_w" = 1/length(vars),
   "bad_w" = 1/length(vars)
 )
+
+# Function to update slider weights ----
+update_slider_weights <-
+  function(slider_i) {
+    remaining <- 100 - input[[slider_i]]
+    slider_o <- sliders[!sliders %in% slider_i]
+    total <- sum(input[[slider_o[1]]],
+                 input[[slider_o[2]]],
+                 input[[slider_o[3]]],
+                 input[[slider_o[4]]],
+                 input[[slider_o[5]]],
+                 input[[slider_o[6]]],
+                 input[[slider_o[7]]])
+    purrr:::map(
+      .x = slider_o,
+      .f = function(sliderid) {
+        updateSliderInput(inputId = sliderid,
+                          value = remaining * input[[sliderid]] /
+                            total)
+      }
+    )
+  }
 
