@@ -11,6 +11,10 @@ library(sigmajs)
 # icons
 library(fontawesome)
 
+# tables
+library(gt)
+library(gtExtras)
+
 # data
 library(sf)
 library(dplyr)
@@ -29,7 +33,7 @@ longdiv <- function(...){
   div(
     ...,
     class = "container",
-    style = "height:100vh;z-index:500;"
+    style = "height:200vh;z-index:500;"
   )
 }
 
@@ -39,6 +43,9 @@ my_animation <- "slideInUp"
 
 # data ----
 master <- readRDS("data/scoring_master.RDS")
+
+# colors ---
+source("_colors.R")
 
 # bounding box (map) ----
 chi_bbox <- st_bbox(master)
@@ -64,7 +71,7 @@ first_weights <- list(
 
 # Function to update slider weights ----
 update_slider_weights <-
-  function(slider_i) {
+  function(input, slider_i) {
     remaining <- 100 - input[[slider_i]]
     slider_o <- sliders[!sliders %in% slider_i]
     total <- sum(input[[slider_o[1]]],
@@ -83,4 +90,54 @@ update_slider_weights <-
       }
     )
   }
+
+## Priorities table
+priorities <- 
+  list("wheelchair-move" = 
+         "<b>People with disabilities</b>, especially ambulatory (walking) 
+         and vision disabilities, who may use assistive devices 
+         (wheelchairs, walkers, canes) to get around.",
+       
+       "user-plus" = 
+         "<b>Elders</b>, who are more vulnerable to serious fall-related injuries, 
+         and may be unable to shovel their own sidewalks, regardless of 
+         whether they identify as having a disability.",
+         
+         "baby-carriage" = 
+           "<b>Young children</b> and their caretakers, who may use strollers",
+       
+       "car" = 
+         "<b>Households without cars</b>, who are more likely to rely on walking to meet their needs",
+       
+       "city" = 
+         "<b>Population-dense areas</b>, to maximize the benefit of each mile of clear sidewalk",
+       
+       "bus" = 
+         "<b>Areas with high transit activity</b>, because the vast majority of riders get to 
+       and from their stop by walking",
+       
+       "building-circle-exclamation" = 
+         "<b>Known problem areas</b>, specifically those with a high number of sidewalk 
+       snow removal requests and vacant buildings reported via 311 and municipal offices"
+         )
+
+
+priorites_tab <- 
+priorities %>%
+  unlist(recursive = FALSE) %>% 
+  tibble::enframe() %>% 
+  gt::gt() %>% 
+  gt::fmt_markdown(columns = value) %>%
+  gtExtras::gt_fa_column(name, height = "50px", 
+                         palette = rep(pal$access_purple, length(priorities)))
+
+
+priorites_row <- 
+  priorities %>%
+  unlist(recursive = FALSE) %>% 
+  tibble::enframe() %>% 
+  select(name) %>%
+  gt::gt() %>% 
+  gtExtras::gt_fa_column(name, height = "50px", 
+                         palette = rep(pal$access_purple, length(priorities)))
 

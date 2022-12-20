@@ -30,48 +30,180 @@ server <- function(input, output, session) {
                      animation = my_animation)$start()
   
   # Render UIs ------
-  ## 0 -----
+  ## 0: Welcome -----
   output$ui0 <- renderUI({
     div(
-      h1("Let's #PlowTheSidewalks"),
+      h1("#PlowTheSidewalks"),
+      
       p(
         "Let’s make sidewalk snow and ice removal a city-wide and city-run service."
       ),
-      p("An initiative of Better Streets Chicago and Access Living"),
-      br(),
       
-      h2("Where should Chicago try municipal sidewalk plowing first?"),
+      p("An initiative of Better Streets Chicago and Access Living"),
+      
+      p("Where should Chicago try municipal sidewalk plowing first?"),
+      
+      p(
+        "We are drafting an ordinance asking Chicago
+          to set aside $750,000 in the upcoming budget
+          for a municipal sidewalk clearing pilot program –
+          a small test of what a city-wide program will look like."
+      ),
+      
+      p("This page explores where that pilot program should occur."),
+      
+      p(
+        "Scroll down to learn how we are drafting the ordinance –
+          and suggest your own pilot zones."
+      ),
+      
       p(style = "text-align:center;",
         tags$i(class = "fas fa-chevron-down fa-3x")),
       br()
     )
   })
   
-  ## 1 -----
+  ## 1: Priorities -----
   output$ui1 <- renderUI({
     req(w1$get_triggered())
     if (w1$get_triggered() == TRUE)
       tagList(
-        p("Some text"),
+        h3("Our priorities"),
         p(
-          "Scroll on the left side to continue reading.
-          Scroll on the right side to view the map more closely."
-        )
+          "To maximize the pilot program’s impact,
+          we are asking the city place the pilot zones
+          in a way that prioritizes:"
+        ),
+        
+        priorites_tab
       )
   })
   
-  ## 2 ---------
+  ## 2: Equal Priorities map ---------
   output$ui2 <- renderUI({
     req(w2$get_triggered())
     if (w2$get_triggered() == TRUE)
-      tagList(p("Some text"))
+      tagList(
+        p(
+          "The map on the right shows areas across the city that rank highly for all of these measures combined."
+        ),
+        priorites_row
+      )
   })
   
-  ## 3 -----------
+  ## 3: Sliders appear -----------
   output$ui3 <- renderUI({
     req(w3$get_triggered())
     if (w3$get_triggered() == TRUE)
-      tagList(p("Some text"))
+      tagList(
+        p(
+          "Right now, the map places equal importance on each of the seven criteria.
+                You can use the sliders below to vary the importance given to each measure."
+        ),
+        
+        
+        h4("Demographics"),
+        sliderInput(
+          "s_vis",
+          label = "People with vision disabilities",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        
+        sliderInput(
+          "s_amb",
+          label = "People with ambulatory disabilities",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        
+        sliderInput(
+          "s_old",
+          label = "Adults 65 and over",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        
+        sliderInput(
+          "s_kid",
+          label = "Children under 5",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        br(),
+        h4("Land use and transportation"),
+        sliderInput(
+          "s_den",
+          label = "Population density",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        
+        sliderInput(
+          "s_zca",
+          label = "Zero-car households",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        
+        sliderInput(
+          "s_cta",
+          label = "Transit activity",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        
+        sliderInput(
+          "s_bad",
+          label = "Vacant buildings and unclear sidewalks",
+          min = 0,
+          max = 100,
+          value = 20,
+          step = 0.1,
+          width = "300px",
+          ticks = FALSE,
+          post = "%"
+        ),
+        
+        h3("Ready to map?"),
+        actionButton(inputId = "go_score", label = "Show results")
+      )
+    
   })
   
   ## 4 -------
@@ -104,22 +236,24 @@ server <- function(input, output, session) {
   })
   
   ## 2 up --------
-  # observeEvent(w2$get_direction(), {
-  #   if (w2$get_direction() == "up")
-  #     # do this
-  # })
+  observeEvent(w2$get_direction(), {
+    if (w2$get_direction() == "up")
+      leafletProxy("mapBuild") %>%
+      clearShapes()
+  })
   
   ## 2 down -----
-  # observeEvent(w2$get_direction(), {
-  #   if (w2$get_direction() == "down")
-  #     # do this
-  # })
+  observeEvent(w2$get_direction(), {
+    if (w2$get_direction() == "down")
+      weights(first_weights)
+  })
   
   ## 3 up ------
-  # observeEvent(w3$get_direction(), {
-  #   if (w3$get_direction() == "up")
-  #   # do this
-  # })
+  observeEvent(w3$get_direction(), {
+    if (w3$get_direction() == "up")
+      leafletProxy("mapBuild") %>%
+      clearShapes()
+  })
   
   ## 3 down ---------
   # observeEvent(w3$get_direction(), {
@@ -152,31 +286,31 @@ server <- function(input, output, session) {
   # update sliders -----
   # this code forces all sliders to add to 100.
   observeEvent(input$s_amb, {
-    update_slider_weights("s_amb")
+    update_slider_weights(input, "s_amb")
   })
   
   observeEvent(input$s_vis, {
-    update_slider_weights("s_vis")
+    update_slider_weights(input, "s_vis")
   })
   
   observeEvent(input$s_old, {
-    update_slider_weights("s_old")
+    update_slider_weights(input, "s_old")
   })
   
   observeEvent(input$s_kid, {
-    update_slider_weights("s_kid")
+    update_slider_weights(input, "s_kid")
   })
   
   observeEvent(input$s_den, {
-    update_slider_weights("s_den")
+    update_slider_weights(input, "s_den")
   })
   
   observeEvent(input$s_zca, {
-    update_slider_weights("s_zca")
+    update_slider_weights(input, "s_zca")
   })
   
   observeEvent(input$s_cta, {
-    update_slider_weights("s_cta")
+    update_slider_weights(input, "s_cta")
   })
   
   observeEvent(input$s_bad, {

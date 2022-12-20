@@ -12,16 +12,9 @@ ui <- fluidPage(
   shticky::use_shticky(),
   waypointer::use_waypointer(),
   
+  # Keep the  map stuck on the right -----
   div(
     id = "bg",
-    
-      
-    # Marker 0 ----
-    longdiv(style = "width:100%;",
-            id = "m0",
-            uiOutput("ui0")),
-    
-    # Separate columns for map and content -----
     div(id = "stick",
         style = "position:fixed;width:100%;",
         fluidRow(column(5),
@@ -30,7 +23,15 @@ ui <- fluidPage(
                  ))),
     
     
-    # Marker 1 -----
+    # Marker 0: Welcome ----
+    longdiv(style = "width:100%;",
+            div(id = "m0",
+                fluidRow(
+                  column(1),
+                  column(4, uiOutput("ui0"))
+                ))),
+    
+    # Marker 1: Priorities -----
     longdiv(style = "width:100%;",
             div(id = "m1",
                 fluidRow(
@@ -38,7 +39,7 @@ ui <- fluidPage(
                   column(4, uiOutput("ui1"))
                 ))),
     
-    # Marker 2 -------
+    # Marker 2: Equal Weights -------
     longdiv(style = "width:100%;",
             div(id = "m2",
                 fluidRow(
@@ -46,7 +47,9 @@ ui <- fluidPage(
                   column(4, uiOutput("ui2"))
                 ))),
     
-    # Marker 3 -------
+    
+    
+    # Marker 3: Sliders -------
     longdiv(style = "width:100%;",
             div(id = "m3",
                 fluidRow(
