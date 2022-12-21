@@ -2,11 +2,9 @@
 # shiny
 library(shiny)
 library(shinyjs)
-
+library(fresh)
 # scrolly
-library(waypointer)
-library(shticky)
-library(sigmajs)
+library(scrollytell)
 
 # icons
 library(fontawesome)
@@ -28,17 +26,48 @@ library(leaflet.extras)
 library(geojsonsf)
 library(jsonify)
 
-# creates 100vh div
-longdiv <- function(...){
-  div(
-    ...,
-    class = "container",
-    style = "height:200vh;z-index:500;"
+# theme ----
+fresh::use_googlefont("Montserrat")
+my_fresh_theme <- 
+  fresh::create_theme(
+  theme = "default",
+  bs_vars_global(
+    body_bg = "#FFFFFF",
+    text_color = "black",
+    link_color = "#10626f",
+    link_hover_color = "#00d084",
+    line_height_base = 1.5,
+    grid_columns = NULL,
+    grid_gutter_width = NULL,
+    border_radius_base = NULL
+  ),
+  bs_vars_wells(bg = "#F9F9F9", border = "transparent"),
+  bs_vars_font(
+    family_sans_serif = "'Montserrat', sans-serif",
+    size_base = 16,
+    size_large = 42,
+    size_small = 13,
+    size_h1 = 42,
+    size_h2 = 36,
+    size_h3 = 20,
+    size_h4 = 16,
+    size_h5 = 16,
+    size_h6 = 16
+  ),
+  bs_vars_color(
+    brand_primary = "#270075",
+    brand_success = "#9b51e0",
+    brand_info = "#F9F9F9",
+    brand_warning = "#cf2e2e",
+    brand_danger = "#F9F9F9"
+  ),
+  bs_vars_navbar(
+    default_bg = "#FFFFFF",
+    default_color = "#FFFFFF",
+    default_link_color = "#10626f",
+    default_link_active_color = "#00d084"
   )
-}
-
-my_offset <- "50%"
-my_animation <- "slideInUp"
+)
 
 
 # data ----
@@ -70,33 +99,32 @@ first_weights <- list(
 )
 
 # Function to update slider weights ----
-update_slider_weights <-
-  function(input, slider_i) {
-    remaining <- 100 - input[[slider_i]]
-    slider_o <- sliders[!sliders %in% slider_i]
-    total <- sum(input[[slider_o[1]]],
-                 input[[slider_o[2]]],
-                 input[[slider_o[3]]],
-                 input[[slider_o[4]]],
-                 input[[slider_o[5]]],
-                 input[[slider_o[6]]],
-                 input[[slider_o[7]]])
-    purrr:::map(
-      .x = slider_o,
-      .f = function(sliderid) {
-        updateSliderInput(inputId = sliderid,
-                          value = remaining * input[[sliderid]] /
-                            total)
-      }
-    )
-  }
+# update_slider_weights <-
+#   function(input, slider_i) {
+#     remaining <- 100 - input[[slider_i]]
+#     slider_o <- sliders[!sliders %in% slider_i]
+#     total <- sum(input[[slider_o[1]]],
+#                  input[[slider_o[2]]],
+#                  input[[slider_o[3]]],
+#                  input[[slider_o[4]]],
+#                  input[[slider_o[5]]],
+#                  input[[slider_o[6]]],
+#                  input[[slider_o[7]]])
+#     purrr:::map(
+#       .x = slider_o,
+#       .f = function(sliderid) {
+#         updateSliderInput(inputId = sliderid,
+#                           value = remaining * input[[sliderid]] /
+#                             total)
+#       }
+#     )
+#   }
 
 ## Priorities table
 priorities <- 
   list("wheelchair-move" = 
          "<b>People with disabilities</b>, especially ambulatory (walking) 
-         and vision disabilities, who may use assistive devices 
-         (wheelchairs, walkers, canes) to get around.",
+         and vision disabilities, who may use assistive devices like wheelchairs and canes",
        
        "user-plus" = 
          "<b>Elders</b>, who are more vulnerable to serious fall-related injuries, 
@@ -117,8 +145,8 @@ priorities <-
        and from their stop by walking",
        
        "building-circle-exclamation" = 
-         "<b>Known problem areas</b>, specifically those with a high number of sidewalk 
-       snow removal requests and vacant buildings reported via 311 and municipal offices"
+         "<b>Known problem areas</b>, specifically those with many 311 reports of unclear sidewalks and
+        vacant buildings"
          )
 
 
@@ -129,7 +157,14 @@ priorities %>%
   gt::gt() %>% 
   gt::fmt_markdown(columns = value) %>%
   gtExtras::gt_fa_column(name, height = "50px", 
-                         palette = rep(pal$access_purple, length(priorities)))
+                         palette = rep(pal$access_purple, length(priorities))) %>%
+  gt::tab_options(column_labels.hidden = TRUE,
+                  table.background.color = "transparent",
+                  table.font.size = 14,
+                  table_body.hlines.color = "transparent",
+                  table_body.border.top.color = "transparent",
+                  table_body.border.bottom.color = "transparent",
+                  container.padding.y = px(0))
 
 
 priorites_row <- 
@@ -140,4 +175,3 @@ priorites_row <-
   gt::gt() %>% 
   gtExtras::gt_fa_column(name, height = "50px", 
                          palette = rep(pal$access_purple, length(priorities)))
-
