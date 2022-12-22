@@ -175,3 +175,49 @@ priorites_row <-
   gt::gt() %>% 
   gtExtras::gt_fa_column(name, height = "50px", 
                          palette = rep(pal$access_purple, length(priorities)))
+
+
+# Table of slider inputs ----
+# https://github.com/rstudio/gt/issues/723
+sliderinput_gt <- function(name,...){
+  as.character(
+    shiny::sliderInput(
+      inputId = paste0(name, "_s"),
+      value = 100 * (1/7),
+      min = 0,
+      max = 100,
+      label = NULL,
+      width = "150px",
+      ticks = FALSE,
+      post = "%"
+    )
+  ) %>% 
+    gt::html()
+}
+
+slider_table <- 
+priorities %>%
+  unlist(recursive = FALSE) %>%
+  tibble::enframe() %>%
+  select(name) %>%
+  mutate(sliderinput_column = purrr::map(
+    name,
+    .f = ~ sliderinput_gt(
+      .x,
+      value = (100 * 1/7),
+      "_sliderinput"
+    )
+  )) %>%
+  gt::gt() %>%
+  gtExtras::gt_fa_column(name,
+                         height = "30px",
+                         palette = rep(pal$access_purple, length(priorities))) %>%
+  gt::tab_options(
+    column_labels.hidden = TRUE,
+    table.background.color = "transparent",
+    table.font.size = 14,
+    table_body.hlines.color = "transparent",
+    table_body.border.top.color = "transparent",
+    table_body.border.bottom.color = "transparent",
+    container.padding.y = px(0)
+  )

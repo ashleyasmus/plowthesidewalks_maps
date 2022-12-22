@@ -1,16 +1,18 @@
-ui <- fluidPage(
+ui <- fixedPage(
   fresh::use_googlefont("Montserrat"),
   fresh::use_googlefont("Poppins"),
   fresh::use_theme(my_fresh_theme),
-  tags$head(
-    # tags$link(rel = "stylesheet", href = "style.css"),
+  tags$head(tags$style(
+    HTML(
+      '.irs-from, .irs-to, .irs-min, .irs-max {visibility: hidden !important;}'
+    ),
     tags$link(
       rel = "stylesheet",
       href = "https://use.fontawesome.com/releases/v5.8.1/css/all.css",
       integrity = "sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf",
       crossorigin = "anonymous"
     )
-  ),
+  )),
   position = "fixed-top",
   
   # Title panel -------
@@ -77,7 +79,7 @@ ui <- fluidPage(
     p(
       'This interactive page asks, "Where should we try sidewalk plowing first?",
       and translates our priorities into a map of places
-      where a test of sidewalk snow plowing would have greatest impact 
+      where a test of sidewalk snow plowing would have greatest impact
       for the people that need it most.'
     )
     ),
@@ -169,40 +171,74 @@ ui <- fluidPage(
       ),
       fluidRow(
         align = 'center',
-        fontawesome::fa(
-          "city",
-          fill = "#270075",
-          height = '40px'
-        ),
-        fontawesome::fa("building-circle-exclamation",
+        fontawesome::fa("city",
                         fill = "#270075",
-                        height = '40px')
+                        height = '30px'),
+        fontawesome::fa(
+          "building-circle-exclamation",
+          fill = "#270075",
+          height = '30px'
+        )
       )
     ))),
     
     # Map our priorities -----
+    fluidRow(
+      HTML(
+        "<h3><section style='font-family: Poppins, sans-serif;
+      font-size:2rem; font-weight: bold; color: #270075'>
+    We propose using a
+    <span style='color: #9b51e0'>
+    weighting approach
+    </span>to identify neighborhoods that might be a good fit
+    for each type of pilot zone.</h3>"
+      ),
+    HTML(
+      "<p><span style = 'font-weight: bold;'>Weighting
+         </span>is a way of calculating a score from many different types of numbers.
+      You might remember taking a class where the
+      final exam was worth half of your grade -- your teacher was using weighting."
+    ),
+    
+    HTML(
+      "<p>In addition to weighting, we are using
+         <span style = 'font-weight: bold;'>
+         standardization
+         </span>to
+      put measures that exist on very different scales on even footing
+      with one another. This ensures that large numbers (like the number of
+      transit boardings, our measure of transit activity) do not overwhelm smaller numbers,
+      like the percentage of people who have a disability."
+    )
+    ),
+    
+    
     fluidRow(scrolly_container(
       "scr",
-      scrolly_graph(textOutput("section"),
-                    plotOutput("distPlot"))
-      ,
+      scrolly_graph(width = "40%",
+                    textOutput("section"),
+                    plotOutput("distPlot")),
+      
       scrolly_sections(
+        width = "60%",
         scrolly_section(
           id = "green",
-          sliderInput(
-            "bins",
-            "Number of bins:",
-            min = 1,
-            max = 50,
-            value = 30
-          )
+          p(
+            "The map on the right
+            scores neighborhoods from
+            high (most suitable)
+            to
+            low (least suitable)
+            by giving equal importance on each of our priorities.
+            Drag a slider to change the importance value
+            assigned to a priority."
+          ),
+          slider_table
         ),
-        scrolly_section(
-          id = "red",
-          h3("Title"),
-          p("dit is een paragraaf, die de grafiek rood maakt")
-        ),
-        scrolly_section(id = "blue", "Blauw"),
+        scrolly_section(id = "red",
+                        p("Places that prioritize people with ")),
+        scrolly_section(id = "blue",
+                        ""),
         scrolly_section(id = "pink", "Rose"),
         scrolly_section(id = "purple", "Paars"),
         scrolly_section(id = "orange", "Oranje boven!")
@@ -227,5 +263,12 @@ ui <- fluidPage(
              padding: 1%;",
     align = "right",
     class = "pull-down-right"
-  )
+  ),
+  sliderInput(
+    "bins",
+    "Number of bins:",
+    min = 1,
+    max = 50,
+    value = 30
+  ),
 )
