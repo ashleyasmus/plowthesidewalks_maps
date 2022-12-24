@@ -2,7 +2,7 @@
 library(dplyr)
 library(tidyr)
 library(sf)
-library(purrr) 
+library(purrr)
 
 # load tract shapefile
 acs_tracts <- readRDS("data/acs_tracts_chicago.RDS") %>%
@@ -29,40 +29,37 @@ acs_var_long <-
     "Low-income households"
   )
 
-master_acs_ls <- 
-purrr::map2(
-  .x = acs_var_abbr,
-  .y = acs_var_long,
-  .f = function(abbr, var) {
-    
-    full_join(
-      acs[[var]][["pct"]] %>%
-        select(GEOID, value, pctile) %>%
-        rename(pop = value) %>%
-        rename_with(.cols = c(pop, pctile), ~ paste0(abbr, "_pct_", .x)),
-      
-      acs[[var]][["pop"]] %>%
-        select(GEOID, value, pctile) %>%
-        rename(pop = value) %>%
-        rename_with(.cols = c(pop, pctile), ~ paste0(abbr, "_n_", .x)),
-      
-      by = "GEOID"
-    )
-  }
-)
+master_acs_ls <-
+  purrr::map2(
+    .x = acs_var_abbr,
+    .y = acs_var_long,
+    .f = function(abbr, var) {
+      full_join(
+        acs[[var]][["pct"]] %>%
+          select(GEOID, value, pctile) %>%
+          rename(pop = value) %>%
+          rename_with(.cols = c(pop, pctile), ~ paste0(abbr, "_pct_", .x)),
+        acs[[var]][["pop"]] %>%
+          select(GEOID, value, pctile) %>%
+          rename(pop = value) %>%
+          rename_with(.cols = c(pop, pctile), ~ paste0(abbr, "_n_", .x)),
+        by = "GEOID"
+      )
+    }
+  )
 
 names(master_acs_ls) <- acs_var_abbr
 
 ## density - people per square mile -----
 master_acs_ls[["den"]] <- acs_tracts %>%
   mutate(area_mi2 = as.numeric(tract_area * 3.86102e-7)) %>%
-  mutate(den = total_population/area_mi2) %>%
+  mutate(den = total_population / area_mi2) %>%
   mutate(den_pctile = ntile(den, 100)) %>%
   select(GEOID, total_population, num_hh, area_mi2, den, den_pctile)
 
 ## compile ----
 master_acs <- master_acs_ls %>% purrr:::reduce(inner_join, by = "GEOID") %>%
-  # get rid of NAs (three tracts) 
+  # get rid of NAs (three tracts)
   filter(!is.na(vis_pct_pop))
 
 
@@ -73,12 +70,14 @@ master_acs <- master_acs %>%
 
 ## rename, household-based columns to hh vars ----
 master_acs <- master_acs %>%
-  rename(inc_pct_hh = inc_pct_pop,
-         zca_pct_hh = zca_pct_pop,
-         oca_pct_hh = oca_pct_pop,
-         inc_n_hh = inc_n_pop,
-         zca_n_hh = zca_n_pop,
-         oca_n_hh = oca_n_pop)
+  rename(
+    inc_pct_hh = inc_pct_pop,
+    zca_pct_hh = zca_pct_pop,
+    oca_pct_hh = oca_pct_pop,
+    inc_n_hh = inc_n_pop,
+    zca_n_hh = zca_n_pop,
+    oca_n_hh = oca_n_pop
+  )
 
 
 
@@ -89,7 +88,7 @@ sno_tracts <- st_join(requests311$sno, acs_tracts, join = st_within) %>%
   group_by(GEOID, tract_area) %>%
   tally(n = "n_sno") %>%
   ungroup() %>%
-  mutate(n_sno_permi2 = n_sno/units::set_units(tract_area, "miles^2")) %>%
+  mutate(n_sno_permi2 = n_sno / units::set_units(tract_area, "miles^2")) %>%
   st_drop_geometry()
 
 # Vacant building requests per square mile, by tract
@@ -97,13 +96,13 @@ vac_tracts <- st_join(requests311$vac, acs_tracts, join = st_within) %>%
   group_by(GEOID, tract_area) %>%
   tally(n = "n_vac") %>%
   ungroup() %>%
-  mutate(n_vac_permi2 = n_vac/units::set_units(tract_area, "miles^2")) %>%
+  mutate(n_vac_permi2 = n_vac / units::set_units(tract_area, "miles^2")) %>%
   st_drop_geometry()
 
 bad_tracts <- sno_tracts %>%
   left_join(vac_tracts) %>%
   mutate(n_bad = n_sno + n_vac) %>%
-  mutate(n_bad_permi2 = n_bad/units::set_units(tract_area, "miles^2")) %>%
+  mutate(n_bad_permi2 = n_bad / units::set_units(tract_area, "miles^2")) %>%
   select(-tract_area)
 
 # (3) CTA Stop Activity (total, within tract) -----
@@ -112,7 +111,7 @@ cta_tracts <- st_join(ctadat_sf, acs_tracts, join = st_within) %>%
   group_by(GEOID) %>%
   summarize(cta_activity = sum(activity)) %>%
   ungroup() %>%
-  st_drop_geometry() 
+  st_drop_geometry()
 
 # (4) Sidewalks -----
 
@@ -122,9 +121,9 @@ master <- master_acs %>%
   left_join(cta_tracts, by = "GEOID") %>%
   left_join(bad_tracts, by = "GEOID") %>%
   # replace missing values for these with zeros
-  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity), ~as.numeric(.))) %>%
-  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity), ~replace_na(., 0)))
-  # left_join(swalk_tracts, by = "GEOID")
+  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity), ~ as.numeric(.))) %>%
+  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity), ~ replace_na(., 0)))
+# left_join(swalk_tracts, by = "GEOID")
 
 
 # Write data -----

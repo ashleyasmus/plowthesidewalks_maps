@@ -8,16 +8,16 @@ library(sf)
 # data from https://data.cityofchicago.org/Service-Requests/311-Service-Requests/v6vf-nfxy
 # dataset is huge - using data.table to read in
 dat311_raw <- data.table::fread("data-raw/311_Service_Requests.csv") %>%
-  janitor::clean_names() 
+  janitor::clean_names()
 
 # Filter data -----
-dat311_filter <- 
+dat311_filter <-
   dat311_raw %>%
   ## relevant request types ----
-    # SR_TYPE: Vacant/Abandoned Building Complaint 
-    # SR_SHORT_CODE: BBK 
-    # SR_TYPE: Snow – Uncleared Sidewalk Complaint 
-    # SR_SHORT_CODE: SDO 
+  # SR_TYPE: Vacant/Abandoned Building Complaint
+  # SR_SHORT_CODE: BBK
+  # SR_TYPE: Snow – Uncleared Sidewalk Complaint
+  # SR_SHORT_CODE: SDO
   filter(sr_short_code %in% c("BBK", "SWSNOREM")) %>%
   ## last 3 years --- (arbitrary)
   mutate(created_datetime = lubridate::parse_date_time(created_date, orders = c("%m/%d/%Y %I/%M/%S %p"))) %>%
@@ -30,12 +30,12 @@ dat311_filter <-
 
 
 # Select columns ----
-dat311_select <- 
+dat311_select <-
   dat311_filter %>%
   select(sr_type, sr_short_code, created_date, latitude, longitude)
 
 # Make spatial ----
-dat311_sf <- 
+dat311_sf <-
   dat311_select %>%
   filter(!is.na(longitude) & !is.na(latitude)) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
@@ -47,9 +47,11 @@ vac <- dat311_sf %>%
 sno <- dat311_sf %>%
   filter(sr_short_code == "SWSNOREM")
 
-requests311 <- 
-  list("vac" = vac,
-       "sno" = sno)
+requests311 <-
+  list(
+    "vac" = vac,
+    "sno" = sno
+  )
 
 # Write data -----
 saveRDS(requests311, "data/311_requests.RDS")
