@@ -1,20 +1,32 @@
 ui <- fixedPage(
   fresh::use_googlefont("Montserrat"),
   fresh::use_googlefont("Poppins"),
-  fresh::use_theme(my_fresh_theme),
+  # fresh::use_theme(my_fresh_theme),
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "fresh_style.css"),
+    tags$link(rel = "stylesheet", type = "text/css", href = "irs_style.css"),
+  ),
   tags$head(tags$style(
     HTML(
-      '.irs-from, .irs-to, .irs-min, .irs-max {visibility: hidden !important;}'
-    ),
-    tags$link(
-      rel = "stylesheet",
-      href = "https://use.fontawesome.com/releases/v5.8.1/css/all.css",
-      integrity = "sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf",
-      crossorigin = "anonymous"
+      "
+    .label-left .form-group {
+      display: flex;              /* Use flexbox for positioning children */
+      flex-direction: row;        /* Place children on a row (default) */
+      width: 90%;                /* Set width for container */
+      max-width: 400px;
+    }
+    .label-left label {
+      margin-right: 1rem;         /* Add spacing between label and slider */
+      align-self: center;         /* Vertical align in center of row */
+      text-align: left;
+      flex-basis: 30px;          /* Target width for label */
+    }
+    .label-left .irs {
+      flex-basis: 300px;          /* Target width for slider */
+    }
+    "
     )
   )),
-  position = "fixed-top",
-  
   # Title panel -------
   titlePanel(title =
                div(
@@ -56,6 +68,7 @@ ui <- fixedPage(
       ),
       p("An inititative of Better Streets Chicago and Access Living"),
     ),
+    
     ## About --------
     fluidRow(
       HTML(
@@ -70,12 +83,10 @@ ui <- fixedPage(
           This pilot will serve as a small test of what a city-wide program
           could look like."
     ),
-    
     p(
       "The draft ordinance calls for the city to run the pilot in four,
       2.5 square-mile zones across the city, with an eye towards mobility justice."
     ),
-    
     p(
       'This interactive page asks, "Where should we try sidewalk plowing first?",
       and translates our priorities into a map of places
@@ -95,10 +106,8 @@ ui <- fixedPage(
           we are asking the city to locate the pilot zones
           in a way that prioritizes:"
     ),
-    
     wellPanel(priorites_tab)
     ),
-    
     fluidRow(
       HTML(
         "<h3><section style='font-family: Poppins, sans-serif;
@@ -117,7 +126,6 @@ ui <- fixedPage(
       of pilot zones:</p>"
     )
     ),
-    
     wellPanel(fluidRow(
       column(
         6,
@@ -127,18 +135,17 @@ ui <- fixedPage(
       people with disabilities and elders</span></p>"
         ),
       fluidRow(
-        align = 'center',
+        align = "center",
         fontawesome::fa(
           "wheelchair-move",
           fill = "#270075",
-          height = '30px'
+          height = "30px"
         ),
         fontawesome::fa("user-plus",
                         fill = "#270075",
-                        height = '30px')
+                        height = "30px")
       )
       ),
-      
       column(
         6,
         HTML(
@@ -147,17 +154,16 @@ ui <- fixedPage(
       transit activity, zero-car households and children</span></p>"
         ),
       fluidRow(
-        align = 'center',
+        align = "center",
         fontawesome::fa("bus",
                         fill = "#270075",
-                        height = '30px'),
+                        height = "30px"),
         fontawesome::fa("car",
                         fill = "#270075",
-                        height = '30px'),
+                        height = "30px"),
         fontawesome::fa("baby-carriage",
                         fill = "#270075",
-                        height = '30px'),
-        
+                        height = "30px"),
       )
       )
     ),
@@ -170,19 +176,19 @@ ui <- fixedPage(
       population density and known problem areas.</span></p>"
       ),
       fluidRow(
-        align = 'center',
+        align = "center",
         fontawesome::fa("city",
                         fill = "#270075",
-                        height = '30px'),
+                        height = "30px"),
         fontawesome::fa(
           "building-circle-exclamation",
           fill = "#270075",
-          height = '30px'
+          height = "30px"
         )
       )
     ))),
     
-    # Map our priorities -----
+    # About weighting -----
     fluidRow(
       HTML(
         "<h3><section style='font-family: Poppins, sans-serif;
@@ -194,81 +200,290 @@ ui <- fixedPage(
     for each type of pilot zone.</h3>"
       ),
     HTML(
-      "<p><span style = 'font-weight: bold;'>Weighting
-         </span>is a way of calculating a score from many different types of numbers.
+      "<p>
+      <span style = 'font-family: Poppins, sans-serif; font-weight: bold; color: #270075;'>
+      Weighting</span>
+      is a way of calculating a score from many different types of numbers.
       You might remember taking a class where the
       final exam was worth half of your grade -- your teacher was using weighting."
     ),
-    
     HTML(
       "<p>In addition to weighting, we are using
-         <span style = 'font-weight: bold;'>
+         <span style = 'font-family: Poppins, sans-serif; font-weight: bold; color: #270075;'>
          standardization
          </span>to
       put measures that exist on very different scales on even footing
-      with one another. This ensures that large numbers (like the number of
-      transit boardings, our measure of transit activity) do not overwhelm smaller numbers,
+      with one another. This ensures that priorities that measure in large numbers (like the number of
+      transit boardings, our measure of transit activity) do not overwhelm
+      priorites that are measured with smaller numbers,
       like the percentage of people who have a disability."
     )
     ),
     
-    
-    fluidRow(scrolly_container(
-      "scr",
-      scrolly_graph(width = "40%",
-                    textOutput("section"),
-                    plotOutput("distPlot")),
-      
-      scrolly_sections(
-        width = "60%",
-        scrolly_section(
-          id = "green",
-          p(
-            "The map on the right
-            scores neighborhoods from
-            high (most suitable)
-            to
-            low (least suitable)
-            by giving equal importance on each of our priorities.
-            Drag a slider to change the importance value
-            assigned to a priority."
-          ),
-          slider_table
-        ),
-        scrolly_section(id = "red",
-                        p("Places that prioritize people with ")),
-        scrolly_section(id = "blue",
-                        ""),
-        scrolly_section(id = "pink", "Rose"),
-        scrolly_section(id = "purple", "Paars"),
-        scrolly_section(id = "orange", "Oranje boven!")
+    # Here's what that looks like ----
+    br(),
+    br(),
+    fluidRow(
+      HTML(
+        "<h3><section style='font-family: Poppins, sans-serif;
+      font-size:2rem; font-weight: bold; color: #270075'>
+    Here's what that looks like on a map.
+    </h3>"
       )
-    ))
-  ),
-  tags$div(
-    "This project is open-source. See our GitHub repository here",
-    tags$a(
-      href = "https://github.com/ashleyasmus/plowthesidewalks_maps",
-      shiny::icon("external-link-alt", lib = "font-awesome"),
-      target = "_blank"
     ),
     
-    tags$br(),
-    "App last updated ",
-    "2022-12-21",
+    ### Begin scroll ------
+    scrolly_container(
+      "scr",
+      ### place map -----
+      scrolly_graph(
+        width = "50%",
+        height = "100%",
+        
+        wellPanel(leafletOutput("mapBuild"))
+      ),
+      ### scroll sections -----
+      scrolly_sections(
+        width = "45%",
+        # ...1: Equal priorities ------
+        scrolly_section(
+          id = "equal",
+          HTML(
+            "<p>
+            The map on the right scores neighborhoods from
+            <span style = 'font-family: Poppins, sans-serif;
+      font-weight: bold; color: #fcb900;'>
+            high
+      </span>
+      to
+       <span style = 'font-family: Poppins, sans-serif;
+      font-weight: bold; color: #270075;'>
+            low
+      </span>
+            based on how well they measure up for
+      all of our priorities. On this map, all of our priorities
+      are weighted equally.
+            </p>"
+          ),
+      fluidRow(
+        align = "center",
+        fontawesome::fa(
+          "wheelchair-move",
+          fill = "#270075",
+          height = "30px"
+        ),
+        fontawesome::fa("user-plus",
+                        fill = "#270075",
+                        height = "30px"),
+        fontawesome::fa("baby-carriage",
+                        fill = "#270075",
+                        height = "30px"),
+        fontawesome::fa("bus",
+                        fill = "#270075",
+                        height = "30px"),
+        fontawesome::fa("car",
+                        fill = "#270075",
+                        height = "30px"),
+        fontawesome::fa("city",
+                        fill = "#270075",
+                        height = "30px"),
+        fontawesome::fa(
+          "building-circle-exclamation",
+          fill = "#270075",
+          height = "30px"
+        )
+      )
+        ),
+      
+      # ...2: disabilities ------
+      scrolly_section(
+        id = "disabilities",
+        HTML(
+          "<p>
+            Now the map shows areas that score highly for
+           the percentage of people with disabilities and elders,
+          with less importance given to
+          known problem areas and density.
+            </p>"
+        ),
+        fluidRow(
+          align = "center",
+          fontawesome::fa(
+            "wheelchair-move",
+            fill = "#270075",
+            height = "40px"
+          ),
+          fontawesome::fa("user-plus",
+                          fill = "#270075",
+                          height = "40px")
+        ),
+        br(),
+        fluidRow(
+          align = "center",
+          fontawesome::fa("city",
+                          fill = "#270075",
+                          height = "20px"),
+          fontawesome::fa(
+            "building-circle-exclamation",
+            fill = "#270075",
+            height = "20px"
+          )
+        )
+      ),
+      
+      # ...2: transit ------
+      scrolly_section(
+        id = "transit",
+        HTML(
+          "<p>
+            Finally, this map shows the areas with a
+          high percentage of children, zero-car households,
+          and transit activity, with less importance
+          given to density and known problem areas.
+            </p>"
+        ),
+        fluidRow(
+          align = "center",
+          fontawesome::fa("baby-carriage",
+                          fill = "#270075",
+                          height = "40px"),
+          fontawesome::fa("car",
+                          fill = "#270075",
+                          height = "40px"),
+          fontawesome::fa("bus",
+                          fill = "#270075",
+                          height = "40px")
+        ),
+        br(),
+        fluidRow(
+          align = "center",
+          fontawesome::fa("city",
+                          fill = "#270075",
+                          height = "20px"),
+          fontawesome::fa(
+            "building-circle-exclamation",
+            fill = "#270075",
+            height = "20px"
+          )
+        ),
+        br(),
+        br()
+      ),
+      scrolly_section(
+        id = "purple",
+        HTML(
+          "<p>
+            You can create your own mix of these priorites
+          using the sliders below. Increase the importance of
+          any priority by moving the slider to the right.
+            </p>"
+        ),
+        div(class = "label-left",
+            s_dis,
+            s_old,
+            s_kid,
+            s_den,
+            s_zca,
+            s_cta,
+            s_bad)
+      )
+      )
+    ),
     
-    style = "font-size: 1.5rem;
+    fluidRow(
+      HTML(
+        "<h3 style = 'font-size:2rem; font-family: Poppins, sans-serif;
+      font-weight: bold; color: #270075;'>
+          Now that we can see some broad areas of the city that
+          meet our criteria,
+          the next step is to draw some potential pilot zones.
+            </h3>"
+      ),
+      HTML(
+        "<p style = 'font-family: Poppins, sans-serif;
+      font-weight: bold; color: #270075;'>
+          Our draft ordinance has some extra rules about the
+          how these zones are drawn.</p>"
+      ),
+      p("In the two pilot zones that prioritize people with disabilities:"),
+      
+      wellPanel(
+        HTML(
+          "<li>at least 100% of people should have an ambulatory (walking) disability,</li>
+           <li>at least 100% of people should have a vision disability, and </li>
+           <li>and at least 100% of people should be over 65</li>
+           </li>"
+        )
+      )
+      ,
+      
+      br(),
+      p(
+        "A similar set of rules applies to zones that focus on children, transit, and households without cars:"
+      ),
+      
+      wellPanel(
+        HTML(
+          "<li>at least 50% of people should be under 5,</li>
+           <li>at least 50% of households should have no car</li>
+           <li>transit activity (boardings plus alightings)
+        should average at least 3,000 per day
+           </li>"
+        )
+      ),
+      
+      HTML(
+        "<p style = 'font-family: Poppins, sans-serif;
+      font-weight: bold; color: #270075;'>
+          These cutoffs would place our zones in the top
+      25% of Chicago census tracts for each of the measures listed.</h3>"
+      ),
+      
+      # Here's what that looks like 2 ----
+      br(),
+      br(),
+      HTML(
+        "<h3><section style='font-family: Poppins, sans-serif;
+      font-size:2rem; font-weight: bold; color: #270075'>
+    Scroll on to see some examples of pilot zones that meet
+    these criteria,
+    </h3>"
+      ),
+    
+    ### Begin scroll ------
+    fluidRow(scrolly_container(
+      "scr2",
+      ### place map -----
+      scrolly_graph(width = "50%"),
+      ### scroll sections -----
+      scrolly_sections(
+        width = "50%",
+        # ...1: Equal priorities ------
+        scrolly_section(id = "2_1",
+                        p("Some text")),
+        scrolly_section(id = "2_2",
+                        p("Some text")),
+        scrolly_section(id = "2_3",
+                        p("Some text"))
+      )
+    )),
+    tags$div(
+      "This project is open-source. See our GitHub repository here",
+      tags$a(
+        href = "https://github.com/ashleyasmus/plowthesidewalks_maps",
+        shiny::icon("external-link-alt", lib = "font-awesome"),
+        target = "_blank"
+      ),
+      tags$br(),
+      "App last updated ",
+      "2022-12-21",
+      style = "font-size: 1.5rem;
              display: block;
              text-align: right;
              padding: 1%;",
-    align = "right",
-    class = "pull-down-right"
-  ),
-  sliderInput(
-    "bins",
-    "Number of bins:",
-    min = 1,
-    max = 50,
-    value = 30
-  ),
+      align = "right",
+      class = "pull-down-right"
+    )
+    )
+  )
 )
