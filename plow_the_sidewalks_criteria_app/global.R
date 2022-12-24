@@ -26,50 +26,6 @@ library(leaflet.extras)
 library(geojsonsf)
 library(jsonify)
 
-# theme ----
-fresh::use_googlefont("Montserrat")
-my_fresh_theme <- 
-  fresh::create_theme(
-  theme = "default",
-  bs_vars_global(
-    body_bg = "#FFFFFF",
-    text_color = "black",
-    link_color = "#10626f",
-    link_hover_color = "#00d084",
-    line_height_base = 1.5,
-    grid_columns = NULL,
-    grid_gutter_width = NULL,
-    border_radius_base = NULL
-  ),
-  bs_vars_wells(bg = "#F9F9F9", border = "transparent"),
-  bs_vars_font(
-    family_sans_serif = "'Montserrat', sans-serif",
-    size_base = 16,
-    size_large = 42,
-    size_small = 13,
-    size_h1 = 42,
-    size_h2 = 36,
-    size_h3 = 20,
-    size_h4 = 16,
-    size_h5 = 16,
-    size_h6 = 16
-  ),
-  bs_vars_color(
-    brand_primary = "#270075",
-    brand_success = "#9b51e0",
-    brand_info = "#F9F9F9",
-    brand_warning = "#cf2e2e",
-    brand_danger = "#F9F9F9"
-  ),
-  bs_vars_navbar(
-    default_bg = "#FFFFFF",
-    default_color = "#FFFFFF",
-    default_link_color = "#10626f",
-    default_link_active_color = "#00d084"
-  )
-)
-
-
 # data ----
 master <- readRDS("data/scoring_master.RDS")
 
@@ -80,138 +36,115 @@ source("_colors.R")
 chi_bbox <- st_bbox(master)
 
 # variables ----
-vars <- list("vis", "amb", "old", "kid", "den", "zca", "cta", "bad")
-sliders <- unlist(lapply(vars, function(x) paste0("s_", x)))
+vars <- list("dis", "old", "kid", "den", "zca", "cta", "bad")
+
 
 # initialize weights as equal to start -----
 first_weights <- list(
-  # Demographics: 
-  "vis_w" = 1/length(vars),
-  "amb_w" = 1/length(vars),
-  "old_w" = 1/length(vars),
-  "kid_w" = 1/length(vars),
-  
+  # Demographics:
+  "dis_w" = 1 / length(vars),
+  "old_w" = 1 / length(vars),
+  "kid_w" = 1 / length(vars),
+
   # Transportation and land use:
-  "zca_w" = 1/length(vars),
-  "den_w" = 1/length(vars),
-  "cta_w" = 1/length(vars),
-  "bad_w" = 1/length(vars)
+  "zca_w" = 1 / length(vars),
+  "den_w" = 1 / length(vars),
+  "cta_w" = 1 / length(vars),
+  "bad_w" = 1 / length(vars)
 )
 
-# Function to update slider weights ----
-# update_slider_weights <-
-#   function(input, slider_i) {
-#     remaining <- 100 - input[[slider_i]]
-#     slider_o <- sliders[!sliders %in% slider_i]
-#     total <- sum(input[[slider_o[1]]],
-#                  input[[slider_o[2]]],
-#                  input[[slider_o[3]]],
-#                  input[[slider_o[4]]],
-#                  input[[slider_o[5]]],
-#                  input[[slider_o[6]]],
-#                  input[[slider_o[7]]])
-#     purrr:::map(
-#       .x = slider_o,
-#       .f = function(sliderid) {
-#         updateSliderInput(inputId = sliderid,
-#                           value = remaining * input[[sliderid]] /
-#                             total)
-#       }
-#     )
-#   }
-
-## Priorities table
-priorities <- 
-  list("wheelchair-move" = 
-         "<b>People with disabilities</b>, especially ambulatory (walking) 
-         and vision disabilities, who may use assistive devices like wheelchairs and canes",
-       
-       "user-plus" = 
-         "<b>Elders</b>, who are more vulnerable to serious fall-related injuries, 
-         and may be unable to shovel their own sidewalks, regardless of 
-         whether they identify as having a disability.",
-         
-         "baby-carriage" = 
-           "<b>Young children</b> and their caretakers, who may use strollers",
-       
-       "car" = 
-         "<b>Households without cars</b>, who are more likely to rely on walking to meet their needs",
-       
-       "city" = 
-         "<b>Population-dense areas</b>, to maximize the benefit of each mile of clear sidewalk",
-       
-       "bus" = 
-         "<b>Areas with high transit activity</b>, because the vast majority of riders get to 
-       and from their stop by walking",
-       
-       "building-circle-exclamation" = 
-         "<b>Known problem areas</b>, specifically those with many 311 reports of unclear sidewalks and
-        vacant buildings"
-         )
+# Create sliders -----------
+sliders <- unlist(lapply(vars, function(x) {
+  paste0("s_", x)
+}))
 
 
-priorites_tab <- 
-priorities %>%
-  unlist(recursive = FALSE) %>% 
-  tibble::enframe() %>% 
-  gt::gt() %>% 
-  gt::fmt_markdown(columns = value) %>%
-  gtExtras::gt_fa_column(name, height = "50px", 
-                         palette = rep(pal$access_purple, length(priorities))) %>%
-  gt::tab_options(column_labels.hidden = TRUE,
-                  table.background.color = "transparent",
-                  table.font.size = 14,
-                  table_body.hlines.color = "transparent",
-                  table_body.border.top.color = "transparent",
-                  table_body.border.bottom.color = "transparent",
-                  container.padding.y = px(0))
-
-
-priorites_row <- 
-  priorities %>%
-  unlist(recursive = FALSE) %>% 
-  tibble::enframe() %>% 
-  select(name) %>%
-  gt::gt() %>% 
-  gtExtras::gt_fa_column(name, height = "50px", 
-                         palette = rep(pal$access_purple, length(priorities)))
-
-
-# Table of slider inputs ----
-# https://github.com/rstudio/gt/issues/723
-sliderinput_gt <- function(name,...){
-  as.character(
-    shiny::sliderInput(
-      inputId = paste0(name, "_s"),
-      value = 100 * (1/7),
+create_slider <-
+  function(slider_id, icon_name) {
+    sliderInput(
+      slider_id,
+      label = fontawesome::fa(icon_name,
+        fill = "#270075",
+        height = "25px"
+      ),
       min = 0,
       max = 100,
-      label = NULL,
-      width = "150px",
+      value = 100 * 1 / length(vars),
+      step = 1,
+      width = "100%",
       ticks = FALSE,
       post = "%"
     )
-  ) %>% 
-    gt::html()
-}
+  }
 
-slider_table <- 
-priorities %>%
-  unlist(recursive = FALSE) %>%
-  tibble::enframe() %>%
-  select(name) %>%
-  mutate(sliderinput_column = purrr::map(
-    name,
-    .f = ~ sliderinput_gt(
-      .x,
-      value = (100 * 1/7),
-      "_sliderinput"
+s_dis <- create_slider("s_dis", "wheelchair-move")
+s_old <- create_slider("s_old", "user-plus")
+s_kid <- create_slider("s_kid", "baby-carriage")
+s_den <- create_slider("s_den", "city")
+s_zca <- create_slider("s_zca", "car")
+s_cta <- create_slider("s_cta", "bus")
+s_bad <- create_slider("s_bad", "building-circle-exclamation")
+
+# Function to update slider weights ----
+update_slider_weights <-
+  function(input, slider_i) {
+    remaining <- 100 - input[[slider_i]]
+    slider_o <- sliders[!sliders %in% slider_i]
+    total <- sum(input[[slider_o[1]]],
+                 input[[slider_o[2]]],
+                 input[[slider_o[3]]],
+                 input[[slider_o[4]]],
+                 input[[slider_o[5]]],
+                 input[[slider_o[6]]])
+    purrr:::map(
+      .x = slider_o,
+      .f = function(sliderid) {
+        updateSliderInput(inputId = sliderid,
+                          value = remaining * input[[sliderid]] /
+                            total)
+      }
     )
-  )) %>%
+  }
+
+## Table of priorities -----
+priorities_df <-
+  data.frame(
+    icon =
+      c(
+        "wheelchair-move",
+        "user-plus",
+        "baby-carriage",
+        "car",
+        "city",
+        "bus",
+        "building-circle-exclamation"
+      ),
+    desc =
+      c(
+        "<b>People with disabilities</b>, especially ambulatory (walking)
+         and vision disabilities, who may use assistive devices like wheelchairs and canes",
+        "<b>Elders</b>, who are more vulnerable to serious fall-related injuries,
+         and may be unable to shovel their own sidewalks, regardless of
+         whether they identify as having a disability.",
+        "<b>Young children</b> and their caretakers, who may use strollers",
+        "<b>Households without cars</b>, who are more likely to rely on walking to meet their needs",
+        "<b>Population-dense areas</b>, to maximize the benefit of each mile of clear sidewalk",
+        "<b>Areas with high transit activity</b>, because the vast majority of riders get to
+       and from their stop by walking",
+        "<b>Known problem areas</b>, specifically those with many 311 reports of unclear sidewalks and
+        vacant buildings"
+      )
+  )
+
+
+priorites_tab <-
+  priorities_df %>%
   gt::gt() %>%
-  gtExtras::gt_fa_column(name,
-                         height = "30px",
-                         palette = rep(pal$access_purple, length(priorities))) %>%
+  gt::fmt_markdown(columns = desc) %>%
+  gtExtras::gt_fa_column(icon,
+    height = "50px",
+    palette = rep(pal$access_purple, nrow(priorities_df))
+  ) %>%
   gt::tab_options(
     column_labels.hidden = TRUE,
     table.background.color = "transparent",
