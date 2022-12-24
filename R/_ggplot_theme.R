@@ -16,7 +16,7 @@ theme_access_insta <-
     requireNamespace("sysfonts", quietly = TRUE)
     requireNamespace("showtext", quietly = TRUE)
     showtext::showtext_auto()
-    
+
 
     font_families <-
       list(
@@ -30,8 +30,8 @@ theme_access_insta <-
         "strip" = "Montserrat"
       )
 
- # test   
-    
+    # test
+
     half_line <- base_size / 2
     t <-
       theme(
@@ -250,8 +250,8 @@ theme_access_large <-
     requireNamespace("sysfonts", quietly = TRUE)
     requireNamespace("showtext", quietly = TRUE)
     showtext::showtext_auto()
-    
-    
+
+
     font_families <-
       list(
         "title" = "Montserrat",
@@ -263,9 +263,9 @@ theme_access_large <-
         "caption" = "Montserrat",
         "strip" = "Montserrat"
       )
-    
-    
-    
+
+
+
 
     half_line <- base_size / 2
     t <-
