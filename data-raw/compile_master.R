@@ -107,11 +107,15 @@ bad_tracts <- sno_tracts %>%
 
 # (3) CTA Stop Activity (total, within tract) -----
 ctadat_sf <- readRDS("data/cta_stop_activity.RDS")
-cta_tracts <- st_join(ctadat_sf, acs_tracts, join = st_within) %>%
-  group_by(GEOID) %>%
+cta_tracts <- 
+  st_join(ctadat_sf, acs_tracts, join = st_within) %>%
+  group_by(GEOID, tract_area) %>%
   summarize(cta_activity = sum(activity)) %>%
   ungroup() %>%
-  st_drop_geometry()
+  st_drop_geometry() %>%
+  select(-tract_area) %>%
+  full_join(acs_tracts %>% select(GEOID, tract_area) %>% st_drop_geometry()) %>%
+  mutate(cta_permi2 = cta_activity / units::set_units(tract_area, "miles^2")) 
 
 # (4) Sidewalks -----
 
@@ -121,8 +125,8 @@ master <- master_acs %>%
   left_join(cta_tracts, by = "GEOID") %>%
   left_join(bad_tracts, by = "GEOID") %>%
   # replace missing values for these with zeros
-  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity), ~ as.numeric(.))) %>%
-  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity), ~ replace_na(., 0)))
+  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity, cta_permi2), ~ as.numeric(.))) %>%
+  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity, cta_permi2), ~ replace_na(., 0)))
 # left_join(swalk_tracts, by = "GEOID")
 
 
