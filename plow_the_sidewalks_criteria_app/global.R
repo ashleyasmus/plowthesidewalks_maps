@@ -3,6 +3,7 @@
 library(shiny)
 library(shinyjs)
 library(fresh)
+
 # scrolly
 library(scrollytell)
 
@@ -106,7 +107,7 @@ update_slider_weights <-
     )
   }
 
-## Table of priorities -----
+# Table of priorities -----
 priorities_df <-
   data.frame(
     icon =
@@ -154,3 +155,11 @@ priorites_tab <-
     table_body.border.bottom.color = "transparent",
     container.padding.y = px(0)
   )
+
+# Polygon draw button -----
+jspolygon <- "shinyjs.polygon_click = function(){
+    var e = document.createEvent('Event');
+    e.initEvent('click', true, true);
+    var cb = document.getElementsByClassName('leaflet-draw-draw-polygon');
+    return !cb[0].dispatchEvent(e);
+}"

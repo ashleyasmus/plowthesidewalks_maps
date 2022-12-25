@@ -92,9 +92,9 @@ server <- function(input, output, session) {
           scale = diff(range(n_bad_permi2))
         )[, 1],
         cta_scale = scale(
-          cta_activity,
-          center = min(cta_activity),
-          scale = diff(range(cta_activity))
+          cta_permi2,
+          center = min(cta_permi2),
+          scale = diff(range(cta_permi2))
         )[, 1]
       ) %>%
       select(GEOID, contains("scale")) %>%
@@ -245,12 +245,73 @@ server <- function(input, output, session) {
       position = "topright",
       polylineOptions = FALSE,
       circleOptions = FALSE,
-      polygonOptions = FALSE,
-      # rectangleOptions = FALSE,
+      # polygonOptions = FALSE,
+      rectangleOptions = FALSE,
       markerOptions = FALSE,
       circleMarkerOptions = FALSE,
       singleFeature = TRUE
     )
       
+  })
+  
+  # react to polygon draw button -------
+  observeEvent(input$polygon_button, {
+    js$polygon_click()
+  })
+
+  # summarize drawn pilot zone ----
+  observeEvent(input$mapDraw_draw_new_feature, {
+    # convert drawn rectangle to sf object
+    user_rect <-
+      # get feature:
+      input$mapDraw_draw_new_feature %>%
+      # translate to JSON:
+      jsonify::to_json(., unbox = T) %>%
+      # translate to SF:
+      geojsonsf::geojson_sf()
+    
+    # intersect, calculate area stats
+    intersection <-
+      st_intersection(user_rect, master)
+    
+    saveRDS(intersection, "intersection.RDS")
+    
+    area_summary <- 
+      intersection %>%
+      mutate(intersect_area = st_area(geometry)) %>%
+      mutate(intersect_area_mi2 = units::set_units(intersect_area, "mi^2")) %>%
+      mutate(prop_area = as.numeric(intersect_area_mi2) / area_mi2) %>%
+      # Adjust all population/household counts:
+      mutate(across(
+        c(matches("n_pop|n_hh"),
+          "total_population",
+          "num_hh"),
+        ~ round(. * prop_area)
+      )) %>%
+      # Total for this rectangle:
+      group_by(X_leaflet_id) %>%
+      summarize(across(c(
+        matches("n_pop|n_hh"),
+        "total_population",
+        "num_hh"
+      ),
+      ~ sum(.)),
+      geometry = st_union(geometry)) %>%
+      mutate(area = st_area(geometry)) %>%
+      mutate(area_mi2 = units::set_units(area, "mi^2")) %>%
+      mutate(density = total_population / area_mi2) %>%
+      # Refresh proportional data:
+      # ... population variables:
+      mutate(
+        across(contains("n_pop"),
+               ~ . / total_population,
+               .names = "{sub('n_pop', 'pct_pop', col)}")
+      ) %>%
+      # ... household-based variables:
+      mutate(across(contains("n_hh"),
+                    ~ . / num_hh,
+                    .names = "{sub('n_hh', 'pct_hh', col)}"))
+    
+    print(area_summary)
   })
 }

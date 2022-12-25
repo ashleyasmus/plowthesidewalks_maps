@@ -1,4 +1,5 @@
 ui <- fixedPage(
+  useShinyjs(),
   fresh::use_googlefont("Montserrat"),
   fresh::use_googlefont("Poppins"),
   # fresh::use_theme(my_fresh_theme),
@@ -26,7 +27,20 @@ ui <- fixedPage(
     }
     "
     )
-  )),
+  ),
+  tags$style(HTML("
+      a.leaflet-draw-draw-polygon {
+      display: inline;
+      visibility: hidden !important;
+      }
+     div.leaflet-draw-toolbar{
+       box-shadow: 0 0px 0px rgba(0,0,0,0) !important; 
+      -moz-box-shadow:0 0px 0px rgba(0,0,0,0) !important;
+      -webkit-box-shadow: 0 0px 0px rgba(0,0,0,0) !important;
+      border-color: rgba(0,0,0,0) !important;
+      }
+
+    "))),
   # Title panel -------
   titlePanel(title =
                div(
@@ -458,7 +472,6 @@ ui <- fixedPage(
       ### scroll sections -----
       scrolly_sections(
         width = "50%",
-        # ...1: Equal priorities ------
         scrolly_section(id = "2_1",
                         p("Some text")),
         scrolly_section(id = "2_2",
@@ -467,6 +480,26 @@ ui <- fixedPage(
                         p("Some text"))
       )
     )),
+    
+    ### Map with drawing tool----
+    
+    fluidRow(
+      column(4, 
+             shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")), 
+             tags$button(type="button", 
+                         id = "polygon_button", 
+                         'Start drawing', 
+                         style='color:#FFF;
+                         font-family: Poppins, sans-serif;
+                         font-weight: bold;
+                         background-color: #10626f',
+                         class="btn action-button shiny-bound-input")
+      ), 
+
+      column(8, leafletOutput("mapDraw"))
+    ),
+    
+    
     tags$div(
       "This project is open-source. See our GitHub repository here",
       tags$a(
