@@ -544,85 +544,92 @@ ui <- fixedPage(
       )
     ))
     )
-  ),
-  #Tab 2: Tool ----
-  tabPanel(
-    title = "Mapping tool",
-    id = "map_tab",
-    
-    fluidRow(
-      id = "mapntools",
-      column(5, 
-             id = "tools",
-             
-      shinyWidgets::verticalTabsetPanel(
-        menuSide = "left",
-        id = "drawTools",
-        color = "#270075",
-        contentWidth = 9,
-         shinyWidgets::verticalTabPanel(
-          "Explore",
-          div(class = "label-left",
-              s_dis,
-              s_old,
-              s_kid,
-              s_den,
-              s_zca,
-              s_cta,
-              s_bad),
-          
-          shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
-          tags$button(
-            type = "button",
-            id = "polygon_button",
-            'Start drawing',
-            style = 'color:#FFF;
+    ),
+    #Tab 2: Tool ----
+    tabPanel(
+      title = "Mapping tool",
+      id = "map_tab",
+      
+      fluidRow(
+        id = "mapntools",
+        column(5,
+               id = "tools",
+               tabsetPanel(
+                 type = "hidden",
+                 tabPanel(
+                   "Explore",
+                   shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
+                   tags$button(
+                     type = "button",
+                     id = "polygon_button",
+                     HTML(
+                       fontawesome::fa("arrow-pointer",
+                                       height = "2rem",
+                                       fill = "#FFF"),
+                       'Draw a pilot zone'
+                     ),
+                     style = 'color:#FFF;
+                     width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
-                         background-color: #10626f',
-            class = "btn action-button shiny-bound-input"
-          )
-        ),
-        shinyWidgets::verticalTabPanel("Results",
-                                       gt_output("scorecard"))
+                         background-color: #9b51e0',
+                     class = "btn action-button shiny-bound-input"
+                   ),
+                   HTML(
+                     "<h3 style = 'font-size:1.5rem;
+                 font-family: Poppins, sans-serif;
+                 font-weight: bold; color: #270075;'>
+                 Use the sliders to color the map according to
+                 your top priorities.
+                 </h3>"
+                   ),
+                 div(class = "label-left",
+                     s_dis2,
+                     s_old2,
+                     s_kid2,
+                     s_den2,
+                     s_zca2,
+                     s_cta2,
+                     s_bad2)
+                 ),
+                 tabPanel("Results",
+                          gt_output("scorecard"))
+               )),
+        
+        column(7,
+               id = "map",
+               tags$div(
+                 tags$style(type = "text/css", "#mapDraw {height: calc(80vh - 80px) !important;}"),
+                 leafletOutput("mapDraw", height = "100%", width = "100%")
+               ))
       )
     ),
     
-    column(7, 
-           id = "map",
-           tags$div(
-      tags$style(type = "text/css", "#mapDraw {height: calc(100vh - 80px) !important;}"),
-      leafletOutput("mapDraw", height = "100%", width = "100%")
-      
-      
-    ))
-  )),
-  
-  # Tab 3: Draft ---
-  tabPanel(title = "Draft Ordinance",
-           id = "draft_tab",
-           p("some text")),
-  
-  
-  
-  # Footer ------
-  footer = tags$div(
-    "This project is open-source. See our GitHub repository here",
-    tags$a(
-      href = "https://github.com/ashleyasmus/plowthesidewalks_maps",
-      shiny::icon("external-link-alt", lib = "font-awesome"),
-      target = "_blank"
-    ),
-    tags$br(),
-    "App last updated ",
-    "2022-12-21",
-    style = "font-size: 1.5rem;
+    # Tab 3: Draft ---
+    tabPanel(title = "Draft Ordinance",
+             id = "draft_tab",
+             p("some text")),
+    
+    
+    
+    # Footer ------
+    footer = tags$div(
+      "This project is open-source. See our GitHub repository here",
+      tags$a(
+        href = "https://github.com/ashleyasmus/plowthesidewalks_maps",
+        shiny::icon("external-link-alt", lib = "font-awesome"),
+        target = "_blank"
+      ),
+      tags$br(),
+      "App last updated ",
+      "2022-12-21",
+      style = "font-size: 1.5rem;
              display: block;
              text-align: right;
              padding: 1%;",
-    align = "right",
-    class = "pull-down-right"
+      align = "right",
+      class = "pull-down-right"
+    )
   )
-)
-# end tabset panel
+  # end tabset panel
 ) # end page
