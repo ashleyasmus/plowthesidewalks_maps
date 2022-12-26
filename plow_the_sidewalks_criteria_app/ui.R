@@ -6,28 +6,29 @@ ui <- fixedPage(
   
   # css tags -----
   tags$head(
+    # tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
+    # tags$link(rel = "stylesheet", type = "text/css", href = "colors.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "fresh_style.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "irs_style.css"),
     ## ... extra styling for sliders
     tags$style(
       HTML(
+        ".label-left .form-group {
+          display: flex;              /* Use flexbox for positioning children */
+          flex-direction: row;        /* Place children on a row (default) */
+          width: 90%;                /* Set width for container */
+          max-width: 400px;
+        }
+        .label-left label {
+          margin-right: 1rem;         /* Add spacing between label and slider */
+          align-self: center;         /* Vertical align in center of row */
+          text-align: left;
+          flex-basis: 30px;          /* Target width for label */
+        }
+        .label-left .irs {
+          flex-basis: 300px;          /* Target width for slider */
+        }
         "
-    .label-left .form-group {
-      display: flex;              /* Use flexbox for positioning children */
-      flex-direction: row;        /* Place children on a row (default) */
-      width: 90%;                /* Set width for container */
-      max-width: 400px;
-    }
-    .label-left label {
-      margin-right: 1rem;         /* Add spacing between label and slider */
-      align-self: center;         /* Vertical align in center of row */
-      text-align: left;
-      flex-basis: 30px;          /* Target width for label */
-    }
-    .label-left .irs {
-      flex-basis: 300px;          /* Target width for slider */
-    }
-    "
       )
     ),
     
@@ -35,42 +36,42 @@ ui <- fixedPage(
     tags$style(
       HTML(
         ".nav-pills {display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    min-height: 5.3rem;
-    padding: 0;
-    padding-top: 0px;
-    margin: 0;
-    margin-left: 0px;
-    padding-top: 1rem;
-  padding: 0;
-  font-family: 'Poppins',sans-serif;
-  font-weight: bold;
+          flex-direction: row;
+          justify-content: space-around;
+          min-height: 5.3rem;
+          padding: 0;
+          padding-top: 0px;
+          margin: 0;
+          margin-left: 0px;
+          padding-top: 1rem;
+          padding: 0;
+          font-family: 'Poppins',sans-serif;
+          font-weight: bold;
+          font-size: 1.8rem;
+          line-height: 1.5;
+          color: #000;
+          fill: #999999;
+          margin: 0;
+          margin-right: 0px;
+          margin-left: 0px;
+          margin-left: 1.5rem;
+          margin-right: .5rem;
+         }
 
-font-size: 1.8rem;
-line-height: 1.5;
-color: #000;
-fill: #999999;
-  margin: 0;
-    margin-right: 0px;
-    margin-left: 0px;
-  margin-left: 1.5rem;
-  margin-right: .5rem;
-}
-.nav-pills{
-    margin-top:20px;
-    width:100%;
+         .nav-pills{
+          margin-top:20px;
+          width:100%;
+          }
 
-}
-.nav-pills > li {
-  float: left;
-
-}")
+          .nav-pills > li {
+          float: left;
+          }"
+      )
     ),
-##...draw polygon button ----
-tags$style(
-  HTML(
-    "
+    ##...draw polygon button ----
+    tags$style(
+      HTML(
+        "
       a.leaflet-draw-draw-polygon {
       display: inline;
       visibility: hidden !important;
@@ -81,26 +82,26 @@ tags$style(
       -webkit-box-shadow: 0 0px 0px rgba(0,0,0,0) !important;
       border-color: rgba(0,0,0,0) !important;
       }"
-  )
-)
+      )
+    )
   ),
-
-# Page title  -------
-titlePanel(title = div(
-  img(
-    src = "main-logo.png",
-    height = "100px",
-    alt = "Access Living logo",
-    class = "pull-right"
-  ),
-  img(
-    src = "second-logo.png",
-    height = "100px",
-    alt = "Better streets logo",
-    class = "pull-right"
-  ),
-  HTML(
-    "<h1
+  
+  # Page title  -------
+  titlePanel(title = div(
+    img(
+      src = "main-logo.png",
+      height = "100px",
+      alt = "Access Living logo",
+      class = "pull-right"
+    ),
+    img(
+      src = "second-logo.png",
+      height = "100px",
+      alt = "Better streets logo",
+      class = "pull-right"
+    ),
+    HTML(
+      "<h1
           style='font-family: Poppins, sans-serif;
       font-size:4rem;
       font-weight: bold;
@@ -128,28 +129,28 @@ titlePanel(title = div(
       color: #000000;'>
       An inititative of Better Streets Chicago and Access Living
       </span></h1>"
-  )
-),
-windowTitle = "Where should we #PlowTheSidewalks first?"),
-
-
-# About --------
-tabsetPanel(
-  type = "pills",
-  tabPanel(
-    title = "About",
-    id = "about_tab",
-    
-    fluidRow(
-      br(),
-      wellPanel(
-        HTML(
-          "<h3><section style='font-family: Poppins, sans-serif;
+    )
+  ),
+  windowTitle = "Where should we #PlowTheSidewalks first?"),
+  
+  
+  # About --------
+  tabsetPanel(
+    type = "pills",
+    tabPanel(
+      title = "About",
+      id = "about_tab",
+      
+      fluidRow(
+        br(),
+        wellPanel(
+          HTML(
+            "<h3><section style='font-family: Poppins, sans-serif;
       font-size:3rem; font-weight: bold; color: #270075'>
     Where should Chicago try municipal sidewalk plowing
     <span style='color: #9b51e0;'>first?</span></h3>"
-        )
-      ),
+          )
+        ),
     p(
       "Better Streets Chicago and Access Living are drafting an ordinance asking Chicago
           to set aside $750,000 in the upcoming budget
@@ -167,7 +168,7 @@ tabsetPanel(
       where a test of sidewalk snow plowing would have greatest impact
       for the people that need it most.'
     )
-    ),
+      ),
     ## Priorities -----
     fluidRow(
       HTML(
