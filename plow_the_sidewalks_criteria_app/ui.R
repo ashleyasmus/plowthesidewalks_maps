@@ -545,41 +545,57 @@ tabsetPanel(
     )
   ),
   #Tab 2: Tool ----
-  tabPanel(title = "Mapping tool",
-           id = "map_tab",
-           
-           fluidRow(
-             column(6, tabsetPanel(
-               tabPanel(
-                 "Explore",
-                 div(class = "label-left",
-                     s_dis,
-                     s_old,
-                     s_kid,
-                     s_den,
-                     s_zca,
-                     s_cta,
-                     s_bad)
-               ),
-               tabPanel(
-                 "Draw",
-                 shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
-                 tags$button(
-                   type = "button",
-                   id = "polygon_button",
-                   'Start drawing',
-                   style = 'color:#FFF;
+  tabPanel(
+    title = "Mapping tool",
+    id = "map_tab",
+    
+    fluidRow(
+      id = "mapntools",
+      column(5, 
+             id = "tools",
+             
+      shinyWidgets::verticalTabsetPanel(
+        menuSide = "left",
+        id = "drawTools",
+        color = "#270075",
+        contentWidth = 9,
+         shinyWidgets::verticalTabPanel(
+          "Explore",
+          div(class = "label-left",
+              s_dis,
+              s_old,
+              s_kid,
+              s_den,
+              s_zca,
+              s_cta,
+              s_bad),
+          
+          shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
+          tags$button(
+            type = "button",
+            id = "polygon_button",
+            'Start drawing',
+            style = 'color:#FFF;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #10626f',
-                   class = "btn action-button shiny-bound-input"
-                 )
-               ),
-               tabPanel("Results",
-                        gt_output("scorecard"))
-             )),
-             column(6, leafletOutput("mapDraw"))
-           )),
+            class = "btn action-button shiny-bound-input"
+          )
+        ),
+        shinyWidgets::verticalTabPanel("Results",
+                                       gt_output("scorecard"))
+      )
+    ),
+    
+    column(7, 
+           id = "map",
+           tags$div(
+      tags$style(type = "text/css", "#mapDraw {height: calc(100vh - 80px) !important;}"),
+      leafletOutput("mapDraw", height = "100%", width = "100%")
+      
+      
+    ))
+  )),
   
   # Tab 3: Draft ---
   tabPanel(title = "Draft Ordinance",
