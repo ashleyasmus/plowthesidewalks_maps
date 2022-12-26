@@ -2,14 +2,16 @@ ui <- fixedPage(
   useShinyjs(),
   fresh::use_googlefont("Montserrat"),
   fresh::use_googlefont("Poppins"),
-  # fresh::use_theme(my_fresh_theme),
+  
+  
+  # css tags -----
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "fresh_style.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "irs_style.css"),
-  ),
-  tags$head(tags$style(
-    HTML(
-      "
+    ## ... extra styling for sliders
+    tags$style(
+      HTML(
+        "
     .label-left .form-group {
       display: flex;              /* Use flexbox for positioning children */
       flex-direction: row;        /* Place children on a row (default) */
@@ -26,69 +28,127 @@ ui <- fixedPage(
       flex-basis: 300px;          /* Target width for slider */
     }
     "
-    )
-  ),
-  tags$style(HTML("
+      )
+    ),
+    
+    ##...navigation bar ----
+    tags$style(
+      HTML(
+        ".nav-pills {display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    min-height: 5.3rem;
+    padding: 0;
+    padding-top: 0px;
+    margin: 0;
+    margin-left: 0px;
+    padding-top: 1rem;
+  padding: 0;
+  font-family: 'Poppins',sans-serif;
+  font-weight: bold;
+
+font-size: 1.8rem;
+line-height: 1.5;
+color: #000;
+fill: #999999;
+  margin: 0;
+    margin-right: 0px;
+    margin-left: 0px;
+  margin-left: 1.5rem;
+  margin-right: .5rem;
+}
+.nav-pills{
+    margin-top:20px;
+    width:100%;
+
+}
+.nav-pills > li {
+  float: left;
+
+}")
+    ),
+##...draw polygon button ----
+tags$style(
+  HTML(
+    "
       a.leaflet-draw-draw-polygon {
       display: inline;
       visibility: hidden !important;
       }
      div.leaflet-draw-toolbar{
-       box-shadow: 0 0px 0px rgba(0,0,0,0) !important; 
+       box-shadow: 0 0px 0px rgba(0,0,0,0) !important;
       -moz-box-shadow:0 0px 0px rgba(0,0,0,0) !important;
       -webkit-box-shadow: 0 0px 0px rgba(0,0,0,0) !important;
       border-color: rgba(0,0,0,0) !important;
-      }
+      }"
+  )
+)
+  ),
 
-    "))),
-  # Title panel -------
-  titlePanel(title =
-               div(
-                 img(
-                   src = "main-logo.png",
-                   height = "100px",
-                   alt = "Access Living logo",
-                   class = "pull-right"
-                 ),
-                 img(
-                   src = "second-logo.png",
-                   height = "100px",
-                   alt = "Better streets logo",
-                   class = "pull-right"
-                 ),
-                 HTML(
-                   "<h1><section style='font-family: Poppins, sans-serif;
-      font-size:4rem; font-weight: bold; color: #270075'>
-    #Plow The Sidewalks pilot zone explorer</h3>"
-                 )
-               ),
-    windowTitle = "Where should we #PlowTheSidewalks first?"),
-  
-  # Main panel --------
-  mainPanel(
-    ## Intro -------
-    wellPanel(
-      HTML(
-        "<h2><section style='font-family: Poppins, sans-serif;
-      font-size:20pt;
-      font-weight: bold; color: #270075; line-height = 2;'>
+# Page title  -------
+titlePanel(title = div(
+  img(
+    src = "main-logo.png",
+    height = "100px",
+    alt = "Access Living logo",
+    class = "pull-right"
+  ),
+  img(
+    src = "second-logo.png",
+    height = "100px",
+    alt = "Better streets logo",
+    class = "pull-right"
+  ),
+  HTML(
+    "<h1
+          style='font-family: Poppins, sans-serif;
+      font-size:4rem;
+      font-weight: bold;
+      line-height: 0.8;
+      color: #270075'>
+      #PlowTheSidewalks
+      <br>
+      <span style='font-family: Poppins, sans-serif;
+      font-size:2.5rem;
+      line-height: 0.8;
+      font-weight: bold; color: #000000;'>
       Let’s make
-      <span><section style='color: #9b51e0;'>
-      sidewalk snow and ice removal
+      <span style='color: #9b51e0;'>
+      sidewalk snow removal
       </span>
-      <span><section style='color: #270075;'>
+      <span style='color: #000000;'>
       a municipal service.
-      </span></h2>"
-      ),
-      p("An inititative of Better Streets Chicago and Access Living"),
-    ),
+      </span>
+      <br>
+      <span
+      style='font-family: Montserrat, sans-serif;
+      font-size:1.8rem;
+      font-weight: 100;
+      line-height: 0.5;
+      color: #000000;'>
+      An inititative of Better Streets Chicago and Access Living
+      </span></h1>"
+  )
+),
+windowTitle = "Where should we #PlowTheSidewalks first?"),
+
+
+# About --------
+tabsetPanel(
+  type = "pills",
+  tabPanel(
+    title = "About",
+    id = "about_tab",
     
-    ## About --------
     fluidRow(
-      HTML(
-        "<h3><section style='font-family: Poppins, sans-serif;
-      font-size:2rem; font-weight: bold; color: #270075'>
-    Where should Chicago try municipal sidewalk plowing first?</h3>"
+      br(),
+      wellPanel(
+        HTML(
+          "<h3><section style='font-family: Poppins, sans-serif;
+      font-size:3rem; font-weight: bold; color: #270075'>
+    Where should Chicago try municipal sidewalk plowing
+    <span style='color: #9b51e0;'>first?</span></h3>"
+        )
       ),
     p(
       "Better Streets Chicago and Access Living are drafting an ordinance asking Chicago
@@ -108,7 +168,7 @@ ui <- fixedPage(
       for the people that need it most.'
     )
     ),
-    ## 1: Priorities -----
+    ## Priorities -----
     fluidRow(
       HTML(
         "<h3><section style='font-family: Poppins, sans-serif;
@@ -202,7 +262,7 @@ ui <- fixedPage(
       )
     ))),
     
-    # About weighting -----
+    ## Weighting -----
     fluidRow(
       HTML(
         "<h3><section style='font-family: Poppins, sans-serif;
@@ -345,7 +405,7 @@ ui <- fixedPage(
         )
       ),
       
-      # ...2: transit ------
+      # ...3: transit ------
       scrolly_section(
         id = "transit",
         HTML(
@@ -383,6 +443,8 @@ ui <- fixedPage(
         br(),
         br()
       ),
+      
+      #...4: try it ---------
       scrolly_section(
         id = "purple",
         HTML(
@@ -479,44 +541,71 @@ ui <- fixedPage(
         scrolly_section(id = "2_3",
                         p("Some text"))
       )
-    )),
-    
-    ### Map with drawing tool----
-    
-    fluidRow(
-      column(4, 
-             shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")), 
-             tags$button(type="button", 
-                         id = "polygon_button", 
-                         'Start drawing', 
-                         style='color:#FFF;
+    ))
+    )
+  ),
+  #Tab 2: Tool ----
+  tabPanel(title = "Mapping tool",
+           id = "map_tab",
+           
+           fluidRow(
+             column(6, tabsetPanel(
+               tabPanel(
+                 "Explore",
+                 div(class = "label-left",
+                     s_dis,
+                     s_old,
+                     s_kid,
+                     s_den,
+                     s_zca,
+                     s_cta,
+                     s_bad)
+               ),
+               tabPanel(
+                 "Draw",
+                 shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
+                 tags$button(
+                   type = "button",
+                   id = "polygon_button",
+                   'Start drawing',
+                   style = 'color:#FFF;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #10626f',
-                         class="btn action-button shiny-bound-input")
-      ), 
-
-      column(8, leafletOutput("mapDraw"))
+                   class = "btn action-button shiny-bound-input"
+                 )
+               ),
+               tabPanel("Results",
+                        gt_output("scorecard"))
+             )),
+             column(6, leafletOutput("mapDraw"))
+           )),
+  
+  # Tab 3: Draft ---
+  tabPanel(title = "Draft Ordinance",
+           id = "draft_tab",
+           p("some text")),
+  
+  
+  
+  # Footer ------
+  footer = tags$div(
+    "This project is open-source. See our GitHub repository here",
+    tags$a(
+      href = "https://github.com/ashleyasmus/plowthesidewalks_maps",
+      shiny::icon("external-link-alt", lib = "font-awesome"),
+      target = "_blank"
     ),
-    
-    
-    tags$div(
-      "This project is open-source. See our GitHub repository here",
-      tags$a(
-        href = "https://github.com/ashleyasmus/plowthesidewalks_maps",
-        shiny::icon("external-link-alt", lib = "font-awesome"),
-        target = "_blank"
-      ),
-      tags$br(),
-      "App last updated ",
-      "2022-12-21",
-      style = "font-size: 1.5rem;
+    tags$br(),
+    "App last updated ",
+    "2022-12-21",
+    style = "font-size: 1.5rem;
              display: block;
              text-align: right;
              padding: 1%;",
-      align = "right",
-      class = "pull-down-right"
-    )
-    )
+    align = "right",
+    class = "pull-down-right"
   )
 )
+# end tabset panel
+) # end page
