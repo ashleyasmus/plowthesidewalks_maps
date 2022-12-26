@@ -1,4 +1,4 @@
-create_agg_table <- 
+create_scorecard <- 
   function(intersection){
     # intersection <-
     #   readRDS("plow_the_sidewalks_criteria_app/intersection.RDS")
