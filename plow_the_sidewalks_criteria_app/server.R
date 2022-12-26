@@ -13,14 +13,23 @@ server <- function(input, output, session) {
   weights <- reactiveVal(first_weights)
 
   observe({
+    
+    total <- sum(input$s_dis,
+                 input$s_old,
+                 input$s_kid,
+                 input$s_den,
+                 input$s_zca,
+                 input$s_cta,
+                 input$s_bad)
+    
     input_weights <- list(
-      "dis_w" = input$s_dis,
-      "old_w" = input$s_old,
-      "kid_w" = input$s_kid,
-      "den_w" = input$s_den,
-      "zca_w" = input$s_zca,
-      "cta_w" = input$s_cta,
-      "bad_w" = input$s_bad
+      "dis_w" = (input$s_dis/total),
+      "old_w" = (input$s_old/total),
+      "kid_w" = (input$s_kid/total),
+      "den_w" = (input$s_den/total),
+      "zca_w" = (input$s_zca/total),
+      "cta_w" = (input$s_cta/total),
+      "bad_w" = (input$s_bad/total)
     )
 
     weights(input_weights)
@@ -191,35 +200,35 @@ server <- function(input, output, session) {
       )
   })
 
-  # force sliders add to 100------
-  observeEvent(input$s_dis, {
-    update_slider_weights(input, "s_dis")
-  })
-
-
-  observeEvent(input$s_old, {
-    update_slider_weights(input, "s_old")
-  })
-
-  observeEvent(input$s_kid, {
-    update_slider_weights(input, "s_kid")
-  })
-
-  observeEvent(input$s_den, {
-    update_slider_weights(input, "s_den")
-      })
-
-  observeEvent(input$s_zca, {
-    update_slider_weights(input, "s_zca")
-  })
-
-  observeEvent(input$s_cta, {
-    update_slider_weights(input, "s_cta")
-  })
-
-  observeEvent(input$s_bad, {
-    update_slider_weights(input, "s_bad")
-  })
+  # # force sliders add to 100------
+  # observeEvent(input$s_dis, {
+  #   update_slider_weights(input, "s_dis")
+  # })
+  # 
+  # 
+  # observeEvent(input$s_old, {
+  #   update_slider_weights(input, "s_old")
+  # })
+  # 
+  # observeEvent(input$s_kid, {
+  #   update_slider_weights(input, "s_kid")
+  # })
+  # 
+  # observeEvent(input$s_den, {
+  #   update_slider_weights(input, "s_den")
+  #     })
+  # 
+  # observeEvent(input$s_zca, {
+  #   update_slider_weights(input, "s_zca")
+  # })
+  # 
+  # observeEvent(input$s_cta, {
+  #   update_slider_weights(input, "s_cta")
+  # })
+  # 
+  # observeEvent(input$s_bad, {
+  #   update_slider_weights(input, "s_bad")
+  # })
   
   
   
@@ -261,6 +270,7 @@ server <- function(input, output, session) {
 
   # summarize drawn pilot zone ----
   observeEvent(input$mapDraw_draw_new_feature, {
+    
     # convert drawn rectangle to sf object
     user_rect <-
       # get feature:
@@ -270,48 +280,20 @@ server <- function(input, output, session) {
       # translate to SF:
       geojsonsf::geojson_sf()
     
+    user_area <- st_area(user_rect) %>%
+      set_units("miles^2") %>%
+      as.numeric() 
+    
+    # Is user_rect between 2 and 3 square miles?
+    print(user_area)
+    
+    
     # intersect, calculate area stats
     intersection <-
       st_intersection(user_rect, master)
     
-    saveRDS(intersection, "intersection.RDS")
+    output$scorecard <- 
+      render_gt(create_scorecard(intersection))
     
-    area_summary <- 
-      intersection %>%
-      mutate(intersect_area = st_area(geometry)) %>%
-      mutate(intersect_area_mi2 = units::set_units(intersect_area, "mi^2")) %>%
-      mutate(prop_area = as.numeric(intersect_area_mi2) / area_mi2) %>%
-      # Adjust all population/household counts:
-      mutate(across(
-        c(matches("n_pop|n_hh"),
-          "total_population",
-          "num_hh"),
-        ~ round(. * prop_area)
-      )) %>%
-      # Total for this rectangle:
-      group_by(X_leaflet_id) %>%
-      summarize(across(c(
-        matches("n_pop|n_hh"),
-        "total_population",
-        "num_hh"
-      ),
-      ~ sum(.)),
-      geometry = st_union(geometry)) %>%
-      mutate(area = st_area(geometry)) %>%
-      mutate(area_mi2 = units::set_units(area, "mi^2")) %>%
-      mutate(density = total_population / area_mi2) %>%
-      # Refresh proportional data:
-      # ... population variables:
-      mutate(
-        across(contains("n_pop"),
-               ~ . / total_population,
-               .names = "{sub('n_pop', 'pct_pop', col)}")
-      ) %>%
-      # ... household-based variables:
-      mutate(across(contains("n_hh"),
-                    ~ . / num_hh,
-                    .names = "{sub('n_hh', 'pct_hh', col)}"))
-    
-    print(area_summary)
   })
 }
