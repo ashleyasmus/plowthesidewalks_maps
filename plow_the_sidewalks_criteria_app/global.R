@@ -102,18 +102,22 @@ update_slider_weights <-
   function(input, slider_i) {
     remaining <- 100 - input[[slider_i]]
     slider_o <- sliders[!sliders %in% slider_i]
-    total <- sum(input[[slider_o[1]]],
-                 input[[slider_o[2]]],
-                 input[[slider_o[3]]],
-                 input[[slider_o[4]]],
-                 input[[slider_o[5]]],
-                 input[[slider_o[6]]])
+    total <- sum(
+      input[[slider_o[1]]],
+      input[[slider_o[2]]],
+      input[[slider_o[3]]],
+      input[[slider_o[4]]],
+      input[[slider_o[5]]],
+      input[[slider_o[6]]]
+    )
     purrr:::map(
       .x = slider_o,
       .f = function(sliderid) {
-        updateSliderInput(inputId = sliderid,
-                          value = remaining * input[[sliderid]] /
-                            total)
+        updateSliderInput(
+          inputId = sliderid,
+          value = remaining * input[[sliderid]] /
+            total
+        )
       }
     )
   }

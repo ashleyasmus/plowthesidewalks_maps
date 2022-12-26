@@ -4,7 +4,7 @@ server <- function(input, output, session) {
   output$scr <- renderScrollytell({
     scrollytell()
   })
-  
+
   output$scr2 <- renderScrollytell({
     scrollytell()
   })
@@ -13,37 +13,36 @@ server <- function(input, output, session) {
   weights <- reactiveVal(first_weights)
 
   observe({
-    
-    total <- sum(input$s_dis,
-                 input$s_old,
-                 input$s_kid,
-                 input$s_den,
-                 input$s_zca,
-                 input$s_cta,
-                 input$s_bad)
-    
+    total <- sum(
+      input$s_dis,
+      input$s_old,
+      input$s_kid,
+      input$s_den,
+      input$s_zca,
+      input$s_cta,
+      input$s_bad
+    )
+
     input_weights <- list(
-      "dis_w" = (input$s_dis/total),
-      "old_w" = (input$s_old/total),
-      "kid_w" = (input$s_kid/total),
-      "den_w" = (input$s_den/total),
-      "zca_w" = (input$s_zca/total),
-      "cta_w" = (input$s_cta/total),
-      "bad_w" = (input$s_bad/total)
+      "dis_w" = (input$s_dis / total),
+      "old_w" = (input$s_old / total),
+      "kid_w" = (input$s_kid / total),
+      "den_w" = (input$s_den / total),
+      "zca_w" = (input$s_zca / total),
+      "cta_w" = (input$s_cta / total),
+      "bad_w" = (input$s_bad / total)
     )
 
     weights(input_weights)
   })
-  
+
   # change weights for scrolling ----
-  observeEvent(input$scr, ignoreNULL = T, ignoreInit = T, 
-               {
-    
-    if(input$scr == "equal"){
+  observeEvent(input$scr, ignoreNULL = T, ignoreInit = T, {
+    if (input$scr == "equal") {
       weights(first_weights)
     }
-    
-    if(input$scr == "disabilities"){
+
+    if (input$scr == "disabilities") {
       new_weights <- list(
         "dis_w" = 0.4,
         "old_w" = 0.4,
@@ -53,25 +52,23 @@ server <- function(input, output, session) {
         "cta_w" = 0,
         "bad_w" = 0.1
       )
-      
+
       weights(new_weights)
-        
     }
-                 
-     if(input$scr == "transit"){
-       new_weights <- list(
-         "dis_w" = 0,
-         "old_w" = 0,
-         "kid_w" = 0.25,
-         "den_w" = 0.15,
-         "zca_w" = 0.25,
-         "cta_w" = 0.25,
-         "bad_w" = 0.15
-       )
-       
-       weights(new_weights)
-       
-     }
+
+    if (input$scr == "transit") {
+      new_weights <- list(
+        "dis_w" = 0,
+        "old_w" = 0,
+        "kid_w" = 0.25,
+        "den_w" = 0.15,
+        "zca_w" = 0.25,
+        "cta_w" = 0.25,
+        "bad_w" = 0.15
+      )
+
+      weights(new_weights)
+    }
   })
 
   # update tract scores -----
@@ -129,9 +126,11 @@ server <- function(input, output, session) {
 
   # base map -----
   output$mapBuild <- renderLeaflet({
-    leaflet(options = leafletOptions(minZoom = 10, maxZoom = 10,
-                                     zoomControl = F,
-                                     attributionControl = FALSE)) %>%
+    leaflet(options = leafletOptions(
+      minZoom = 10, maxZoom = 10,
+      zoomControl = F,
+      attributionControl = FALSE
+    )) %>%
       addProviderTiles("CartoDB.Positron") %>%
       fitBounds(
         lat1 = chi_bbox[["ymin"]],
@@ -139,14 +138,16 @@ server <- function(input, output, session) {
         lng1 = chi_bbox[["xmin"]],
         lng2 = chi_bbox[["xmax"]]
       ) %>%
-      setView(lat = 
-                41.840675, 
-              lng = 
-                -87.679365,
-              zoom = 10)
+      setView(
+        lat =
+          41.840675,
+        lng =
+          -87.679365,
+        zoom = 10
+      )
   })
 
-  
+
   # update map with new scores -----
   observe({
     map_data <- scores() %>%
@@ -199,13 +200,15 @@ server <- function(input, output, session) {
         fillColor = my_pal(color_data)
       )
   })
-  
-  
+
+
   # map for drawing --------------
   output$mapDraw <- renderLeaflet({
-    leaflet(options = leafletOptions(minZoom = 10, maxZoom = 10,
-                                     zoomControl = F,
-                                     attributionControl = FALSE)) %>%
+    leaflet(options = leafletOptions(
+      minZoom = 10, maxZoom = 10,
+      zoomControl = F,
+      attributionControl = FALSE
+    )) %>%
       addProviderTiles("CartoDB.Positron") %>%
       fitBounds(
         lat1 = chi_bbox[["ymin"]],
@@ -213,25 +216,26 @@ server <- function(input, output, session) {
         lng1 = chi_bbox[["xmin"]],
         lng2 = chi_bbox[["xmax"]]
       ) %>%
-      setView(lat = 
-                41.840675, 
-              lng = 
-                -87.679365,
-              zoom = 10) %>%
+      setView(
+        lat =
+          41.840675,
+        lng =
+          -87.679365,
+        zoom = 10
+      ) %>%
       # draw rectangle tool ----
-    leaflet.extras::addDrawToolbar(
-      position = "topright",
-      polylineOptions = FALSE,
-      circleOptions = FALSE,
-      # polygonOptions = FALSE,
-      rectangleOptions = FALSE,
-      markerOptions = FALSE,
-      circleMarkerOptions = FALSE,
-      singleFeature = TRUE
-    )
-      
+      leaflet.extras::addDrawToolbar(
+        position = "topright",
+        polylineOptions = FALSE,
+        circleOptions = FALSE,
+        # polygonOptions = FALSE,
+        rectangleOptions = FALSE,
+        markerOptions = FALSE,
+        circleMarkerOptions = FALSE,
+        singleFeature = TRUE
+      )
   })
-  
+
   # react to polygon draw button -------
   observeEvent(input$polygon_button, {
     js$polygon_click()
@@ -239,7 +243,6 @@ server <- function(input, output, session) {
 
   # summarize drawn pilot zone ----
   observeEvent(input$mapDraw_draw_new_feature, {
-    
     # convert drawn rectangle to sf object
     user_rect <-
       # get feature:
@@ -248,21 +251,20 @@ server <- function(input, output, session) {
       jsonify::to_json(., unbox = T) %>%
       # translate to SF:
       geojsonsf::geojson_sf()
-    
+
     user_area <- st_area(user_rect) %>%
       set_units("miles^2") %>%
-      as.numeric() 
-    
+      as.numeric()
+
     # Is user_rect between 2 and 3 square miles?
     print(user_area)
-    
-    
+
+
     # intersect, calculate area stats
     intersection <-
       st_intersection(user_rect, master)
-    
-    output$scorecard <- 
+
+    output$scorecard <-
       render_gt(create_scorecard(intersection))
-    
   })
 }
