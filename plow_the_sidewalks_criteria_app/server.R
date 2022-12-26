@@ -199,37 +199,6 @@ server <- function(input, output, session) {
         fillColor = my_pal(color_data)
       )
   })
-
-  # # force sliders add to 100------
-  # observeEvent(input$s_dis, {
-  #   update_slider_weights(input, "s_dis")
-  # })
-  # 
-  # 
-  # observeEvent(input$s_old, {
-  #   update_slider_weights(input, "s_old")
-  # })
-  # 
-  # observeEvent(input$s_kid, {
-  #   update_slider_weights(input, "s_kid")
-  # })
-  # 
-  # observeEvent(input$s_den, {
-  #   update_slider_weights(input, "s_den")
-  #     })
-  # 
-  # observeEvent(input$s_zca, {
-  #   update_slider_weights(input, "s_zca")
-  # })
-  # 
-  # observeEvent(input$s_cta, {
-  #   update_slider_weights(input, "s_cta")
-  # })
-  # 
-  # observeEvent(input$s_bad, {
-  #   update_slider_weights(input, "s_bad")
-  # })
-  
   
   
   # map for drawing --------------
