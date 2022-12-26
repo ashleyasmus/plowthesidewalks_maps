@@ -2,6 +2,7 @@
 # shiny
 library(shiny)
 library(shinyjs)
+library(shinyWidgets)
 library(fresh)
 
 # scrolly
@@ -66,7 +67,7 @@ create_slider <-
       slider_id,
       label = fontawesome::fa(icon_name,
         fill = "#270075",
-        height = "25px"
+        height = "2rem"
       ),
       min = 0,
       max = 100,
