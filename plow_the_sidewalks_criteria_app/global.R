@@ -86,6 +86,16 @@ s_zca <- create_slider("s_zca", "car")
 s_cta <- create_slider("s_cta", "bus")
 s_bad <- create_slider("s_bad", "building-circle-exclamation")
 
+
+s_dis2 <- create_slider("s_dis", "wheelchair-move")
+s_old2 <- create_slider("s_old", "user-plus")
+s_kid2 <- create_slider("s_kid", "baby-carriage")
+s_den2 <- create_slider("s_den", "city")
+s_zca2 <- create_slider("s_zca", "car")
+s_cta2 <- create_slider("s_cta", "bus")
+s_bad2 <- create_slider("s_bad", "building-circle-exclamation")
+
+
 # Function to update slider weights ----
 update_slider_weights <-
   function(input, slider_i) {
