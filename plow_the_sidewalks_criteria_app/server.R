@@ -194,7 +194,7 @@ server <- function(input, output, session) {
   })
 
 
-  # base map for drawing --------------
+  # draw map--------------
   output$mapDraw <- renderLeaflet({
     leaflet(options = leafletOptions(
       minZoom = 10, maxZoom = 13,
@@ -305,6 +305,18 @@ server <- function(input, output, session) {
   observeEvent(input$edit_button, {
     js$edit_click()
   })
+  
+  # react to checkboxes: new layers ------
+  observeEvent(input$layers, {
+    if ("Ward boundaries" %in% input$layers) 
+    { 
+      leafletProxy("mapBuild") %>%
+        addPolygons(
+          data = wards
+        )
+      }
+  })
+  
   
   user_zone <- reactiveVal()
   

@@ -699,13 +699,13 @@ ui <- fluidPage(
                        s_bad2),
                    
                   
-                   
+                   #...layers ----
                    checkboxGroupInput(
                      inputId = 'layers',
                      label =  HTML("<p><b>Add to the map:
                                </b></p>"),
                      choices = c(
-                       "Ward boundaries",
+                       "Ward boundaries" ,
                        "L stations",
                        "Sidewalk snow removal requests",
                        "Vacant building reports"

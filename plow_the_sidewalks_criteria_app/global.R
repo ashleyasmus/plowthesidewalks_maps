@@ -32,13 +32,21 @@ library(geojsonsf)
 library(jsonify)
 
 # data ----
-master <- readRDS("data/scoring_master.RDS")
-bad_chicago <- readRDS("data/311_requests_chicago.RDS")
-cta_chicago <- readRDS("data/cta_stop_activity_chicago.RDS") 
-  
+master <- readRDS("data/scoring_master.RDS")%>%
+  st_transform(crs = 4326)
+bad_chicago <- readRDS("data/311_requests_chicago.RDS")%>%
+  st_transform(crs = 4326)
+cta_chicago <- readRDS("data/cta_stop_activity_chicago.RDS") %>%
+  st_transform(crs = 4326)
+wards <- readRDS("data/wards.RDS") %>%
+  st_transform(crs = 4326)
+
 # colors ---
 source("_colors.R")
+
+# scorecard function ----
 source("fun_create_scorecard.R")
+
 # bounding box (map) ----
 chi_bbox <- st_bbox(master)
 

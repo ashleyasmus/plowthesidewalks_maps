@@ -1,5 +1,6 @@
 create_scorecard <-
   function(intersection) {
+    
     # intersection <-
     #   readRDS("plow_the_sidewalks_criteria_app/intersection.RDS")
     
@@ -105,7 +106,7 @@ create_scorecard <-
             paste0(prettyNum(round(as.numeric(summary$n_sno)), big.mark = ","), " sidewalk snow/ice removal requests"),
             paste0(prettyNum(round(as.numeric(summary$n_vac)), big.mark = ","), " vacant building reports")
           ),
-        rank = c(
+        score = c(
           round(
             100 - (100 * ecdf(master$amb_pct_pop)(summary$amb_pct_pop))
           ),
@@ -139,13 +140,54 @@ create_scorecard <-
 
     scorecard <-
       summary_tab %>%
+      mutate(icon = factor(icon,
+                              levels = c("city", 
+                                         "snowplow",
+                                         "building-circle-exclamation",
+                                         
+                                         "wheelchair-move",
+                                         "person-walking-with-cane",
+                                         "user-plus",
+                                         
+                                         "baby-carriage",
+                                         "bus",
+                                         "car"))) %>%
+      mutate(requirement_applies_to = recode_factor(icon,
+                                   "city" = "All zones", 
+                                   "snowplow" =  "All zones",
+                                   "building-circle-exclamation" = "All zones",
+                                   
+                                   "wheelchair-move" = "Disability-focused zones",
+                                   "person-walking-with-cane" = "Disability-focused zones",
+                                   "user-plus" = "Disability-focused zones",
+                                   
+                                   "baby-carriage" = "Transit-focused zones",
+                                   "bus" = "Transit-focused zones",
+                                   "car" = "Transit-focused zones")) %>%
+        
+        mutate(
+          score_minimum = recode(
+            requirement_applies_to,
+            "All zones" = 50,
+            "Disability-focused zones" = 75,
+            "Transit-focused zones" = 75
+          )
+        ) %>% 
+      mutate(meets_requirement = ifelse(score >= score_minimum, "circle-check", "xmark")) %>% 
+      arrange(requirement_applies_to, icon) %>%
+      select(requirement_applies_to, icon, desc, score, score_minimum, meets_requirement) %>%
       gt::gt() %>%
-      gtExtras::gt_fa_column(icon,
+      gtExtras::gt_fa_column(meets_requirement,
         height = "1.5rem",
-        palette = rep("#270075", nrow(summary_tab))
+        palette = c("circle-check" = "#9b51e0", 
+                    "xmark" = "#abb8c3")
       ) %>%
+        gtExtras::gt_fa_column(icon,
+                               height = "1.5rem",
+                               palette = rep("#270075", nrow(summary))) %>%
+        
       gt::tab_style(
-        locations = cells_body(columns = "desc"),
+        locations = cells_body(),
         style = list(cell_text(
           color = "#270075",
           font = "Poppins",
@@ -154,11 +196,11 @@ create_scorecard <-
           align = "left",
           v_align = "middle"
         ))
-      ) %>%
+      )%>%
+       
       gt::tab_style(
-        locations = cells_body(columns = "rank"),
+        locations = cells_body(columns = c("score", "score_minimum")),
         style = list(cell_text(
-          color = "#000000",
           font = "Poppins",
           size = "1.5rem",
           align = "center",
@@ -166,20 +208,48 @@ create_scorecard <-
           weight = "bold"
         ))
       ) %>%
-      data_color(
-        columns = rank,
-        apply_to = "fill",
-        colors = scales::col_numeric(
-          palette = "plasma",
-          reverse = F,
-          domain = c(0, 100)
-        )
-      ) %>%
+        tab_row_group(
+          label = toupper("Requirements that apply to transit-focused pilot zones (min. score: 75)"),
+          rows = requirement_applies_to == "Transit-focused zones"
+        ) %>%
+        tab_row_group(
+          label = toupper("Requirements that apply to disability-focused pilot zones (min. score: 75)"),
+          rows = requirement_applies_to == "Disability-focused zones"
+        ) %>%
+        tab_row_group(
+          label = toupper("Requirements that apply to all pilot zones (min. score: 50)"),
+          rows = requirement_applies_to == "All zones",
+        ) %>%
+        gt::cols_hide(c("requirement_applies_to", "score_minimum")) %>%
+        gt::tab_style(
+          locations = cells_column_labels(),
+          style = list(cell_text(
+            color = "white",
+            font = "Poppins",
+            weight = "bold",
+            size = "1.2rem",
+            align = "left",
+            v_align = "middle"
+          ))
+        ) %>%
+        gt::tab_style(
+          locations = cells_row_groups(),
+          style = list(cell_text(
+            color = "#270075",
+            font = "Poppins",
+            weight = "bold",
+            size = "1rem",
+            align = "left",
+            v_align = "middle"
+          ))
+        ) %>%
       gt::cols_label(
-          rank = gt::html(glue::glue("<span 
+          icon = "",
+          meets_requirement = "Meets req.",
+          score = gt::html(glue::glue("<span 
                                 style= 'font-family: Poppins, sans-serif;
                                 font-size:1.2rem;
-                                color = #270075,
+                                color = white,
                                 font-weight: bold'>
                                 Score
                                 </span>
@@ -195,7 +265,7 @@ create_scorecard <-
           icon = gt::html(glue::glue("<span 
                                 style= 'font-family: Poppins, sans-serif;
                                 font-size:1.2rem;
-                                color = #270075,
+                                color = white,
                                 font-weight: bold'>
                                 Result
                                 </span>")),
@@ -204,7 +274,7 @@ create_scorecard <-
       gt::tab_style(
         locations = cells_column_labels(),
         style = list(cell_text(
-          color = "#270075",
+          color = "white",
           font = "Poppins",
           size = "1.2rem",
           align = "center",
@@ -213,6 +283,8 @@ create_scorecard <-
         ))
       ) %>%
       gt::tab_options(
+        column_labels.background.color =  "#270075",
+        row_group.background.color ="#F9F9F9",
         table.background.color = "transparent",
         table.font.size = 10,
         table_body.hlines.color = "transparent",
@@ -222,5 +294,5 @@ create_scorecard <-
         # column_labels.hidden = TRUE
       )
 
-    # scorecard
+    scorecard
   }
