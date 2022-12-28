@@ -126,7 +126,38 @@ master <- master_acs %>%
   left_join(bad_tracts, by = "GEOID") %>%
   # replace missing values for these with zeros
   mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity, cta_permi2), ~ as.numeric(.))) %>%
-  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity, cta_permi2), ~ replace_na(., 0)))
+  mutate(across(c(n_sno, n_sno_permi2, n_vac, n_vac_permi2, n_bad, n_bad_permi2, cta_activity, cta_permi2), ~ replace_na(., 0))) %>%
+  mutate(across(
+    c(matches(
+      "pct_pop|pct_hh"
+    )),
+    # get a scaled value for each variable
+    ~ scale(
+      .,
+      center = min(.), scale = diff(range(.))
+    )[, 1],
+    .names = "{sub('pct_pop|pct_hh', 'scale', col)}"
+  )) %>%
+  # scale variables with non-standard names:
+  mutate(
+    den_scale =
+      scale(den, center = min(den), scale = diff(range(den)))[, 1],
+    sno_scale = scale(
+      n_sno_permi2,
+      center = min(n_sno_permi2),
+      scale = diff(range(n_sno_permi2))
+    )[, 1],
+    vac_scale = scale(
+      n_vac_permi2,
+      center = min(n_vac_permi2),
+      scale = diff(range(n_vac_permi2))
+    )[, 1],
+    cta_scale = scale(
+      cta_permi2,
+      center = min(cta_permi2),
+      scale = diff(range(cta_permi2))
+    )[, 1]
+  )
 # left_join(swalk_tracts, by = "GEOID")
 
 

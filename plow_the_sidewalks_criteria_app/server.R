@@ -35,9 +35,38 @@ server <- function(input, output, session) {
 
     weights(input_weights)
   })
+  
+  # second set of weights for drawing map ------
+  weights2 <- reactiveVal(first_weights)
+  
+  observe({
+    total <- sum(
+      input$s_dis2,
+      input$s_old2,
+      input$s_kid2,
+      input$s_den2,
+      input$s_zca2,
+      input$s_cta2,
+      input$s_bad2
+    )
+    
+    input_weights2 <- list(
+      "dis_w2" = (input$s_dis2 / total),
+      "old_w2" = (input$s_old2 / total),
+      "kid_w2" = (input$s_kid2 / total),
+      "den_w2" = (input$s_den2 / total),
+      "zca_w2" = (input$s_zca2 / total),
+      "cta_w2" = (input$s_cta2 / total),
+      "bad_w2" = (input$s_bad2 / total)
+    )
+    
+    weights2(input_weights2)
+  })
 
-  # change weights for scrolling ----
-  observeEvent(input$scr, ignoreNULL = T, ignoreInit = T, {
+  # update weights on scroll ----
+  observeEvent(input$scr, 
+               ignoreNULL = T, 
+               ignoreInit = T, {
     if (input$scr == "equal") {
       weights(first_weights)
     }
@@ -73,55 +102,18 @@ server <- function(input, output, session) {
 
   # update tract scores -----
   scores <- reactiveVal()
-
   observe({
-    updated_scores <-
-      master %>%
-      mutate(across(
-        c(matches(
-          "pct_pop|pct_hh"
-        )),
-        # get a scaled value for each variable
-        ~ scale(
-          .,
-          center = min(.), scale = diff(range(.))
-        )[, 1],
-        .names = "{sub('pct_pop|pct_hh', 'scale', col)}"
-      )) %>%
-      # scale variables with non-standard names:
-      mutate(
-        den_scale =
-          scale(den, center = min(den), scale = diff(range(den)))[, 1],
-        bad_scale = scale(
-          n_bad_permi2,
-          center = min(n_bad_permi2),
-          scale = diff(range(n_bad_permi2))
-        )[, 1],
-        cta_scale = scale(
-          cta_permi2,
-          center = min(cta_permi2),
-          scale = diff(range(cta_permi2))
-        )[, 1]
-      ) %>%
-      select(GEOID, contains("scale")) %>%
-      # calculate a weighted score
-      mutate(
-        score =
-        # Demographics
-          (amb_scale * weights()$dis_w * 0.5) +
-            (vis_scale * weights()$dis_w * 0.5) +
-            (old_scale * weights()$old_w) +
-            (kid_scale * weights()$kid_w) +
-            (zca_scale * weights()$zca_w) +
-            # Land use and transportation
-            (den_scale * weights()$den_w) +
-            (cta_scale * weights()$cta_w) +
-            (bad_scale * weights()$bad_w)
-      ) %>%
-      mutate(score_pctile = ntile(desc(score), 100))
-
+    updated_scores <- update_scores(weights = weights())
     # Feed reactive value
     scores(updated_scores)
+  })
+  
+  # second set of scores ----------
+  scores2 <- reactiveVal()
+  observe({
+    updated_scores <- update_scores(weights = weights2())
+    # Feed reactive value
+    scores2(updated_scores)
   })
 
   # base map -----
@@ -202,10 +194,10 @@ server <- function(input, output, session) {
   })
 
 
-  # map for drawing --------------
+  # base map for drawing --------------
   output$mapDraw <- renderLeaflet({
     leaflet(options = leafletOptions(
-      minZoom = 10, maxZoom = 10,
+      # minZoom = 10, maxZoom = 10,
       zoomControl = F,
       attributionControl = FALSE
     )) %>%
@@ -232,10 +224,72 @@ server <- function(input, output, session) {
         rectangleOptions = FALSE,
         markerOptions = FALSE,
         circleMarkerOptions = FALSE,
-        singleFeature = TRUE
+        singleFeature = TRUE,
+        
+        
+        editOptions = editToolbarOptions(
+          edit = TRUE, 
+          remove = FALSE, 
+          selectedPathOptions = NULL,
+          allowIntersection = TRUE
+        )
       )
   })
-
+  
+  # update draw map with new scores ----
+  observe({
+    map_data <- scores2() %>%
+      mutate(helptext = ifelse(
+        score_pctile > 50,
+        paste0(
+          "bottom ",
+          100 - round(score_pctile)
+        ),
+        paste0(
+          "top ",
+          round(score_pctile)
+        )
+      ))
+    
+    color_data <- map_data$score_pctile
+    my_title <- "Rank"
+    my_pal <-
+      colorBin("plasma",
+               color_data,
+               10,
+               pretty = T,
+               reverse = T
+      )
+    
+    
+    tooltips <- sprintf(
+      "<p style='font-family: Poppins, sans-serif;
+      font-size:1rem;
+      color: #270075'>
+      This tract ranks in the
+      <br>
+      <strong><span style='font-size:1.5rem'>
+      %s%% of tracts</strong>
+      <br>
+      </span>,
+      for the priorities you selected.",
+      map_data$helptext
+    ) %>%
+      lapply(htmltools::HTML)
+    
+    leafletProxy("mapDraw", data = map_data) %>%
+      clearGroup("score_tiles") %>%
+      addPolygons(
+        data = map_data,
+        layerId = ~GEOID,
+        label = ~tooltips,
+        stroke = FALSE,
+        fillOpacity = 0.4,
+        fillColor = my_pal(color_data),
+        group = "score_tiles"
+      )
+  })
+  
   # react to polygon draw button -------
   observeEvent(input$polygon_button, {
     js$polygon_click()
@@ -250,7 +304,8 @@ server <- function(input, output, session) {
       # translate to JSON:
       jsonify::to_json(., unbox = T) %>%
       # translate to SF:
-      geojsonsf::geojson_sf()
+      geojsonsf::geojson_sf() %>%
+      sf::st_transform(crs = 4326)
 
     user_area <- st_area(user_rect) %>%
       set_units("miles^2") %>%

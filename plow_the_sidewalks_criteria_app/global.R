@@ -2,14 +2,15 @@
 # shiny
 library(shiny)
 library(shinyjs)
+library(bslib)
 library(shinyWidgets)
-library(fresh)
 
 # scrolly
 library(scrollytell)
 
 # icons
 library(fontawesome)
+library(tippy)
 
 # tables
 library(gt)
@@ -29,11 +30,12 @@ library(geojsonsf)
 library(jsonify)
 
 # data ----
-master <- readRDS("data/scoring_master.RDS")
+master <- readRDS("data/scoring_master.RDS") %>%
+  sf::st_transform(crs = 4326)
 
 # colors ---
 source("_colors.R")
-
+source("fun_create_scorecard.R")
 # bounding box (map) ----
 chi_bbox <- st_bbox(master)
 
@@ -88,13 +90,13 @@ s_cta <- create_slider("s_cta", "bus")
 s_bad <- create_slider("s_bad", "building-circle-exclamation")
 
 
-s_dis2 <- create_slider("s_dis", "wheelchair-move")
-s_old2 <- create_slider("s_old", "user-plus")
-s_kid2 <- create_slider("s_kid", "baby-carriage")
-s_den2 <- create_slider("s_den", "city")
-s_zca2 <- create_slider("s_zca", "car")
-s_cta2 <- create_slider("s_cta", "bus")
-s_bad2 <- create_slider("s_bad", "building-circle-exclamation")
+s_dis2 <- create_slider("s_dis2", "wheelchair-move")
+s_old2 <- create_slider("s_old2", "user-plus")
+s_kid2 <- create_slider("s_kid2", "baby-carriage")
+s_den2 <- create_slider("s_den2", "city")
+s_zca2 <- create_slider("s_zca2", "car")
+s_cta2 <- create_slider("s_cta2", "bus")
+s_bad2 <- create_slider("s_bad2", "building-circle-exclamation")
 
 
 # Function to update slider weights ----
@@ -122,6 +124,31 @@ update_slider_weights <-
     )
   }
 
+
+# Function to update scores -----
+update_scores <- 
+  function(weights){
+    master %>%
+      select(GEOID, contains("scale")) %>%
+      # calculate a weighted score
+      mutate(
+        score =
+          # Demographics
+          (amb_scale * weights$dis_w * 0.5) +
+          (vis_scale * weights$dis_w * 0.5) +
+          (old_scale * weights$old_w) +
+          (kid_scale * weights$kid_w) +
+          (zca_scale * weights$zca_w) +
+          # Land use and transportation
+          (den_scale * weights$den_w) +
+          (cta_scale * weights$cta_w) +
+          (sno_scale * weights$bad_w * 0.5) + 
+          (vac_scale * weights$bad_w * 0.5)
+      ) %>%
+      mutate(score_pctile = ntile(desc(score), 100))
+  }
+
+
 # Table of priorities -----
 priorities_df <-
   data.frame(
@@ -137,18 +164,18 @@ priorities_df <-
       ),
     desc =
       c(
-        "<b>People with disabilities</b>, especially ambulatory (walking)
-         and vision disabilities, who may use assistive devices like wheelchairs and canes",
-        "<b>Elders</b>, who are more vulnerable to serious fall-related injuries,
+        "<p style = 'font-size: 1.2rem;'><b>People with disabilities</b>, especially ambulatory (walking)
+         and vision disabilities, who may use assistive devices like wheelchairs and canes</p>",
+        "<p style = 'font-size: 1.2rem;'><b>Elders</b>, who are more vulnerable to serious fall-related injuries,
          and may be unable to shovel their own sidewalks, regardless of
-         whether they identify as having a disability.",
-        "<b>Young children</b> and their caretakers, who may use strollers",
-        "<b>Households without cars</b>, who are more likely to rely on walking to meet their needs",
-        "<b>Population-dense areas</b>, to maximize the benefit of each mile of clear sidewalk",
-        "<b>Areas with high transit activity</b>, because the vast majority of riders get to
-       and from their stop by walking",
-        "<b>Known problem areas</b>, specifically those with many 311 reports of unclear sidewalks and
-        vacant buildings"
+         whether they identify as having a disability.</p>",
+        "<p style = 'font-size: 1.2rem;'><b>Young children</b> and their caretakers, who may use strollers</p>",
+        "<p style = 'font-size: 1.2rem;'><b>Households without cars</b>, who are more likely to rely on walking to meet their needs</p>",
+        "<p style = 'font-size: 1.2rem;'><b>Population-dense areas</b>, to maximize the benefit of each mile of clear sidewalk</p>",
+        "<p style = 'font-size: 1.2rem;'><b>Areas with high transit activity</b>, because the vast majority of riders get to
+       and from their stop by walking</p>",
+        "<p style = 'font-size: 1.2rem;'><b>Known problem areas</b>, specifically those with many 311 reports of unclear sidewalks and
+        vacant buildings</p>"
       )
   )
 
@@ -158,13 +185,13 @@ priorites_tab <-
   gt::gt() %>%
   gt::fmt_markdown(columns = desc) %>%
   gtExtras::gt_fa_column(icon,
-    height = "50px",
+    height = '3rem',
     palette = rep(pal$access_purple, nrow(priorities_df))
   ) %>%
   gt::tab_options(
     column_labels.hidden = TRUE,
     table.background.color = "transparent",
-    table.font.size = 14,
+    table.font.size = '1.2rem',
     table_body.hlines.color = "transparent",
     table_body.border.top.color = "transparent",
     table_body.border.bottom.color = "transparent",

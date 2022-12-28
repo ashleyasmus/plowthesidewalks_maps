@@ -1,19 +1,3 @@
-.label-left .form-group {
-      display: flex;              /* Use flexbox for positioning children */
-      flex-direction: row;        /* Place children on a row (default) */
-      width: 90%;                /* Set width for container */
-      max-width: 400px;
-    }
-    .label-left label {
-      margin-right: 1rem;         /* Add spacing between label and slider */
-      align-self: center;         /* Vertical align in center of row */
-      text-align: left;
-      flex-basis: 30px;          /* Target width for label */
-    }
-    .label-left .irs {
-      flex-basis: 300px;          /* Target width for slider */
-    }
-
 .irs {
   position: relative;
   display: block;
@@ -92,7 +76,7 @@
   bottom: 0;
   left: 0;
   width: 80%;
-  height: 15px;
+  height: 2rem;
 }
 
 .irs-with-grid .irs-grid {
@@ -168,11 +152,11 @@
 }
 
 .irs--shiny {
-  height: 40px;
+  height: 2rem;
 }
 
 .irs--shiny.irs-with-grid {
-  height: 60px;
+  height: 2rem;
 }
 
 .irs--shiny .irs-line {
@@ -208,13 +192,13 @@
 }
 
 .irs--shiny .irs-handle {
-  top: 17px;
-  width: 22px;
-  height: 22px;
+  top: 0;
+  width: 2rem;
+  height: 2rem;
   border: 1px solid #270075;
   background-color: #9b51e0;
   box-shadow: 1px 1px 3px rgba(255, 255, 255, 0.3);
-  border-radius: 22px;
+  border-radius: 2.2rem;
 }
 
 .irs--shiny .irs-handle.state_hover, .irs--shiny .irs-handle:hover {
@@ -256,7 +240,7 @@
 }
 
 .irs--shiny .irs-grid {
-  height: 27px;
+  height: 2rem;
 }
 
 .irs--shiny .irs-grid-pol {

@@ -35,11 +35,11 @@ my_fresh_theme <-
       brand_danger = "#F9F9F9"
     ),
     bs_vars_navbar(
-      default_bg = "#FFFFFF",
+      default_bg = "#270075",
       default_color = "#FFFFFF",
-      default_link_color = "#10626f",
-      default_link_active_color = "#00d084"
+      default_link_color = "#9b51e0",
+      default_link_active_color = "#270075"
     )
   )
 
-my_fresh_theme
+# my_fresh_theme
