@@ -69,7 +69,7 @@ ui <- fluidPage(
         "
       a.leaflet-draw-edit-edit {
       display: inline;
-      visibility: hidden !important;
+      # visibility: hidden !important;
       }"
       )
     ),
@@ -303,10 +303,11 @@ ui <- fluidPage(
       ### place map -----
       scrolly_graph(
         width = "50%",
-        height = "100%",
+        height = "100vh",
         wellPanel(
           style = "padding: 0;
-                    margin-bottom:0;
+                    margin-bottom:2rem;
+                    margin-top:10px;
                     background-color: transparent;
                     border: 2px solid #270075;",
           leafletOutput("mapBuild")
@@ -671,7 +672,7 @@ ui <- fluidPage(
         id = "mapntools",
         
         # tools ------
-        column(5,
+        column(6,
                id = "tools",
                shinyWidgets::verticalTabsetPanel(
                  color = "#9b51e0",
@@ -725,7 +726,7 @@ ui <- fluidPage(
                  )
                )),
         ##...map -----
-        column(7,
+        column(6,
                id = "map",
                tags$div(
                  #...draw/edit buttons -----
@@ -734,6 +735,7 @@ ui <- fluidPage(
                      4,
                      style = "margin-left: 0px; margin-right: 0px; padding: 5px",
                      shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
+                     shinyjs::extendShinyjs(text = jsedit, functions = c("edit_click")),
                      tags$button(
                        type = "button",
                        id = "polygon_button",

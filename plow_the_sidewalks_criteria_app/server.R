@@ -124,18 +124,18 @@ server <- function(input, output, session) {
       attributionControl = FALSE
     )) %>%
       addProviderTiles("CartoDB.Positron") %>%
-      fitBounds(
-        lat1 = chi_bbox[["ymin"]],
-        lat2 = chi_bbox[["ymax"]],
-        lng1 = chi_bbox[["xmin"]],
-        lng2 = chi_bbox[["xmax"]]
-      ) %>%
       setView(
         lat =
           41.840675,
         lng =
           -87.679365,
         zoom = 10
+      ) %>%
+      setMaxBounds(
+        lat1 = chi_bbox[["ymin"]],
+        lat2 = chi_bbox[["ymax"]],
+        lng1 = chi_bbox[["xmin"]],
+        lng2 = chi_bbox[["xmax"]]
       )
   })
 
@@ -197,7 +197,7 @@ server <- function(input, output, session) {
   # base map for drawing --------------
   output$mapDraw <- renderLeaflet({
     leaflet(options = leafletOptions(
-      # minZoom = 10, maxZoom = 10,
+      minZoom = 10, maxZoom = 13,
       zoomControl = F,
       attributionControl = FALSE
     )) %>%
@@ -215,6 +215,12 @@ server <- function(input, output, session) {
           -87.679365,
         zoom = 10
       ) %>%
+      setMaxBounds(
+        lat1 = chi_bbox[["ymin"]],
+        lat2 = chi_bbox[["ymax"]],
+        lng1 = chi_bbox[["xmin"]],
+        lng2 = chi_bbox[["xmax"]]
+      )%>%
       # draw rectangle tool ----
       leaflet.extras::addDrawToolbar(
         position = "topright",
@@ -294,32 +300,106 @@ server <- function(input, output, session) {
   observeEvent(input$polygon_button, {
     js$polygon_click()
   })
-
+  
+  # react to edit button -------
+  observeEvent(input$edit_button, {
+    js$edit_click()
+  })
+  
+  user_zone <- reactiveVal()
+  
   # summarize drawn pilot zone ----
-  observeEvent(input$mapDraw_draw_new_feature, {
+  observeEvent(input$mapDraw_draw_all_features, {
     # convert drawn rectangle to sf object
-    user_rect <-
+    user_sf <-
       # get feature:
-      input$mapDraw_draw_new_feature %>%
+      input$mapDraw_draw_all_features %>%
       # translate to JSON:
       jsonify::to_json(., unbox = T) %>%
       # translate to SF:
       geojsonsf::geojson_sf() %>%
       sf::st_transform(crs = 4326)
-
-    user_area <- st_area(user_rect) %>%
+    
+    user_zone(user_sf)
+  })
+  
+  user_area <- reactiveVal()
+  
+  # print area -----
+  observeEvent(user_zone(), ignoreNULL = T, {
+    user_area_new <- st_area(user_zone()) %>%
       set_units("miles^2") %>%
       as.numeric()
-
-    # Is user_rect between 2 and 3 square miles?
-    print(user_area)
-
-
-    # intersect, calculate area stats
-    intersection <-
-      st_intersection(user_rect, master)
-
-    output$scorecard <-
-      render_gt(create_scorecard(intersection))
+    
+    user_area(user_area_new)
+    
+    text <- case_when(user_area_new > 3.1 ~
+                     glue::glue(
+                     "<span style = 'font-size: 1.2rem; 
+                     color: #270075;
+                     font-family: Poppins, sans-serif;
+                     font-weight: bold'> 
+                     Zone area: {round(user_area_new, 1)}
+                     square miles<br>
+                     
+                     {fontawesome::fa('exclamation-triangle', 
+                     fill = '#ff6900',
+                     height = '1.2rem')}
+                     Area is too large</span>"),
+                   
+                     user_area_new < 1.9 ~
+                          glue::glue(
+                            "<span style = 'font-size: 1.2rem; 
+                            color: #270075;
+                     font-family: Poppins, sans-serif;
+                     font-weight: bold'> 
+                     Zone area: {round(user_area_new, 1)}
+                     square miles<br>
+                     
+                     {fontawesome::fa('exclamation-triangle', 
+                     fill = '#ff6900',
+                     height = '1.2rem')}
+                     Area is too small</span>"),
+                     
+                     TRUE ~ 
+                       glue::glue(
+                         "<span style = 'font-size: 1.2rem;
+                         color: #270075;
+                     font-family: Poppins, sans-serif;
+                     font-weight: bold'> 
+                     Zone area: {round(user_area_new, 1)}
+                     square miles</span>")
+                     )
+                   
+    area_text <- tags$div(
+      tag.zone.area, HTML(text)
+    )  
+    
+    leafletProxy("mapDraw")  %>%
+      clearControls() %>%
+      addControl(area_text, position = "topleft", className="map-title")
+    
   })
+  
+  # scorecard -----
+  observeEvent(user_area(), ignoreNULL = T, {
+ 
+    if(user_area() < 3.1 &
+       user_area() > 1.9)
+    {
+      # intersect, calculate area stats
+      intersection <-
+        st_intersection(user_zone(), master)
+      
+      output$scorecard <-
+        render_gt(create_scorecard(intersection))
+    }
+   
+  })
+  
 }
+  
+
+  
+  
+  

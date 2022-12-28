@@ -4,6 +4,7 @@ library(shiny)
 library(shinyjs)
 library(bslib)
 library(shinyWidgets)
+library(shinycssloaders)
 
 # scrolly
 library(scrollytell)
@@ -21,6 +22,7 @@ library(sf)
 library(dplyr)
 library(tidyr)
 library(units)
+library(purrr)
 
 # mapping
 library(leaflet)
@@ -30,9 +32,10 @@ library(geojsonsf)
 library(jsonify)
 
 # data ----
-master <- readRDS("data/scoring_master.RDS") %>%
-  sf::st_transform(crs = 4326)
-
+master <- readRDS("data/scoring_master.RDS")
+bad_chicago <- readRDS("data/311_requests_chicago.RDS")
+cta_chicago <- readRDS("data/cta_stop_activity_chicago.RDS") 
+  
 # colors ---
 source("_colors.R")
 source("fun_create_scorecard.R")
@@ -46,15 +49,15 @@ vars <- list("dis", "old", "kid", "den", "zca", "cta", "bad")
 # initialize weights as equal to start -----
 first_weights <- list(
   # Demographics:
-  "dis_w" = 1 / length(vars),
-  "old_w" = 1 / length(vars),
-  "kid_w" = 1 / length(vars),
+  "dis_w" =  100 * 1 / length(vars),
+  "old_w" =  100 * 1 / length(vars),
+  "kid_w" =  100 * 1 / length(vars),
 
   # Transportation and land use:
-  "zca_w" = 1 / length(vars),
-  "den_w" = 1 / length(vars),
-  "cta_w" = 1 / length(vars),
-  "bad_w" = 1 / length(vars)
+  "zca_w" =  100 * 1 / length(vars),
+  "den_w" =  100 * 1 / length(vars),
+  "cta_w" =  100 * 1 / length(vars),
+  "bad_w" =  100 * 1 / length(vars)
 )
 
 # Create sliders -----------
@@ -205,3 +208,28 @@ jspolygon <- "shinyjs.polygon_click = function(){
     var cb = document.getElementsByClassName('leaflet-draw-draw-polygon');
     return !cb[0].dispatchEvent(e);
 }"
+
+# Edit button -----
+jsedit <- "shinyjs.edit_click = function(){
+    var e = document.createEvent('Event');
+    e.initEvent('click', true, true);
+    var cb = document.getElementsByClassName('leaflet-draw-edit-edit');
+    return !cb[0].dispatchEvent(e);
+}"
+
+
+# Text box for Leaflet area --------
+tag.zone.area <- tags$style(HTML("
+  .leaflet-control.map-title { 
+    transform: translate(-50%,20%);
+    position: relative;
+    left: 50%;
+    text-align: center;
+    padding-left: 10px; 
+    padding-right: 10px; 
+    background: rgba(255,255,255,0.75);
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+  }
+"))
