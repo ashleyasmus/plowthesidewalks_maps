@@ -3,7 +3,7 @@ create_scorecard <-
     
     # intersection <-
     #   readRDS("plow_the_sidewalks_criteria_app/intersection.RDS")
-    
+
     pop_summary <-
       intersection %>%
       mutate(intersect_area = st_area(geometry)) %>%
@@ -20,7 +20,9 @@ create_scorecard <-
       )) %>%
       # Total for this rectangle:
       group_by(X_leaflet_id) %>%
-      summarize(across(
+      summarize(
+        do.union = T,
+        across(
         c(
           matches("n_pop|n_hh"),
           "total_population",
@@ -28,7 +30,7 @@ create_scorecard <-
         ),
         ~ sum(.)
       )) %>%
-      mutate(geometry = st_union(geometry)) %>%
+      ungroup() %>%
       mutate(area = st_area(geometry)) %>%
       mutate(area_mi2 = units::set_units(area, "mi^2")) %>%
       # Refresh proportional data:
@@ -45,10 +47,12 @@ create_scorecard <-
       mutate(across(contains("n_hh"),
         ~ . / num_hh,
         .names = "{sub('n_hh', 'pct_hh', col)}"
-      ))
+      )) %>%
+      st_transform(crs = 4326)
     
     sno_count <- 
-      st_intersection(bad_chicago$sno, pop_summary %>% select(X_leaflet_id)) %>%
+      st_intersection(bad_chicago$sno, pop_summary %>% 
+                        select(X_leaflet_id)) %>%
       st_drop_geometry() %>%
       group_by(X_leaflet_id) %>%
       tally(n = "n_sno") %>%
@@ -75,9 +79,9 @@ create_scorecard <-
                     vac_count,
                     cta_total) %>% 
       purrr::reduce(left_join, by = "X_leaflet_id") %>%
-      mutate(cta_permi2 = cta_activity/area,
-             n_sno_permi2 = n_sno/area,
-             n_vac_permi2 = n_vac/area)
+      mutate(cta_permi2 = cta_activity/area_mi2,
+             n_sno_permi2 = n_sno/area_mi2,
+             n_vac_permi2 = n_vac/area_mi2)
       
 
     summary_tab <-
@@ -108,31 +112,31 @@ create_scorecard <-
           ),
         score = c(
           round(
-            100 - (100 * ecdf(master$amb_pct_pop)(summary$amb_pct_pop))
+            (100 * ecdf(master$amb_pct_pop)(100 * summary$amb_pct_pop))
           ),
           round(
-            100 - (100 * ecdf(master$vis_pct_pop)(summary$vis_pct_pop))
+            (100 * ecdf(master$vis_pct_pop)(100 * summary$vis_pct_pop))
           ),
           round(
-            100 - (100 * ecdf(master$amb_pct_pop)(summary$old_pct_pop))
+            (100 * ecdf(master$old_pct_pop)(100 * summary$old_pct_pop))
           ),
           round(
-            100 - (100 * ecdf(master$amb_pct_pop)(summary$kid_pct_pop))
+            (100 * ecdf(master$kid_pct_pop)(100 * summary$kid_pct_pop))
           ),
           round(
-            100 - (100 * ecdf(master$zca_pct_hh)(summary$zca_pct_hh))
+            (100 * ecdf(master$zca_pct_hh)(100 * summary$zca_pct_hh))
           ),
           round(
-            100 - ( 100 * ecdf(master$den)(summary$den))
+            ( 100 * ecdf(master$den)(summary$den))
           ),
           round(
-            100 - (100 * ecdf(master$cta_permi2)(summary$cta_permi2))
+            (100 * ecdf(master$cta_permi2)(summary$cta_permi2))
           ),
           round(
-            100 - (100 * ecdf(master$n_sno_permi2)(summary$n_sno_permi2))
+            (100 * ecdf(master$n_sno_permi2)(summary$n_sno_permi2))
           ),
           round(
-            100 - (100 * ecdf(master$n_vac_permi2)(summary$n_vac_permi2))
+            (100 * ecdf(master$n_vac_permi2)(summary$n_vac_permi2))
           )
         )
       )

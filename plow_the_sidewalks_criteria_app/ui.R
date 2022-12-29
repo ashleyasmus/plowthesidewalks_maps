@@ -76,22 +76,21 @@ ui <- fluidPage(
   ),
   
   # Page title  -------
-  titlePanel(
-    title = div(
-      img(
-        src = "main-logo.png",
-        height = "100px",
-        alt = "Access Living logo",
-        class = "pull-right"
-      ),
-      img(
-        src = "second-logo.png",
-        height = "100px",
-        alt = "Better streets logo",
-        class = "pull-right"
-      ),
-      HTML(
-        "<h2
+  titlePanel(title = div(
+    img(
+      src = "main-logo.png",
+      height = "100px",
+      alt = "Access Living logo",
+      class = "pull-right"
+    ),
+    img(
+      src = "second-logo.png",
+      height = "100px",
+      alt = "Better streets logo",
+      class = "pull-right"
+    ),
+    HTML(
+      "<h2
       style = 'line-height: 2rem;
       margin-top:3rem;
       margin-bottom:1rem;'>
@@ -117,9 +116,9 @@ ui <- fluidPage(
       color: #000000;'>
       An inititative of Better Streets Chicago and Access Living
       </span></h1>"
-      )
-    ),
-    windowTitle = "Where should we #PlowTheSidewalks first?"),
+    )
+  ),
+  windowTitle = "Where should we #PlowTheSidewalks first?"),
   
   # About --------
   tabsetPanel(
@@ -616,7 +615,7 @@ ui <- fluidPage(
                          {fontawesome::fa('bus',
                             fill = '#270075',
                             height = '1.6rem')}
-                        Transit activity should average at least <b>7,500</b>
+                        Transit activity should average at least <b>40,000</b>
                        boardings and alightings per day</p>"
                    )
                  ),
@@ -663,144 +662,150 @@ ui <- fluidPage(
     ))
     ),
     # Tab 2: Tool ----
-
+    
     tabPanel(
       title = "Suggest a pilot zone",
       id = "map_tab",
       type = "pills",
-      fluidRow(
-        id = "mapntools",
-        
-        # tools ------
-        column(6,
-               id = "tools",
-               shinyWidgets::verticalTabsetPanel(
-                 color = "#9b51e0",
-                 id = "toolnav",
-                 #...sliders ----
-                 verticalTabPanel (
-                   id = "sliders",
-                   title = HTML(glue::glue("{fontawesome::fa('screwdriver-wrench')}<br>
+      shinyWidgets::verticalTabsetPanel(
+        color = "#9b51e0",
+        contentWidth = 11,
+        id = "toolnav",
+        #...sliders ----
+        verticalTabPanel (
+          title = HTML(
+            glue::glue(
+              "{fontawesome::fa('screwdriver-wrench')}<br>
                                             {fontawesome::fa('layer-group')}<br>
-                                            {fontawesome::fa('map-location-dot')}")),
-                   HTML(
-                     "<p><b>
+                                            {fontawesome::fa('map-location-dot')}"
+            )
+          ),
+          column(
+            6,
+            id = "sliders",
+            HTML(
+              "<p><b>
                                Use the sliders to color the map according to
                                your top priorities.
                                </b></p>"
-                   ),
-                   div(class = "label-left",
-                       s_dis2,
-                       s_old2,
-                       s_kid2,
-                       s_den2,
-                       s_zca2,
-                       s_cta2,
-                       s_bad2),
-                   
-                  
-                   #...layers ----
-                   checkboxGroupInput(
-                     inputId = 'layers',
-                     label =  HTML("<p><b>Add to the map:
+            ),
+            div(class = "label-left",
+                s_dis2,
+                s_old2,
+                s_kid2,
+                s_den2,
+                s_zca2,
+                s_cta2,
+                s_bad2),
+            
+            
+            #...layers ----
+            checkboxGroupInput(
+              inputId = 'layers',
+              label =  HTML("<p><b>Add to the map:
                                </b></p>"),
-                     choices = c(
-                       "Ward boundaries" ,
-                       "L stations",
-                       "Sidewalk snow removal requests",
-                       "Vacant building reports"
+              choices = c(
+                "Ward boundaries" ,
+                "L stations",
+                "Sidewalk snow removal requests",
+                "Vacant building reports"
+              )
+            )
+          ),
+          
+          column(6,
+                 ##...map -----
+                   id = "map",
+                   tags$div(
+                     #...draw/edit buttons -----
+                     fluidRow(
+                       column(
+                         4,
+                         style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                         shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
+                         shinyjs::extendShinyjs(text = jsedit, functions = c("edit_click")),
+                         tags$button(
+                           type = "button",
+                           id = "polygon_button",
+                           HTML(
+                             fontawesome::fa("arrow-pointer",
+                                             height = "2rem",
+                                             fill = "#FFF"),
+                             "Draw"
+                           ),
+                           style = "color:#FFF;
+                     width:100%;
+                         font-family: Poppins, sans-serif;
+                         font-weight: bold;
+                         background-color: #9b51e0",
+                     class = "btn action-button shiny-bound-input"
+                         )
+                       ),
+                     
+                     column(
+                       4,
+                       style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                       tags$button(
+                         type = "button",
+                         id = "edit_button",
+                         HTML(
+                           fontawesome::fa("pen-to-square",
+                                           height = "2rem",
+                                           fill = "#FFF"),
+                           "Edit"
+                         ),
+                         style = "color:#FFF;
+                     width:100%;
+                         font-family: Poppins, sans-serif;
+                         font-weight: bold;
+                         background-color: #9b51e0",
+                     class = "btn action-button shiny-bound-input"
+                       )
+                     ),
+                     
+                     column(
+                       4,
+                       style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                       tags$button(
+                         type = "button",
+                         id = "submit_button",
+                         HTML(
+                           fontawesome::fa("paper-plane",
+                                           height = "2rem",
+                                           fill = "#FFF"),
+                           "Submit"
+                         ),
+                         style = "color:#FFF;
+                     width:100%;
+                         font-family: Poppins, sans-serif;
+                         font-weight: bold;
+                         background-color: #9b51e0",
+                     class = "btn action-button shiny-bound-input"
+                       )
                      )
+                     ),
+                     tags$style(type = "text/css", "#mapDraw {height: calc(80vh - 80px) !important;}"),
+                     leafletOutput("mapDraw", height = "100%", width = "100%")
                    )
-                 ),
-                 ##...scorecard----
-                 verticalTabPanel (
-                   id = "scorecard",
-                   title = HTML(glue::glue("<br>{fontawesome::fa('list-check')}<br>")),
-                   HTML(
-                     "<p><b>
+                 )
+        ),
+        ##...scorecard----
+        verticalTabPanel (
+          id = "scorecard",
+          title = HTML(glue::glue(
+            "<br>{fontawesome::fa('list-check')}<br>"
+          )),
+          HTML(
+            "<p><b>
                                        Draw a zone to see how well your suggested pilot zone
                                        serves our priorities.
                                        </b></p>"
-                   ),
-                   gt_output("scorecard")
-                 )
-               )),
-        ##...map -----
-        column(6,
-               id = "map",
-               tags$div(
-                 #...draw/edit buttons -----
-                 fluidRow(
-                   column(
-                     4,
-                     style = "margin-left: 0px; margin-right: 0px; padding: 5px",
-                     shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
-                     shinyjs::extendShinyjs(text = jsedit, functions = c("edit_click")),
-                     tags$button(
-                       type = "button",
-                       id = "polygon_button",
-                       HTML(
-                         fontawesome::fa("arrow-pointer",
-                                         height = "2rem",
-                                         fill = "#FFF"),
-                         "Draw"
-                       ),
-                       style = "color:#FFF;
-                     width:100%;
-                         font-family: Poppins, sans-serif;
-                         font-weight: bold;
-                         background-color: #9b51e0",
-                     class = "btn action-button shiny-bound-input"
-                     )
-                   ),
-                   
-                   column(
-                     4,
-                     style = "margin-left: 0px; margin-right: 0px; padding: 5px",
-                     tags$button(
-                       type = "button",
-                       id = "edit_button",
-                       HTML(
-                         fontawesome::fa("pen-to-square",
-                                         height = "2rem",
-                                         fill = "#FFF"),
-                         "Edit"
-                       ),
-                       style = "color:#FFF;
-                     width:100%;
-                         font-family: Poppins, sans-serif;
-                         font-weight: bold;
-                         background-color: #9b51e0",
-                     class = "btn action-button shiny-bound-input"
-                     )
-                   ),
-                   
-                   column(
-                     4,
-                     style = "margin-left: 0px; margin-right: 0px; padding: 5px",
-                     tags$button(
-                       type = "button",
-                       id = "submit_button",
-                       HTML(
-                         fontawesome::fa("paper-plane",
-                                         height = "2rem",
-                                         fill = "#FFF"),
-                         "Submit"
-                       ),
-                       style = "color:#FFF;
-                     width:100%;
-                         font-family: Poppins, sans-serif;
-                         font-weight: bold;
-                         background-color: #9b51e0",
-                     class = "btn action-button shiny-bound-input"
-                     )
-                   )
-                 ),
-                 tags$style(type = "text/css", "#mapDraw {height: calc(80vh - 80px) !important;}"),
-                 leafletOutput("mapDraw", height = "100%", width = "100%")
-               ))
+          ),
+          gt_output("scorecard")
+        )
       )
-    ),
+    )
+    ,
     
     # Tab 3: Draft ---
     tabPanel(title = "Read the draft ordinance",

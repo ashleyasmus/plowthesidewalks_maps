@@ -34,11 +34,19 @@ library(jsonify)
 # data ----
 master <- readRDS("data/scoring_master.RDS")%>%
   st_transform(crs = 4326)
-bad_chicago <- readRDS("data/311_requests_chicago.RDS")%>%
+
+bad_chicago <- readRDS("data/311_requests_chicago.RDS")
+
+bad_chicago$sno <- bad_chicago$sno %>%
   st_transform(crs = 4326)
-cta_chicago <- readRDS("data/cta_stop_activity_chicago.RDS") %>%
+
+bad_chicago$vac <- bad_chicago$vac %>%
   st_transform(crs = 4326)
-wards <- readRDS("data/wards.RDS") %>%
+
+cta_chicago <- readRDS("data/cta_stop_activity_chicago.RDS")%>%
+  st_transform(crs = 4326)
+
+wards <- readRDS("data/wards.RDS")%>%
   st_transform(crs = 4326)
 
 # colors ---
