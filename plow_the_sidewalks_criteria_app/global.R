@@ -2,9 +2,8 @@
 # shiny
 library(shiny)
 library(shinyjs)
-library(bslib)
+# vertical tabset panel: 
 library(shinyWidgets)
-library(shinycssloaders)
 
 # scrolly
 library(scrollytell)
@@ -26,7 +25,10 @@ library(purrr)
 
 # mapping
 library(leaflet)
+library(leafgl)
 library(RColorBrewer)
+
+# drawn shapes:
 library(leaflet.extras)
 library(geojsonsf)
 library(jsonify)
@@ -49,31 +51,54 @@ cta_chicago <- readRDS("data/cta_stop_activity_chicago.RDS")%>%
 wards <- readRDS("data/wards.RDS")%>%
   st_transform(crs = 4326)
 
+ward_centroids <- readRDS("data/ward_centroids.RDS")%>%
+  st_transform(crs = 4326)
+
+l_stops <- readRDS("data/l_stops.RDS")%>%
+  st_transform(crs = 4326)
+
+# static maps ----
+pctile_maps <- readRDS("data/pctile_maps.RDS")
+
 # colors ---
 source("_colors.R")
 
 # scorecard function ----
 source("fun_create_scorecard.R")
 
+
+
 # bounding box (map) ----
 chi_bbox <- st_bbox(master)
 
 # variables ----
-vars <- list("dis", "old", "kid", "den", "zca", "cta", "bad")
+vars <- list("vis",
+             "amb",
+             "old",
+             
+             "kid",
+             "zca", 
+             "cta",
+             
+             "den", 
+             "sno", 
+             "vac")
 
 
 # initialize weights as equal to start -----
 first_weights <- list(
   # Demographics:
-  "dis_w" =  100 * 1 / length(vars),
-  "old_w" =  100 * 1 / length(vars),
-  "kid_w" =  100 * 1 / length(vars),
-
-  # Transportation and land use:
-  "zca_w" =  100 * 1 / length(vars),
-  "den_w" =  100 * 1 / length(vars),
-  "cta_w" =  100 * 1 / length(vars),
-  "bad_w" =  100 * 1 / length(vars)
+  "vis_w" =  1 / length(vars),
+  "amb_w" =  1 / length(vars),
+  "old_w" =  1 / length(vars),
+  
+  "kid_w" =  1 / length(vars),
+  "zca_w" =  1 / length(vars),
+  "cta_w" =  1 / length(vars),
+  
+  "den_w" =  1 / length(vars),
+  "sno_w" =  1 / length(vars),
+  "vac_w" =  1 / length(vars)
 )
 
 # Create sliders -----------
@@ -83,16 +108,17 @@ sliders <- unlist(lapply(vars, function(x) {
 
 
 create_slider <-
-  function(slider_id, icon_name) {
+  function(slider_id, icon_name, icon_title = NULL) {
     sliderInput(
       slider_id,
       label = fontawesome::fa(icon_name,
         fill = "#270075",
-        height = "2rem"
+        height = "2rem",
+        title = icon_title
       ),
       min = 0,
       max = 100,
-      value = 100 * 1 / length(vars),
+      value = 100,
       step = 1,
       width = "100%",
       ticks = FALSE,
@@ -100,73 +126,155 @@ create_slider <-
     )
   }
 
-s_dis <- create_slider("s_dis", "wheelchair-move")
-s_old <- create_slider("s_old", "user-plus")
-s_kid <- create_slider("s_kid", "baby-carriage")
-s_den <- create_slider("s_den", "city")
-s_zca <- create_slider("s_zca", "car")
-s_cta <- create_slider("s_cta", "bus")
-s_bad <- create_slider("s_bad", "building-circle-exclamation")
+s_vis <- create_slider("s_vis",
+                       "person-walking-with-cane",
+                       "Percent of people with vision disabilities")
+s_amb <- create_slider("s_amb",
+                       "wheelchair-move",
+                       "Percent of people with ambulatory disabilities")
+s_old <- create_slider("s_old", "user-plus",
+                       "Percent of people over 65")
+
+s_kid <- create_slider("s_kid", "baby-carriage",
+                       "Percent of people under 5")
+s_zca <- create_slider("s_zca", "car-tunnel",
+                       "Percent of households without cars")
+s_cta <- create_slider("s_cta",
+                       "bus",
+                       "Transit activity: boardings and alightings per square mile")
+
+s_den <- create_slider("s_den", "city",
+                       "Population density: people per square mile")
+s_sno <- create_slider("s_sno",
+                       "snowplow",
+                       "Number of snowy/icy sidewalk complaints per square mile")
+s_vac <- create_slider("s_vac",
+                       "building-circle-exclamation",
+                       "Number of vacant buildings per square mile")
 
 
-s_dis2 <- create_slider("s_dis2", "wheelchair-move")
-s_old2 <- create_slider("s_old2", "user-plus")
-s_kid2 <- create_slider("s_kid2", "baby-carriage")
-s_den2 <- create_slider("s_den2", "city")
-s_zca2 <- create_slider("s_zca2", "car")
-s_cta2 <- create_slider("s_cta2", "bus")
-s_bad2 <- create_slider("s_bad2", "building-circle-exclamation")
+s_vis2 <- create_slider("s_vis2",
+                       "person-walking-with-cane",
+                       "Percent of people with vision disabilities")
+s_amb2 <- create_slider("s_amb2",
+                       "wheelchair-move",
+                       "Percent of people with ambulatory disabilities")
+s_old2 <- create_slider("s_old2", "user-plus",
+                       "Percent of people over 65")
+
+s_kid2 <- create_slider("s_kid2", "baby-carriage",
+                       "Percent of people under 5")
+s_zca2 <- create_slider("s_zca2", "car-tunnel",
+                       "Percent of households without cars")
+s_cta2 <- create_slider("s_cta2",
+                       "bus",
+                       "Transit activity: boardings and alightings per square mile")
+
+s_den2 <- create_slider("s_den2", "city",
+                       "Population density: people per square mile")
+s_sno2 <- create_slider("s_sno2",
+                       "snowplow",
+                       "Number of snowy/icy sidewalk complaints per square mile")
+s_vac2 <- create_slider("s_vac2",
+                       "building-circle-exclamation",
+                       "Number of vacant buildings per square mile")
 
 
-# Function to update slider weights ----
-update_slider_weights <-
-  function(input, slider_i) {
-    remaining <- 100 - input[[slider_i]]
-    slider_o <- sliders[!sliders %in% slider_i]
-    total <- sum(
-      input[[slider_o[1]]],
-      input[[slider_o[2]]],
-      input[[slider_o[3]]],
-      input[[slider_o[4]]],
-      input[[slider_o[5]]],
-      input[[slider_o[6]]]
-    )
-    purrr:::map(
-      .x = slider_o,
-      .f = function(sliderid) {
-        updateSliderInput(
-          inputId = sliderid,
-          value = remaining * input[[sliderid]] /
-            total
-        )
-      }
+# Create filters -----------
+sliders <- unlist(lapply(vars, function(x) {
+  paste0("s_", x)
+}))
+
+
+create_filter <-
+  function(filter_id, icon_name, icon_title = NULL) {
+    sliderInput(
+      filter_id,
+      label = fontawesome::fa(icon_name,
+                              fill = "#270075",
+                              height = "2rem"
+      ),
+      min = 0,
+      max = 100,
+      value = c(0, 100),
+      step = 5,
+      width = "100%",
+      ticks = F,
+      post = "%",
+      dragRange = F
     )
   }
+
+f_score <- create_filter("f_score", 
+                         "plus-minus",
+                         "Overall weighted score")
+f_vis <- create_filter("f_vis", 
+                       "person-walking-with-cane", 
+                       "Percent of people with vision disabilities")
+f_amb <- create_filter("f_amb", 
+                       "wheelchair-move",
+                       "Percent of people with ambulatory disabilities"
+                       )
+f_old <- create_filter("f_old", "user-plus",
+                       "Percent of people over 65")
+
+f_kid <- create_filter("f_kid", "baby-carriage",
+                       "Percent of people under 5")
+f_zca <- create_filter("f_zca", "car-tunnel",
+                       "Percent of households without cars")
+f_cta <- create_filter("f_cta", "bus", 
+                       "Transit activity: boardings and alightings per square mile")
+
+f_den <- create_filter("f_den", "city",
+                       "Population density: people per square mile")
+f_sno <- create_filter("f_sno", "snowplow",
+                       "Number of snowy/icy sidewalk complaints per square mile")
+f_vac <- create_filter("f_vac", "building-circle-exclamation",
+                       "Number of vacant buildings per square mile")
+
 
 
 # Function to update scores -----
 update_scores <- 
-  function(weights){
-    master %>%
-      select(GEOID, contains("scale")) %>%
-      # calculate a weighted score
-      mutate(
-        score =
-          # Demographics
-          (amb_scale * weights$dis_w * 0.5) +
-          (vis_scale * weights$dis_w * 0.5) +
-          (old_scale * weights$old_w) +
-          (kid_scale * weights$kid_w) +
-          (zca_scale * weights$zca_w) +
-          # Land use and transportation
-          (den_scale * weights$den_w) +
-          (cta_scale * weights$cta_w) +
-          (sno_scale * weights$bad_w * 0.5) + 
-          (vac_scale * weights$bad_w * 0.5)
+  function(weights, df = master){
+    
+    
+    scores <- 
+    df %>%
+      st_drop_geometry() %>%
+      select(hexid, contains("pctile")) %>%
+      pivot_longer(
+        cols = contains("pctile"),
+        names_to = "variable",
+        values_to = "pctile",
+        names_transform = ~ gsub("_pctile", "", .)
       ) %>%
-      mutate(score_pctile = ntile(desc(score), 100))
+      mutate(
+        weight =
+          case_when(
+            variable == "vis" ~ weights$vis_w,
+            variable == "amb" ~ weights$amb_w,
+            variable == "kid" ~ weights$kid_w,
+            variable == "old" ~ weights$old_w,
+            variable == "zca" ~ weights$zca_w,
+            variable == "n_cta" ~ weights$cta_w,
+            variable == "n_sno" ~ weights$sno_w,
+            variable == "n_vac" ~ weights$vac_w,
+            variable == "n_ppl" ~ weights$den_w
+          )
+      ) %>%
+      group_by(hexid) %>%
+      summarize(wtd_score = 
+                  round(100 *
+                  weighted.mean(x = pctile, w = weight))) %>%
+      ungroup() %>%
+      mutate(score_p_rank = round(100 * percent_rank(wtd_score))) %>%
+      arrange(desc(score_p_rank), hexid)
+    
+    scores
   }
 
+first_scores <- update_scores(first_weights, master)
 
 # Table of priorities -----
 priorities_df <-
@@ -176,7 +284,7 @@ priorities_df <-
         "wheelchair-move",
         "user-plus",
         "baby-carriage",
-        "car",
+        "car-tunnel",
         "city",
         "bus",
         "building-circle-exclamation"
@@ -249,3 +357,23 @@ tag.zone.area <- tags$style(HTML("
     font-size: 1.2rem;
   }
 "))
+
+# Function to make ward ID labels
+make_ward_labs <- function(font_size = 1, ward_ids = ward_centroids$ward_id){
+  sprintf(
+    paste0(
+    "<i style='font-family: Montserrat, sans-serif;
+      font-weight: bold;
+      font-size:",
+    font_size,
+    "rem;
+    color: white'>
+      %s</i>"
+  ), 
+  ward_ids) %>%
+    lapply(htmltools::HTML)
+}
+
+init_ward_labs <- make_ward_labs()
+
+

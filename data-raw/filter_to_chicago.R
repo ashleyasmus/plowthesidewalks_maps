@@ -26,14 +26,14 @@ acs_summary_chi <- list()
 for (n in names(acs_summary)) {
   acs_summary_chi[[n]] <-
     purrr::map(
-      .x = c("pct", "pop"),
+      .x = c("pct", "ppl"),
       .f = function(p) {
         acs_summary[[n]][[p]] %>%
           filter(GEOID %in% acs_tracts_chi$GEOID)
       }
     )
 
-  names(acs_summary_chi[[n]]) <- c("pct", "pop")
+  names(acs_summary_chi[[n]]) <- c("pct", "ppl")
 }
 
 

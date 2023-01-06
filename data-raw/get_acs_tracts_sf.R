@@ -19,7 +19,7 @@ acs_tracts <-
   # project to local crs:
   st_transform(crs = 26916) %>%
   select(GEOID, NAME, estimate) %>%
-  rename(total_population = estimate) %>%
+  rename(n_ppl = estimate) %>%
   mutate(tract_area = st_area(geometry))
 
 ## number of households ----
@@ -34,7 +34,7 @@ acs_hh <-
     # get the geometry of the tracts separately:
     geometry = F
   ) %>%
-  rename(num_hh = estimate) %>%
+  rename(n_hhs = estimate) %>%
   select(-moe)
 
 acs_tracts <-

@@ -321,12 +321,12 @@ acs_summary_c <-
   bind_rows() %>%
   group_by(GEOID, var_short, var_long) %>%
   summarize(
-    pop = sum(est),
+    ppl = sum(est),
     pct = round(100 * sum(est) / total_est, 2)
   ) %>%
   ungroup() %>%
   unique() %>%
-  pivot_longer(cols = c(pop, pct), names_to = "measure", values_to = "value") %>%
+  pivot_longer(cols = c(ppl, pct), names_to = "measure", values_to = "value") %>%
   filter(!is.na(value)) %>%
   group_by(var_short, var_long, measure) %>%
   mutate(
