@@ -81,11 +81,11 @@ leg_plot
 
 ggsave("plow_the_sidewalks_criteria_app/www/legend.png", 
        leg_plot, 
-       height = 1200, 
-       width = 1000, 
+       height = 3000, 
+       width = 4000, 
        units = "px")
 
-pctile_maps[[legend]] <- leg_plot
+pctile_maps[["legend"]] <- leg_plot
 
 saveRDS(pctile_maps, "plow_the_sidewalks_criteria_app/data/pctile_maps.RDS")
 

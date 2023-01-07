@@ -2,6 +2,8 @@
 # shiny
 library(shiny)
 library(shinyjs)
+library(bslib)
+
 # vertical tabset panel: 
 library(shinyWidgets)
 
@@ -32,6 +34,7 @@ library(RColorBrewer)
 library(leaflet.extras)
 library(geojsonsf)
 library(jsonify)
+
 
 # data ----
 master <- readRDS("data/scoring_master.RDS")%>%

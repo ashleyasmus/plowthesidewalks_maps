@@ -10,77 +10,57 @@ server <- function(input, output, session) {
   })
   
   # Static plots ------
-  output$ambmap <- renderPlot({
-    pctile_maps[["amb_pctile"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_ambmap_width
-  })
   
-  output$vismap <- renderPlot({
-    pctile_maps[["vis_pctile"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_vismap_width
-  })
+    output$ambmap <- renderPlot({
+      pctile_maps[["amb_pctile"]]
+    })
   
-  output$oldmap <- renderPlot({
-    pctile_maps[["old_pctile"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_oldmap_width
-  })
+    
+    output$vismap <- renderPlot({
+      info <- getCurrentOutputInfo()
+      pctile_maps[["vis_pctile"]]
+    })
+    
+    
+    output$oldmap <- renderPlot({
+      pctile_maps[["old_pctile"]]
+    })
+    
+    
+    output$kidmap <- renderPlot({
+      pctile_maps[["kid_pctile"]]
+    })
+    
+    
+    output$zcamap <- renderPlot({
+      pctile_maps[["zca_pctile"]]
+    })
+    
+    
+    output$ctamap <- renderPlot({
+      pctile_maps[["n_cta_pctile"]]
+    })
+    
+    output$denmap <- renderPlot({
+      pctile_maps[["n_ppl_pctile"]]
+    })
+    
+    
+    output$snomap <- renderPlot({
+      pctile_maps[["n_sno_pctile"]]
+    })
+    
+    output$vacmap <- renderPlot({
+      pctile_maps[["n_vac_pctile"]]
+    })
+    
+    
+    output$mapleg <- renderPlot({
+      pctile_maps[["legend"]]
+    })
+
   
-  output$kidmap <- renderPlot({
-    pctile_maps[["kid_pctile"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_kidmap_width
-  })
-  
-  output$zcamap <- renderPlot({
-    pctile_maps[["zca_pctile"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_zcamap_width
-  })
-  
-  output$ctamap <- renderPlot({
-    pctile_maps[["n_cta_pctile"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_ctamap_width
-  })
-  
-  output$denmap <- renderPlot({
-    pctile_maps[["n_ppl_pctile"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_denmap_width
-  })
-  
-  
-  output$snomap <- renderPlot({
-    pctile_maps[["n_sno_pctile"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_snomap_width
-  })
-  
-  output$vacmap <- renderPlot({
-    pctile_maps[["n_vac_pctile"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_vacmap_width
-  })
-  
-  
-  output$mapleg <- renderPlot({
-    pctile_maps[["legend"]]
-  }, 
-  height = function() {
-    1.5 * session$clientData$output_mapleg_width
-  })
+    
   
   
   
