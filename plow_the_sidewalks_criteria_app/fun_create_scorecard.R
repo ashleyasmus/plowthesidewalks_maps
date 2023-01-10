@@ -2,7 +2,7 @@ create_scorecard <-
   function(intersection) {
     
     # intersection <-
-    #   readRDS("plow_the_sidewalks_criteria_app/scrap/intersection.RDS")
+    #   readRDS("plow_the_sidewalks_criteria_app/scrap/intersection_514.RDS")
 
     pop_summary <-
       intersection %>%
@@ -85,29 +85,38 @@ create_scorecard <-
       data.frame(
         icon =
           c(
+            "city",
             "wheelchair-move",
             "person-walking-with-cane",
+
             "user-plus",
             "baby-carriage",
             "car-tunnel",
-            "city",
+            "circle-dollar-to-slot",
             "bus",
+            
             "snowplow",
             "building-circle-exclamation"
           ),
         desc =
           c(
-            paste0(round(100 * summary$amb_pct_ppl), "% of residents have an ambulatory disability"),
-            paste0(round(100 * summary$vis_pct_ppl), "% of residents have a vision disability"),
+            paste0(round(as.numeric(summary$n_ppl) / 1000), "K residents"),
+            paste0(prettyNum(round(summary$amb_n_ppl, -3), big.mark = ","), " of residents have an ambulatory disability"),
+            paste0(prettyNum(round(summary$vis_n_ppl, -2), big.mark = ","), " of residents have a vision disability"),
+            
             paste0(round(100 * summary$old_pct_ppl), "% of residents are age 65 and over"),
             paste0(round(100 * summary$kid_pct_ppl), "% of residents are under age 5"),
             paste0(round(100 * summary$zca_pct_hhs), "% of households have no car"),
-            paste0(round(as.numeric(summary$n_ppl) / 1000), "K residents"),
+            paste0(round(100 * summary$inc_pct_hhs), "% of households have incomes less than $50K"),
             paste0(round(as.numeric(summary$n_cta) / 1000), "K transit boardings and alightings per day"),
+            
             paste0(prettyNum(round(as.numeric(summary$n_sno)), big.mark = ","), " sidewalk snow/ice removal requests"),
             paste0(prettyNum(round(as.numeric(summary$n_vac)), big.mark = ","), " vacant building reports")
           ),
         score = c(
+          round(
+            ( 100 * ecdf(master$n_ppl_permi2)(summary$n_ppl_permi2))
+          ),
           round(
             (100 * ecdf(master$amb_pct_ppl)(summary$amb_pct_ppl))
           ),
@@ -124,7 +133,7 @@ create_scorecard <-
             (100 * ecdf(master$zca_pct_hhs)(summary$zca_pct_hhs))
           ),
           round(
-            ( 100 * ecdf(master$n_ppl_permi2)(summary$n_ppl_permi2))
+            (100 * ecdf(master$inc_pct_hhs)(summary$inc_pct_hhs))
           ),
           round(
             (100 * ecdf(master$n_cta_permi2)(summary$n_cta_permi2))
@@ -143,38 +152,49 @@ create_scorecard <-
       summary_tab %>%
       mutate(icon = factor(icon,
                               levels = c("city", 
-                                         "snowplow",
-                                         "building-circle-exclamation",
                                          
                                          "wheelchair-move",
                                          "person-walking-with-cane",
-                                         "user-plus",
                                          
+                                         "user-plus",
                                          "baby-carriage",
+                                         "car-tunnel",
+                                         "circle-dollar-to-slot",
                                          "bus",
-                                         "car-tunnel"))) %>%
-      mutate(requirement_applies_to = recode_factor(icon,
-                                   "city" = "All zones", 
-                                   "snowplow" =  "All zones",
-                                   "building-circle-exclamation" = "All zones",
-                                   
-                                   "wheelchair-move" = "Disability-focused zones",
-                                   "person-walking-with-cane" = "Disability-focused zones",
-                                   "user-plus" = "Disability-focused zones",
-                                   
-                                   "baby-carriage" = "Transit-focused zones",
-                                   "bus" = "Transit-focused zones",
-                                   "car-tunnel" = "Transit-focused zones")) %>%
+                                         
+                                         "snowplow",
+                                         "building-circle-exclamation"))) %>%
+      mutate(
+        requirement_applies_to = recode_factor(
+          icon,
+          "city" = "Density-focused zones",
+          "wheelchair-move" = "Disability-focused zones",
+          "person-walking-with-cane" = "Disability-focused zones",
+          
+          "snowplow" =  "Tertiary",
+          "building-circle-exclamation" = "Tertiary",
+          "user-plus" = "Secondary",
+          "baby-carriage" = "Secondary",
+          "bus" = "Secondary",
+          "car-tunnel" = "Secondary",
+          "circle-dollar-to-slot" = "Secondary"
+        )
+      ) %>% 
         
         mutate(
           score_minimum = recode(
             requirement_applies_to,
-            "All zones" = 50,
+            "Secondary" = 0,
+            "Tertiary" = 0,
             "Disability-focused zones" = 75,
-            "Transit-focused zones" = 75
+            "Density-focused zones" = 75
           )
         ) %>% 
-      mutate(meets_requirement = ifelse(score >= score_minimum, "circle-check", "xmark")) %>% 
+      mutate(meets_requirement = case_when(
+              score_minimum == 0 ~ NA_character_,
+              score >= score_minimum ~ "circle-check", 
+              score < score_minimum ~ "xmark"
+              )) %>% 
       arrange(requirement_applies_to, icon) %>%
       select(requirement_applies_to, icon, desc, score, score_minimum, meets_requirement) %>%
       gt::gt() %>%
@@ -185,7 +205,7 @@ create_scorecard <-
       ) %>%
         gtExtras::gt_fa_column(icon,
                                height = "1.5rem",
-                               palette = rep("#270075", nrow(summary))) %>%
+                               palette = rep("#270075", nrow(summary_tab))) %>%
         
       gt::tab_style(
         locations = cells_body(),
@@ -209,18 +229,24 @@ create_scorecard <-
           weight = "bold"
         ))
       ) %>%
-        tab_row_group(
-          label = toupper("Requirements that apply to transit-focused pilot zones (min. score: 75)"),
-          rows = requirement_applies_to == "Transit-focused zones"
+      tab_row_group(
+        label = toupper("Tertiary considerations"),
+        rows = requirement_applies_to == "Tertiary",
+      ) %>%
+     tab_row_group(
+          label = toupper("Secondary considerations"),
+          rows = requirement_applies_to == "Secondary",
         ) %>%
         tab_row_group(
-          label = toupper("Requirements that apply to disability-focused pilot zones (min. score: 75)"),
+          label = toupper("Requirements that apply to density-focused pilot zones"),
+          rows = requirement_applies_to == "Density-focused zones"
+        ) %>%
+        tab_row_group(
+          label = toupper("Requirements that apply to disability-focused pilot zones"),
           rows = requirement_applies_to == "Disability-focused zones"
         ) %>%
-        tab_row_group(
-          label = toupper("Requirements that apply to all pilot zones (min. score: 50)"),
-          rows = requirement_applies_to == "All zones",
-        ) %>%
+       
+      
         gt::cols_hide(c("requirement_applies_to", "score_minimum")) %>%
         gt::tab_style(
           locations = cells_column_labels(),

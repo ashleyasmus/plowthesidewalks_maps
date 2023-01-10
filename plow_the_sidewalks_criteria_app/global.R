@@ -18,6 +18,13 @@ library(tippy)
 library(gt)
 library(gtExtras)
 
+# plotting
+library(ggplot2)
+library(sysfonts)
+library(showtext)
+sysfonts::font_add_google(name = "Poppins")
+showtext_auto()
+
 # data
 library(sf)
 library(dplyr)
@@ -80,7 +87,8 @@ vars <- list("vis",
              "old",
              
              "kid",
-             "zca", 
+             "zca",
+             "inc",
              "cta",
              
              "den", 
@@ -97,6 +105,7 @@ first_weights <- list(
   
   "kid_w" =  1 / length(vars),
   "zca_w" =  1 / length(vars),
+  "inc_w" =  1 / length(vars),
   "cta_w" =  1 / length(vars),
   
   "den_w" =  1 / length(vars),
@@ -142,6 +151,10 @@ s_kid <- create_slider("s_kid", "baby-carriage",
                        "Percent of people under 5")
 s_zca <- create_slider("s_zca", "car-tunnel",
                        "Percent of households without cars")
+
+s_inc <- create_slider("s_inc", "circle-dollar-to-slot",
+                       "Percent of households with incomes less than $50K")
+
 s_cta <- create_slider("s_cta",
                        "bus",
                        "Transit activity: boardings and alightings per square mile")
@@ -169,6 +182,8 @@ s_kid2 <- create_slider("s_kid2", "baby-carriage",
                        "Percent of people under 5")
 s_zca2 <- create_slider("s_zca2", "car-tunnel",
                        "Percent of households without cars")
+s_inc2 <- create_slider("s_inc2", "circle-dollar-to-slot",
+                        "Percent of households without income less than $50K")
 s_cta2 <- create_slider("s_cta2",
                        "bus",
                        "Transit activity: boardings and alightings per square mile")
@@ -225,6 +240,8 @@ f_kid <- create_filter("f_kid", "baby-carriage",
                        "Percent of people under 5")
 f_zca <- create_filter("f_zca", "car-tunnel",
                        "Percent of households without cars")
+f_inc <- create_filter("f_inc", "circle-dollar-to-slot",
+                       "Percent of households with low incomes")
 f_cta <- create_filter("f_cta", "bus", 
                        "Transit activity: boardings and alightings per square mile")
 
@@ -260,6 +277,7 @@ update_scores <-
             variable == "kid" ~ weights$kid_w,
             variable == "old" ~ weights$old_w,
             variable == "zca" ~ weights$zca_w,
+            variable == "inc" ~ weights$inc_w,
             variable == "n_cta" ~ weights$cta_w,
             variable == "n_sno" ~ weights$sno_w,
             variable == "n_vac" ~ weights$vac_w,

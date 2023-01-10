@@ -69,6 +69,7 @@ create_agg_table <-
             "user-plus",
             "baby-carriage",
             "car-tunnel",
+            "circle-dollar-to-slot",
             "city",
             "bus",
             "snowplow",
@@ -80,6 +81,7 @@ create_agg_table <-
           paste0(round(100 * summary$old_pct_ppl), "%"),
           paste0(round(100 * summary$kid_pct_ppl), "%"),
           paste0(round(100 * summary$zca_pct_hh), "%"),
+          paste0(round(100 * summary$inc_pct_hh), "%"),
           paste0(round(as.numeric(summary$den) / 1000), "K"),
           paste0(round(as.numeric(summary$cta_permi2) / 1000), "K"),
           prettyNum(round(as.numeric(summary$n_sno_permi2)), big.mark = ","),
@@ -92,6 +94,7 @@ create_agg_table <-
             "of residents are age 65 and over",
             "of residents are under age 5",
             "of households have no car",
+            "of households have low incomes (less than $50K)",
             "people per square mile",
             "transit boardings per square mile, per day",
             "311 requests for snow removal per square mile",
@@ -112,6 +115,9 @@ create_agg_table <-
           ),
           round(
             100 * ecdf(master$zca_pct_hh)(summary$zca_pct_hh)
+          ),
+          round(
+            100 * ecdf(master$inc_pct_hh)(summary$inc_pct_hh)
           ),
           round(
             100 * ecdf(master$den)(summary$den)

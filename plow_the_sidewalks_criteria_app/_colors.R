@@ -13,7 +13,7 @@ pal <- list(
   "vivid_purple" = "#9b51e0",
   "teal" = "#10626f",
   "access_purple" = "#270075",
-  "highlighter_yellow" = "#FFF800",
+  "highlighter_yellow" = "#FFF880",
   "off_white" = "#F9F9F9",
   "light_gray" = "#979797"
 )

@@ -10,6 +10,14 @@ server <- function(input, output, session) {
   })
   
   # Static plots ------
+  output$hist_ex <- renderPlot({
+    info <- getCurrentOutputInfo()
+    if (info$width() > 600) {
+      pctile_maps[["histogram"]]
+    } else {
+      pctile_maps[["histogram"]]
+    }
+  })
   
     output$ambmap <- renderPlot({
       pctile_maps[["amb_pctile"]]
@@ -36,6 +44,9 @@ server <- function(input, output, session) {
       pctile_maps[["zca_pctile"]]
     })
     
+    output$incmap <- renderPlot({
+      pctile_maps[["inc_pctile"]]
+    })
     
     output$ctamap <- renderPlot({
       pctile_maps[["n_cta_pctile"]]
@@ -77,6 +88,7 @@ server <- function(input, output, session) {
       input$s_kid,
       input$s_den,
       input$s_zca,
+      input$s_inc,
       input$s_cta,
       input$s_sno,
       input$s_vac
@@ -89,6 +101,7 @@ server <- function(input, output, session) {
       "kid_w" = (input$s_kid / total),
       "den_w" = (input$s_den / total),
       "zca_w" = (input$s_zca / total),
+      "inc_w" = (input$s_inc / total),
       "cta_w" = (input$s_cta / total),
       "sno_w" = (input$s_sno / total),
       "vac_w" = (input$s_vac / total)
@@ -108,6 +121,7 @@ server <- function(input, output, session) {
       input$s_kid2,
       input$s_den2,
       input$s_zca2,
+      input$s_inc2,
       input$s_cta2,
       input$s_sno2,
       input$s_vac2
@@ -120,6 +134,7 @@ server <- function(input, output, session) {
       "kid_w" = (input$s_kid2 / total),
       "den_w" = (input$s_den2 / total),
       "zca_w" = (input$s_zca2 / total),
+      "inc_w" = (input$s_inc2 / total),
       "cta_w" = (input$s_cta2 / total),
       "sno_w" = (input$s_sno2 / total),
       "vac_w" = (input$s_vac2 / total)
@@ -138,17 +153,19 @@ server <- function(input, output, session) {
                  
                  if (input$scr == "disabilities") {
                    new_weights <- list(
+                     "den_w" = 0,
+                     
                      "vis_w" = 0.25,
                      "amb_w" = 0.25,
-                     "old_w" = 0.25,
                      
-                     "kid_w" = 0,
-                     "zca_w" = 0,
-                     "cta_w" = 0,
+                     "old_w" = 0.125,
+                     "kid_w" = 0.125,
+                     "zca_w" = 0.125,
+                     "inc_w" = 0.125,
+                     "cta_w" = 0.125,
                      
-                     "den_w" = 0.125,
-                     "sno_w" = 0,
-                     "vac_w" = 0.125
+                     "sno_w" = 0.07,
+                     "vac_w" = 0.07
                    )
                    
                    weights(new_weights)
@@ -156,17 +173,19 @@ server <- function(input, output, session) {
                  
                  if (input$scr == "transit") {
                    new_weights <- list(
+                     "den_w" = 0.25,
+                     
                      "vis_w" = 0,
                      "amb_w" = 0,
-                     "old_w" = 0,
                      
-                     "kid_w" = 0.25,
-                     "zca_w" = 0.25,
-                     "cta_w" = 0.25,
+                     "old_w" = 0.125,
+                     "kid_w" = 0.125,
+                     "zca_w" = 0.125,
+                     "inc_w" = 0.125,
+                     "cta_w" = 0.125,
                      
-                     "den_w" = 0.125,
-                     "sno_w" = 0.125,
-                     "vac_w" = 0.0
+                     "sno_w" = 0.07,
+                     "vac_w" = 0.07
                    )
                    
                    weights(new_weights)
@@ -183,6 +202,8 @@ server <- function(input, output, session) {
                    updateSliderInput(inputId = "s_kid", 
                                      value = 0)
                    updateSliderInput(inputId = "s_zca", 
+                                     value = 0)
+                   updateSliderInput(inputId = "s_inc", 
                                      value = 0)
                    updateSliderInput(inputId = "s_cta", 
                                      value = 0)
@@ -207,19 +228,21 @@ server <- function(input, output, session) {
     updateSliderInput(inputId = "s_amb2", 
                       value = 100)
     updateSliderInput(inputId = "s_old2", 
-                      value = 100)
+                      value = 50)
     updateSliderInput(inputId = "s_kid2", 
-                      value = 0)
+                      value = 50)
     updateSliderInput(inputId = "s_zca2", 
-                      value = 0)
+                      value = 50)
+    updateSliderInput(inputId = "s_inc2", 
+                      value = 50)
     updateSliderInput(inputId = "s_cta2", 
-                      value = 0)
+                      value = 50)
     updateSliderInput(inputId = "s_den2", 
-                      value = 50)
-    updateSliderInput(inputId = "s_vac2", 
-                      value = 50)
-    updateSliderInput(inputId = "s_sno2", 
                       value = 0)
+    updateSliderInput(inputId = "s_vac2", 
+                      value = 25)
+    updateSliderInput(inputId = "s_sno2", 
+                      value = 25)
   })
   
   
@@ -230,19 +253,23 @@ server <- function(input, output, session) {
     updateSliderInput(inputId = "s_amb2", 
                       value = 0)
     updateSliderInput(inputId = "s_old2", 
-                      value = 0)
+                      value = 50)
     updateSliderInput(inputId = "s_kid2", 
-                      value = 100)
+                      value = 50)
     updateSliderInput(inputId = "s_zca2", 
-                      value = 100)
+                      value = 50)
+    updateSliderInput(inputId = "s_inc2", 
+                      value = 50)
     updateSliderInput(inputId = "s_cta2", 
-                      value = 100)
+                      value = 50)
+    
     updateSliderInput(inputId = "s_den2", 
-                      value = 50)
+                      value = 100)
+    
     updateSliderInput(inputId = "s_vac2", 
-                      value = 0)
+                      value = 25)
     updateSliderInput(inputId = "s_sno2", 
-                      value = 50)
+                      value = 25)
   })
 
   # update scores -----
@@ -283,6 +310,8 @@ server <- function(input, output, session) {
                kid_pctile <= input$f_kid[2]/100) %>%
       filter(zca_pctile >= input$f_zca[1]/100 & 
                zca_pctile <= input$f_zca[2]/100) %>%
+      filter(inc_pctile >= input$f_inc[1]/100 & 
+               inc_pctile <= input$f_inc[2]/100) %>%
       filter(n_cta_pctile >= input$f_cta[1]/100 & 
                n_cta_pctile <= input$f_cta[2]/100) %>%
       filter(n_vac_pctile >= input$f_vac[1]/100 & 
@@ -324,16 +353,36 @@ server <- function(input, output, session) {
   # update map with new scores -----
   observe({
     map_data <- master %>%
-      left_join(scores()) 
+      left_join(scores()) %>%
+      mutate(score_bin = 
+               case_when(score_p_rank < 10 ~ "0-10 (Low)", 
+                         score_p_rank < 20 ~  "10-20", 
+                         score_p_rank < 30 ~  "20-30", 
+                         score_p_rank < 40 ~ "30-40", 
+                         score_p_rank < 50 ~  "40-50",
+                         score_p_rank < 60 ~ "50-60", 
+                         score_p_rank < 70 ~  "60-70", 
+                         score_p_rank < 80 ~ "70-80", 
+                         score_p_rank < 90 ~ "80-90", 
+                         score_p_rank <= 100 ~ "90-100 (High)")) %>%
+      mutate(score_bin = factor(score_bin, 
+                                levels = c("90-100 (High)",
+                                           "80-90",
+                                           "70-80",
+                                           "60-70",
+                                           "50-60",
+                                           "40-50",
+                                           "30-40",
+                                           "20-30",
+                                           "10-20",
+                                           "0-10 (Low)")))
 
-    color_data <- map_data$score_p_rank
+    color_data <- map_data$score_bin
     my_title <- "Rank"
     my_pal <-
-      colorBin("plasma",
-        color_data,
-        10,
-        pretty = T,
-        reverse = F
+      colorFactor("plasma",
+                  color_data,
+                  reverse = FALSE
       )
 
 
@@ -353,6 +402,7 @@ server <- function(input, output, session) {
 
     leafletProxy("mapBuild", data = map_data) %>%
       clearShapes() %>%
+      clearControls() %>%
       addPolygons(
         data = map_data,
         layerId = ~hexid,
@@ -360,7 +410,12 @@ server <- function(input, output, session) {
         stroke = FALSE,
         fillOpacity = 0.7,
         fillColor = my_pal(color_data)
-      )
+      ) %>%
+      addLegend(position = "topright", 
+                pal = my_pal,
+                group = "score_tiles",
+                values = unique(color_data),
+                title = "Weighted score<br>(rank percentile)")
   })
 
   
@@ -370,7 +425,30 @@ server <- function(input, output, session) {
 
     
     map_data <- master %>%
-      left_join(first_scores)
+      left_join(first_scores) %>%
+      mutate(score_bin = 
+               case_when(score_p_rank < 10 ~ "0-10 (Low)", 
+                         score_p_rank < 20 ~  "10-20", 
+                         score_p_rank < 30 ~  "20-30", 
+                         score_p_rank < 40 ~ "30-40", 
+                         score_p_rank < 50 ~  "40-50",
+                         score_p_rank < 60 ~ "50-60", 
+                         score_p_rank < 70 ~  "60-70", 
+                         score_p_rank < 80 ~ "70-80", 
+                         score_p_rank < 90 ~ "80-90", 
+                         score_p_rank <= 100 ~ "90-100 (High)")) %>%
+      mutate(score_bin = factor(score_bin, 
+                                levels = c("90-100 (High)",
+                                           "80-90",
+                                           "70-80",
+                                           "60-70",
+                                           "50-60",
+                                           "40-50",
+                                           "30-40",
+                                           "20-30",
+                                           "10-20",
+                                           "0-10 (Low)")))
+      
     
     tooltips <- sprintf(
       "<p style='font-family: Poppins, sans-serif;
@@ -387,19 +465,15 @@ server <- function(input, output, session) {
 
     map_data$tooltips <- tooltips
     
-    color_data <- map_data$score_p_rank
+    color_data <- map_data$score_bin
     my_title <- "Rank"
     my_pal <-
-      colorBin("plasma",
+      colorFactor("plasma",
                color_data,
-               10,
-               pretty = T,
-               reverse = F
+               reverse = FALSE
       )
     
-    
-   
-    
+
     leaflet(options = leafletOptions(
       minZoom = 10, maxZoom = 13,
       zoomControl = F,
@@ -457,7 +531,12 @@ server <- function(input, output, session) {
         fillColor = my_pal(color_data),
         group = "score_tiles",
         options = pathOptions(pane = "hex")
-      )
+      ) %>%
+      addLegend(position = "topright", 
+                pal = my_pal,
+                group = "score_tiles",
+                values = unique(color_data),
+                title = "Weighted score<br>(rank percentile)")
   })
   
   ward_tooltips <- reactiveVal(init_ward_labs)
@@ -492,17 +571,39 @@ server <- function(input, output, session) {
   # update draw map with new scores ----
   observe({
     map_data <- master_filtered() %>%
-      left_join(scores2())
+      left_join(scores2()) %>%
+      mutate(score_bin = 
+               case_when(score_p_rank < 10 ~ "0-10 (Low)", 
+                         score_p_rank < 20 ~  "10-20", 
+                         score_p_rank < 30 ~  "20-30", 
+                         score_p_rank < 40 ~ "30-40", 
+                         score_p_rank < 50 ~  "40-50",
+                         score_p_rank < 60 ~ "50-60", 
+                         score_p_rank < 70 ~  "60-70", 
+                         score_p_rank < 80 ~ "70-80", 
+                         score_p_rank < 90 ~ "80-90", 
+                         score_p_rank <= 100 ~ "90-100 (High)")) %>%
+      mutate(score_bin = factor(score_bin, 
+                                levels = c("90-100 (High)",
+                                           "80-90",
+                                           "70-80",
+                                           "60-70",
+                                           "50-60",
+                                           "40-50",
+                                           "30-40",
+                                           "20-30",
+                                           "10-20",
+                                           "0-10 (Low)")))
+
     
-    color_data <- map_data$score_p_rank
+    color_data <- map_data$score_bin
     my_title <- "Rank"
     my_pal <-
-      colorBin("plasma",
-               domain = 1:100,
-               10,
-               pretty = T,
-               reverse = F
+      colorFactor("plasma",
+                  color_data,
+                  reverse = FALSE
       )
+    
     
     tooltips <- sprintf(
       "<p style='font-family: Poppins, sans-serif;
@@ -519,6 +620,7 @@ server <- function(input, output, session) {
     
     leafletProxy("mapDraw", data = map_data) %>%
       clearGroup("score_tiles") %>%
+      clearControls() %>%
       addPolygons(
         data = map_data,
         label = ~tooltips,
@@ -527,7 +629,12 @@ server <- function(input, output, session) {
         fillColor = my_pal(color_data),
         group = "score_tiles",
         options = pathOptions(pane = "hex")
-      )
+      ) %>%
+      addLegend(position = "topright", 
+                pal = my_pal,
+                group = "score_tiles",
+                values = unique(color_data),
+                title = "Weighted score<br>(rank percentile)")
   })
   
   # add layers to map -----
@@ -723,9 +830,9 @@ server <- function(input, output, session) {
       
       
       
-      # saveRDS(intersection, 
-      #         paste0("scrap/intersection_",
-      #                sample(1:1000, 1), ".RDS"))
+      saveRDS(intersection,
+              paste0("scrap/intersection_",
+                     sample(1:1000, 1), ".RDS"))
       
       output$scorecard <-
         render_gt(create_scorecard(intersection))

@@ -72,7 +72,7 @@ acs_ls <- readRDS("data/acs_summary_chicago.RDS")
 
 # Select variables
 acs_var_abbr <-
-  c("amb", "vis", "kid", "old", "zca")
+  c("amb", "vis", "kid", "old", "zca", "inc")
 
 acs_var_long <-
   c(
@@ -80,7 +80,8 @@ acs_var_long <-
     "Vision difficulty",
     "Under 5",
     "65 and older",
-    "Zero-car households"
+    "Zero-car households",
+    "Low-income households"
   )
 
 # rename columns
@@ -112,7 +113,9 @@ acs <- acs_ls %>% purrr:::reduce(inner_join, by = "GEOID") %>%
   # rename household-based columns with 'hh' suffix instead of 'pop'
   rename(
     zca_pct_hhs = zca_pct_ppl,
-    zca_n_hhs = zca_n_ppl
+    zca_n_hhs = zca_n_ppl,
+    inc_n_hhs = inc_n_ppl,
+    inc_pct_hhs = inc_pct_ppl
   ) %>%
   # make spatial
   left_join(tracts) %>%

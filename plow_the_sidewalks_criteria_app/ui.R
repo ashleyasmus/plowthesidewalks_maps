@@ -8,23 +8,6 @@ ui <- bslib::page_fluid(
     tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css?family=Poppins"),
     tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "irs_style.css"),
-    tags$head(
-      tags$script(
-        '
-                                var dimension = [0, 0];
-                                $(document).on("shiny:connected", function(e) {
-                                    dimension[0] = window.innerWidth;
-                                    dimension[1] = window.innerHeight;
-                                    Shiny.onInputChange("dimension", dimension);
-                                });
-                                $(window).resize(function(e) {
-                                    dimension[0] = window.innerWidth;
-                                    dimension[1] = window.innerHeight;
-                                    Shiny.onInputChange("dimension", dimension);
-                                });
-                            '
-      )
-    ),
     ## ... extra styling for sliders
     tags$style(
       HTML(
@@ -137,7 +120,7 @@ ui <- bslib::page_fluid(
           fill = '#270075',
           height = '1.5rem')}
           </a><br>
-          App last updated 2023-01-04
+          App last updated 2023-01-09
           </h6>"
         )
       ),
@@ -168,25 +151,27 @@ ui <- bslib::page_fluid(
         HTML(
           "<h3 style = 'margin-top: 0rem;
         margin-bottom: 0rem;'>Where should Chicago try municipal sidewalk plowing
-              <span style='color: #9b51e0;'>first?</span></h3>"
+              <span style=
+        'text-decoration: underline;
+        text-decoration-thickness: 0.4rem;
+        text-decoration-color: #9b51e0;'>first</span>?</h3>"
         ),
         
         HTML(
           "<h4
           style = 'font-size: 1rem;
       font-weight: 500;
-      color: #9b51e0;
       margin-top:0rem;
       margin-bottom:0rem;
       letter-spacing: 0.05rem;
-      color: #9b51e0;'>
-      An inititative of Better Streets Chicago and Access Living
+      color: #270075;'>
+      An initiative of Better Streets Chicago and Access Living
       </span></h4>"
         )
       ),
       
       div(
-        class = "row",
+        class = "row mt-3",
         p(
           "Better Streets Chicago and Access Living are drafting an ordinance asking Chicago
           to set aside $750,000 in the upcoming budget
@@ -207,7 +192,7 @@ ui <- bslib::page_fluid(
       ),
       ## Priorities table -----
       div(
-        class = "row",
+        class = "row mt-3",
         HTML("<h3>Setting our priorities</h3>"),
         p(
           "To maximize the pilot program’s impact,
@@ -216,38 +201,97 @@ ui <- bslib::page_fluid(
         )
       ),
       div(class = "well",
-          priorites_tab),
+          priorities_tab),
       
-      ## Static maps -----
+      ## Rank percentiles introduced -----
       div(
-        class = "row",
+        class = "row mt-5",
+        
         HTML("<h3>
-              Our priorities, mapped
+              Data sources and methods
               </h3>"),
         
         HTML(
-          "<p>
-            To help identify pilot zone araes
-              that cross political, census, or other
-              boundaries, we have mapped these populations
-              and variables (e.g., transit boardings, 311 complaints)
-              across the city in a grid of
-              <b>
-              half-square-mile areas (0.5 mi2)
-              </b>.
-            </p>"
+          "<p><b>Data sources.</b>
+          We relied on a mix of publicly-available data for this project.
+          The <a href = 'https://www.census.gov/data/developers/data-sets/acs-5year.html'>
+          Census' American Community Survey (ACS)</a>,
+          mapped at the tract level and averaged over the
+          five years from 2016 to 2021, was our main source of
+          demographic information, including
+          car ownership,
+          disability status,
+          population,
+          and population by age.
+          To measure transit activity, we
+          summed the number of average weekday boardings
+          and alightings
+          for each transit stop, as reported in
+          <a href = 'https://data.cityofchicago.org/Transportation/CTA-Ridership-Avg-Weekday-Bus-Stop-Boardings-in-Oc/mq3i-nnqe'>
+          CTA's October 2012 Average Weekday Bus Stop dataset</a> [data update pending].
+          Finally, we used 
+          <a href = 'https://data.cityofchicago.org/Service-Requests/311-Service-Requests/v6vf-nfxy'>
+          the City's 311 complaints database to find indicators of known problem areas, 
+          </a> filtering to sidewalk snow and ice complaints and vacant building reports, December 2018 to present. 
+          </p>"
         ),
         
         HTML(
-          "<p>To enable easier comparison across variables
+          "<p>
+          <b>Data standardization.</b>
+          To enable easier comparison across variables
           with very different scales, we have
           we have <b>standardized</b> all our measures to
-          <b>rank-percentiles</b> that range from 0 to 100. An area that ranks in the
+          <b>rank-percentiles</b> that range from 0 to 100. A neighborhood
+          that ranks in the
           99th percentile for the share of people older than 65,
           for example, corresponds to a half-mile square area that
           ranks higher than 99% of the other half-mile square areas in Chicago
           for that measure.</p>"
         ),
+        
+        HTML(
+          "<p>
+          <b>Map boundaries.</b>
+            To help identify pilot zone areas
+              that cross political, census, or other
+              boundaries, we have mapped these populations
+              and variables (e.g., transit boardings, 311 complaints)
+              across the city in a uniform grid where each cell is
+              <b>
+              a half-square-mile (0.5 mi<sup>2</sup>).
+              </b> There are about 32 city blocks
+              in a half-square mile. A pilot zone (2.5 to 3 square miles)
+              would encompass approximately five to six half-sqaure-mile areas.
+            </p>"
+        ),
+        
+        HTML(glue::glue(
+          "<p>
+            All of our sources and methods - including this website- are open-source, written in the R 
+          programming language. 
+            You can comment and collaborate on our GitHub repository here
+          <a href ='https://github.com/ashleyasmus/plowthesidewalks_maps'
+          target = '_blank'>
+          {fontawesome::fa('arrow-up-right-from-square',
+          fill = '#270075',
+          height = '1.2rem')}
+          </a></p>"
+        ))
+        
+        
+      ),
+      
+      
+      ## Static maps -----
+      div(
+        class = "row mt-3",
+        
+        HTML("<h3>
+              Our priorities, mapped
+              </h3>"),
+        
+        
         
         p(
           "South (Englewood) and West Chicago (Austin, Humboldt Park) tend to have the highest
@@ -263,9 +307,38 @@ ui <- bslib::page_fluid(
         width = 1 / 5,
         height = "350px",
         height_mobile = "300px",
-        card(card_body_fill(img(src = "Rplot.png"),
-                            class = "p-0 mx-auto mt-3")),
+        
         card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
+          card_body_fill(img(src = "Rplot.png"),
+                         class = "p-0 mx-auto mt-3")
+        ),
+        card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -279,6 +352,19 @@ ui <- bslib::page_fluid(
                          class = "p-0")
         ),
         card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -292,6 +378,19 @@ ui <- bslib::page_fluid(
                          class = "p-0")
         ),
         card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -305,6 +404,19 @@ ui <- bslib::page_fluid(
                          class = "p-0")
         ),
         card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -325,7 +437,7 @@ ui <- bslib::page_fluid(
           "Meanwhile, the areas that
                    rank highest for the share of population under 5
                    are scattered across the City. Areas along the lake shore
-                   rank lowest for under-5 populaton share."
+                   rank lowest for under-5 population share."
         ),
         p(
           "As might be expected, areas that rank
@@ -338,10 +450,25 @@ ui <- bslib::page_fluid(
       ),
       
       layout_column_wrap(
-        width = 1 / 5,
+        width = 1 / 6,
         height = "350px",
         height_mobile = "300px",
         card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-color: transparent;
+                --bs-card-bg: transparent;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -355,6 +482,47 @@ ui <- bslib::page_fluid(
                          class = "p-0")
         ),
         card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-color: transparent;
+                --bs-card-bg: transparent;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
+          card_header(
+            align = "center",
+            fontawesome::fa(
+              "circle-dollar-to-slot",
+              title = "Households without low incomes",
+              fill = "#270075",
+              height = "1.5rem"
+            )
+          ),
+          card_body_fill(plotOutput("incmap"),
+                         class = "p-0")
+        ),
+        card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
           height = "300px",
           card_header(
             align = "center",
@@ -370,6 +538,19 @@ ui <- bslib::page_fluid(
         ),
         
         card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
           height = "300px",
           card_header(
             align = "center",
@@ -385,6 +566,19 @@ ui <- bslib::page_fluid(
         ),
         
         card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
           height = "300px",
           card_header(
             align = "center",
@@ -399,6 +593,19 @@ ui <- bslib::page_fluid(
                          class = "p-0")
         ),
         card(
+          style = "--bs-card-spacer-y: 0rem;
+                --bs-card-spacer-x: 0rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-width: 0;
+                --bs-card-border-color: transparent;
+                --bs-card-border-radius: 0rem;
+                --bs-card-inner-border-radius: 0rem;
+                --bs-card-cap-padding-y: 0rem;
+                --bs-card-cap-padding-x: 1rem;
+                --bs-card-cap-bg: transparent;
+                --bs-card-bg: #fff;
+                --bs-card-img-overlay-padding: 1rem;
+                --bs-card-group-margin: 0rem;",
           height = "300px",
           card_header(
             align = "center",
@@ -440,7 +647,10 @@ ui <- bslib::page_fluid(
         HTML(
           "<h3>
             No one neighborhood will best serve
-            <span style='color: #9b51e0'>
+            <span style=
+        'text-decoration: underline;
+        text-decoration-color: #9b51e0;
+        text-decoration-thickness: 0.4rem;'>
             all
             </span>of these priorities at once</h3>"
         ),
@@ -451,8 +661,8 @@ ui <- bslib::page_fluid(
           "<p>That is why we are suggesting the city take a
               measured approach to the problem
               of pilot zone placement, and create
-              <span style='color: #9b51e0; font-weight:bold'>
-              two types</span>
+              <b>
+              two types</b>
               of pilot zones, each based around a key
               constituency that will benefit most from sidewalk plowing:</p>"
         )
@@ -460,64 +670,72 @@ ui <- bslib::page_fluid(
       
       ## Zone Type table -----
       div(
-        class = "well",
-        layout_column_wrap(width = 1 / 2,
-                           card(
-                             HTML(
-                               "<p style = 'text-align: center; font-size:1.2rem'>One set of zones will focus on
+        class = "well p-3",
+        layout_column_wrap(
+          width = 1 / 2,
+          card(
+            style = "--bs-card-spacer-y: 0.5rem;
+                     --bs-card-spacer-x: 0rem;
+                     --bs-card-title-spacer-y: 0rem;
+                     --bs-card-border-width: 0px;
+                     --bs-card-bg: transparent;
+                     --bs-card-img-overlay-padding: 0rem;",
+            HTML(
+              "<p style = 'text-align: center; font-size:1.2rem'>Two zones will focus on
                   <b>people with disabilities</b></p>"
-                             ),
-                  div(
-                    class = "mx-auto",
-                    align = "center",
-                    fontawesome::fa(
-                      "wheelchair-move",
-                      fill = "#270075",
-                      title = "People with ambulatory disabilities",
-                      height = "2rem"
-                    ),
-                    
-                    fontawesome::fa(
-                      "person-walking-with-cane",
-                      fill = "#270075",
-                      title = "People with vision disabilities",
-                      height = "2rem"
-                    )
-                  )
-                           ),
-                  card(
-                    HTML(
-                      "<p style = 'text-align: center; font-size:1.2rem'>A second set of zones will focus on
-                      <b>dense neighborhoods and people who rely on transit</b></p>"
-                    ),
-                    div(
-                      class = "mx-auto",
-                      align = "center",
-                      fontawesome::fa(
-                        "city",
-                        title = "Population density: people per square mile",
-                        fill = "#270075",
-                        height = "2rem"
-                      ),
-                      fontawesome::fa(
-                        "bus",
-                        fill = "#270075",
-                        title = "Transit activity: boardings and alightings per square mile",
-                        height = "2rem"
-                      ),
-                      fontawesome::fa(
-                        "car-tunnel",
-                        fill = "#270075",
-                        title = "Households without cars",
-                        height = "2rem"
-                      )
-                    )
-                  )),
+            ),
+            div(
+              class = "mx-auto",
+              align = "center",
+              fontawesome::fa(
+                "wheelchair-move",
+                fill = "#270075",
+                title = "People with ambulatory disabilities",
+                height = "4rem"
+              ),
+              
+              fontawesome::fa(
+                "person-walking-with-cane",
+                fill = "#270075",
+                title = "People with vision disabilities",
+                height = "4rem"
+              )
+            )
+          ),
+          card(
+            style = "--bs-card-spacer-y: 0.5rem;
+                     --bs-card-spacer-x: 0rem;
+                     --bs-card-title-spacer-y: 0rem;
+                     --bs-card-border-width: 0px;
+                     --bs-card-bg: transparent;
+                     --bs-card-img-overlay-padding: 0rem;",
+            HTML(
+              "<p style = 'text-align: center; font-size:1.2rem'>Two zones will focus on
+                      <b>dense neighborhoods</b></p>"
+            ),
+            div(
+              class = "mx-auto p-0",
+              align = "center",
+              fontawesome::fa(
+                "city",
+                title = "Population density: people per square mile",
+                fill = "#270075",
+                height = "4rem"
+              )
+            )
+          )
+        ),
         card(
+          style = "--bs-card-spacer-y: 0.5rem;
+                     --bs-card-spacer-x: 0rem;
+                     --bs-card-title-spacer-y: 0rem;
+                     --bs-card-border-width: 0px;
+                     --bs-card-bg: transparent;
+                     --bs-card-img-overlay-padding: 0rem;",
           HTML(
             "<p style = 'text-align: center; font-size:1.2rem'>
-           Both sets of zones will consider
-               <b> elders and children.
+            All four zones will be selected in a way that also considers
+            <b>elders, children, zero-car households, and low-income households
                 </b></p>"
           ),
           div(
@@ -527,23 +745,44 @@ ui <- bslib::page_fluid(
               "user-plus",
               fill = "#270075",
               title = "People 65 and older",
-              height = "2rem"
+              height = "3rem"
             ),
             fontawesome::fa(
               "baby-carriage",
               title = "Children 5 and younger",
               fill = "#270075",
-              height = "2rem"
+              height = "3rem"
+            ),
+            fontawesome::fa(
+              "bus",
+              fill = "#270075",
+              title = "Transit activity: boardings and alightings per square mile",
+              height = "3rem"
+            ),
+            fontawesome::fa(
+              "car-tunnel",
+              fill = "#270075",
+              title = "Households without cars",
+              height = "3rem"
+            ),
+            fontawesome::fa(
+              "circle-dollar-to-slot",
+              title = "Households without low incomes",
+              fill = "#270075",
+              height = "3rem"
             )
           )
         ),
         card(
+          style = "--bs-card-spacer-y: 0.5rem;
+                     --bs-card-spacer-x: 0rem;
+                     --bs-card-title-spacer-y: 0rem;
+                     --bs-card-border-width: 0px;
+                     --bs-card-bg: transparent;
+                     --bs-card-img-overlay-padding: 0rem;",
           HTML(
             "<p style = 'text-align: center; font-size:1.2rem'>
-            311 complaints will also be considered, but to a lesser extent.<br>
-
-            Transit-focused zones will consider <b>sidwewalk snow removal complaints</b>,
-            While disability-focused zones will consider <b>vacant building reports</b>.</p>"
+            311 complaints will also be considered, but to a lesser extent."
           ),
           div(
             class = "mx-auto",
@@ -551,11 +790,6 @@ ui <- bslib::page_fluid(
             fontawesome::fa(
               "building-circle-exclamation",
               title = "311 reports of vacant buildings per square  mile",
-              fill = "#270075",
-              height = "2rem"
-            ),
-            fontawesome::fa(
-              "arrows-left-right",
               fill = "#270075",
               height = "2rem"
             ),
@@ -576,7 +810,10 @@ ui <- bslib::page_fluid(
         class = "row",
         HTML(
           "<h3>We propose using a
-                <span style='color: #9b51e0'>
+                <span style=
+        'text-decoration: underline;
+        text-decoration-color: #9b51e0;
+        text-decoration-thickness: 0.4rem'>
                 weighting approach
                 </span>to
                 identify places that might
@@ -604,14 +841,6 @@ ui <- bslib::page_fluid(
       ),
       
       
-      div(
-        class = "row",
-        HTML(
-          "<h3>
-              Here's what our weighted priorities look like on the map.
-              </h3>"
-        )
-      ),
       
       ### Begin scroll ------
       scrolly_container(
@@ -619,15 +848,17 @@ ui <- bslib::page_fluid(
         ### place map -----
         scrolly_graph(
           width = "50%",
-          height = "100vh",
+          height = "90vh",
           div(
             class = "well",
             style = "padding: 0;
+                    height = '90vh';
                     margin-bottom:2rem;
                     margin-top:10px;
                     background-color: transparent;
                     border: 2px solid #270075;",
-            leafletOutput("mapBuild")
+            leafletOutput("mapBuild",
+                              height = "90vh")
           )
         ),
         ### scroll sections -----
@@ -638,14 +869,32 @@ ui <- bslib::page_fluid(
           scrolly_section(
             id = "equal",
             HTML(
+              "<h3>
+              Here's what our weighted priorities look like on the map.
+              </h3>"
+            ),
+            HTML(
               "<p>
             The map on the right scores neighborhoods from
-            <b color:#000000; background: #fcb900;'>
+            <b style = '
+              color: white;
+              background-color: #0D0887;
+              margin-top:0rem;
+              margin-bottom:0rem;
+              letter-spacing: 0.05rem;
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;'>
              high
             </b>
              to
-             <b color: #fff;
-            background:#270075'>
+            <b style = '
+              color: black;
+              background-color: #F0F921;
+              margin-top:0rem;
+              margin-bottom:0rem;
+              letter-spacing: 0.05rem;
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;'>
             low
             </b>
             based on how well they measure up for
@@ -693,6 +942,12 @@ ui <- bslib::page_fluid(
                 height = "2rem"
               ),
               fontawesome::fa(
+                "circle-dollar-to-slot",
+                title = "Households without low incomes",
+                fill = "#270075",
+                height = "2rem"
+              ),
+              fontawesome::fa(
                 "city",
                 title = "Population density: people per square mile",
                 fill = "#270075",
@@ -720,12 +975,10 @@ ui <- bslib::page_fluid(
               "<p>
             Now the map shows areas that score highly for
            the percentage of people with disabilities and elders,
-          with less importance given to
-          problem areas
-          and population density. In this case,
-          we are using vacant building reports as our indicator
-          of problem areas, owing to its overlap with the neighborhoods
-          where people with disabilites live.
+          with less weight given to elders, children, transit activity,
+          zero-car households and low-income households. Vacant building reports and
+          snow removal complaints are also in this mix, but are assigned
+          a lower importance value than other demographic factors.
             </p>"
             ),
           div(
@@ -756,54 +1009,27 @@ ui <- bslib::page_fluid(
             ),
             fontawesome::fa(
               "baby-carriage",
-              fill = "#270075",
-              title = "Children under 5",
-              height = "3rem"
-            ),
-            fontawesome::fa(
-              "building-circle-exclamation",
-              title = "311 reports of vacant buildings per square  mile",
-              fill = "#270075",
-              height = "3rem"
-            )
-          ),
-          br(),
-          br()
-          ),
-          
-          # ...3: transit ------
-          scrolly_section(
-            id = "transit",
-            HTML(
-              "<p>
-            Finally, this map shows the areas with a
-          high percentage of children, zero-car households,
-          and transit activity, with less importance
-          given to density and known problem areas. For this set of zones,
-          we are using unclear sidewalk reports as our indicator of problem areas,
-          owing to its overlap with transit activity.
-            </p>"
-            ),
-          div(
-            class = "mx-auto",
-            align = "center",
-            fontawesome::fa(
-              "baby-carriage",
               title = "Children 5 and younger",
               fill = "#270075",
-              height = "4rem"
-            ),
-            fontawesome::fa(
-              "car-tunnel",
-              title = "Households without cars",
-              fill = "#270075",
-              height = "4rem"
+              height = "3rem"
             ),
             fontawesome::fa(
               "bus",
-              title = "Transit activity: boardings and alightings per square mile",
               fill = "#270075",
-              height = "4rem"
+              title = "Transit activity: boardings and alightings per square mile",
+              height = "3rem"
+            ),
+            fontawesome::fa(
+              "car-tunnel",
+              fill = "#270075",
+              title = "Households without cars",
+              height = "3rem"
+            ),
+            fontawesome::fa(
+              "circle-dollar-to-slot",
+              title = "Households without low incomes",
+              fill = "#270075",
+              height = "3rem"
             )
           ),
           br(),
@@ -811,8 +1037,8 @@ ui <- bslib::page_fluid(
             class = "mx-auto",
             align = "center",
             fontawesome::fa(
-              "city",
-              title = "Population density: people per square mile",
+              "building-circle-exclamation",
+              title = "311 reports of vacant buildings per square  mile",
               fill = "#270075",
               height = "2rem"
             ),
@@ -827,12 +1053,92 @@ ui <- bslib::page_fluid(
           br()
           ),
           
+          # ...3: transit ------
+          scrolly_section(
+            id = "transit",
+            HTML(
+              "<p>
+            Finally, this map shows the areas with a
+          high percentage of children, zero-car households,
+          and transit activity, with less importance
+          given to density and known problem areas. Once again,
+          indicators of known problem areas are included, but weighted to a lesser
+          extent than our demographic variables. 
+            </p>"
+            ),
+          div(
+            class = "mx-auto",
+            align = "center",
+            fontawesome::fa(
+              "city",
+              title = "Population density: people per square mile",
+              fill = "#270075",
+              height = "4rem"
+            )
+          ),
+          br(),
+          div(
+            class = "mx-auto",
+            align = "center",
+            fontawesome::fa(
+              "user-plus",
+              fill = "#270075",
+              title = "People 65 and older",
+              height = "3rem"
+            ),
+            fontawesome::fa(
+              "baby-carriage",
+              title = "Children 5 and younger",
+              fill = "#270075",
+              height = "3rem"
+            ),
+            fontawesome::fa(
+              "bus",
+              fill = "#270075",
+              title = "Transit activity: boardings and alightings per square mile",
+              height = "3rem"
+            ),
+            fontawesome::fa(
+              "car-tunnel",
+              fill = "#270075",
+              title = "Households without cars",
+              height = "3rem"
+            ),
+            fontawesome::fa(
+              "circle-dollar-to-slot",
+              title = "Households without low incomes",
+              fill = "#270075",
+              height = "3rem"
+            )
+          ),
+          br(),
+          div(
+            class = "mx-auto",
+            align = "center",
+            fontawesome::fa(
+              "building-circle-exclamation",
+              title = "311 reports of vacant buildings per square  mile",
+              fill = "#270075",
+              height = "2rem"
+            ),
+            fontawesome::fa(
+              "snowplow",
+              title = "311 complaints of icy/snowy sidewalks",
+              fill = "#270075",
+              height = "2rem"
+            )
+          ),
+          
+          br(),
+          br()
+          ),
+          
           # ...4: try it ---------
           scrolly_section(
             id = "purple",
             HTML(
               "<p>
-            You can create your own mix of these priorites
+            You can create your own mix of these priorities
           using the sliders below. Increase the importance of
           any priority by moving the slider to the right.
             </p>"
@@ -846,6 +1152,7 @@ ui <- bslib::page_fluid(
             s_kid,
             s_cta,
             s_zca,
+            s_inc,
             
             s_den,
             s_sno,
@@ -891,46 +1198,7 @@ ui <- bslib::page_fluid(
                             height = '1.6rem')}
                       Must be <b>2 to 3 square miles</b> in area</p>"
                   )
-                ),
-                
-                HTML(
-                  "<p style = 'font-size:1.2rem;'>
-          and must <b>meet or exceed</b>
-             Chicago's <b>median</b> (average) population density,
-             complaints of unshoveled sidewalks, and vacant buildings.
-          In numbers, that translates to <b>at least:</b></p>"
-                ),
-          
-          HTML(
-            glue::glue(
-              "<p style = 'font-size:1.2rem;'>{fontawesome::fa('city',
-                            title = 'Population density: people per square mile',
-                            fill = '#270075',
-                            height = '1.6rem')}
-                      <b>38,000 residents</b></p>"
-            )
-          ),
-          
-          HTML(
-            glue::glue(
-              "<p style = 'font-size:1.2rem;'>{fontawesome::fa('snowplow',
-                            fill = '#270075',
-                            title = '311 complaints of icy/snowy sidewalks',
-                            height = '1.6rem')}
-                      <b>150 sidewalk snow removal complaints</b>
-                     in the last 3 years</p>"
-            )
-          ),
-          
-          HTML(
-            glue::glue(
-              "<p style = 'font-size:1.2rem;'>{fontawesome::fa('building-circle-exclamation',
-                            fill = '#270075',
-                            title = '311 reports of vacant buildings per square  mile',
-                            height = '1.6rem')}
-                      <b>120 vacant building</b> reports in the last 3 years</p>"
-            )
-          )
+                )
               )
             )),
         
@@ -964,8 +1232,8 @@ ui <- bslib::page_fluid(
                             fill = '#270075',
                             title = 'People with ambulatory disabilities',
                             height = '1.6rem')}
-                      At least <b>1.4%</b>
-                       of people should have an ambulatory (walking)
+                      At least 9%
+                       of people <b>(approximately 15,000 people)</b> should have an ambulatory (walking)
                        disability</p>"
               )
             ),
@@ -977,21 +1245,9 @@ ui <- bslib::page_fluid(
                             fill = '#270075',
                             title = 'People with vision disabilities',
                             height = '1.6rem')}
-                        At least <b>0.5%</b>
-                       of people should have an vision
+                        At least 3%
+                       of people <b>(approximately 5,000 people)</b>should have an vision
                        disability</p>"
-              )
-            ),
-            
-            HTML(
-              glue::glue(
-                "<p style = 'font-size:1.2rem'>
-                       {fontawesome::fa('user-plus',
-                            fill = '#270075',
-                            title = 'People 65 and older',
-                            height = '1.6rem')}
-                        At least <b>17%</b>
-                       of people should be over 65</p>"
               )
             )
               )),
@@ -1002,50 +1258,25 @@ ui <- bslib::page_fluid(
                 # style = "max-width: 400px;",
                 HTML(
                   "<p style = 'text-align:center; font-size:1.4rem'><b>
-                 In the two pilot zones focusing on children and transit
-                 users:</b></p>"
+                 In the two pilot zones focusing on dense neighborhoods:</b></p>"
                 ),
-                HTML(
-                  glue::glue(
-                    "<p style = 'font-size:1.2rem'>
-                         {fontawesome::fa('baby-carriage',
-                             title = 'Children 5 and younger',
-                            fill = '#270075',
-                            height = '1.6rem')}
-                        At least <b>8%</b>
-                       of people should be under 5</p>"
-                  )
-                ),
-                
-                HTML(
-                  glue::glue(
-                    "<p style = 'font-size:1.2rem'>
-                         {fontawesome::fa('bus',
-                            fill = '#270075',
-                            title = 'Transit activity: boardings and alightings per square mile',
-                            height = '1.6rem')}
-                        Transit activity should average at least <b>40,000</b>
-                       boardings and alightings per day</p>"
-                  )
-                ),
+               
                 
                 HTML(
                   glue::glue(
                     "<p style = 'font-size:1.2rem;'>
-                         {fontawesome::fa('car-tunnel',
-                            title = 'Households without cars',
+                         {fontawesome::fa('city',
+                            title = 'Population density',
                             fill = '#270075',
                             height = '1.6rem')}
-                        At least <b>36%</b>
-                        of households should have zero cars</p>"
+                        Population density should exceed 11,000 people
+                    per square mile, for a total of
+                    <b>29,000 to 35,000 residents</b> in a 2.5-to-3 square mile zone.</p>"
                   )
                 )
               ))
         )
       )
-      
-      
-      # Here's what that looks like 2 ----
     ),
     # Tab 2: Tool ----
     
@@ -1059,151 +1290,154 @@ ui <- bslib::page_fluid(
         # panel with controls ----
         card(
           card_body_fill(
-             class = "p-0",
-             style = "padding-left: 0px;",
-             full_screen = T,
-             
-             navs_tab_card(
-               # well = FALSE,
-               # widths = c(2, 10),
-               # color = "#9b51e0",
-               # contentWidth = 10,
-               # id = "toolnav",
-               #...sliders ----
-               nav(
-                 title = HTML(
-                   glue::glue(
-                     "{fontawesome::fa('scale-unbalanced-flip', height = '2rem')}<br>
+            class = "p-0",
+            style = "padding-left: 0px;",
+            full_screen = T,
+            
+            navs_tab_card(
+              # well = FALSE,
+              # widths = c(2, 10),
+              # color = "#9b51e0",
+              # contentWidth = 10,
+              # id = "toolnav",
+              #...sliders ----
+              nav(
+                title = HTML(
+                  glue::glue(
+                    "{fontawesome::fa('scale-unbalanced-flip', height = '2rem')}<br>
                                         <p style = 'font-size:0.75rem'>
                   Weights</p>"
-                   )
-                 ),
-                 id = "sliders",
-                 HTML(
-                   "<h4 style = 'font-size:1.2rem'>Color the map according to your priorities</h4>"
-                 ),
-                 # preset weights -----
-                 HTML("<p><b>Use our pre-set weights: </b></p>"),
-                 layout_column_wrap(width = 1/2,
-                   card(
-                     card_body_fill(
-                     style = "margin-left: 0px; margin-right: 0px; padding: 5px",
-                     tags$button(
-                       type = "button",
-                       id = "disability_button",
-                       HTML(
-                         fontawesome::fa(
-                           "wheelchair-move",
-                           height = "2rem",
-                           title = "People with ambulatory disabilities",
-                           fill = "#FFF"
-                         ),
-                         "Disability mix"
-                       ),
-                       style = "color:#FFF;
+                  )
+                ),
+                id = "sliders",
+                HTML(
+                  "<h4 style = 'font-size:1.2rem'>Color the map according to your priorities</h4>"
+                ),
+                # preset weights -----
+                HTML("<p><b>Use our pre-set weights: </b></p>"),
+                layout_column_wrap(width = 1 / 2,
+                                   card(
+                                     card_body_fill(
+                                       style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                                       tags$button(
+                                         type = "button",
+                                         id = "disability_button",
+                                         HTML(
+                                           fontawesome::fa(
+                                             "wheelchair-move",
+                                             height = "2rem",
+                                             title = "People with ambulatory disabilities",
+                                             fill = "#FFF"
+                                           ),
+                                           "Disability mix"
+                                         ),
+                                         style = "color:#FFF;
                      width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #9b51e0",
                      class = "btn action-button shiny-bound-input"
-                     )
-                   )),
-                   
-                   card(
-                     card_body_fill(style = "margin-left: 0px; margin-right: 0px; padding: 5px",
-                     tags$button(
-                       type = "button",
-                       id = "transit_button",
-                       HTML(
-                         fontawesome::fa(
-                           "bus",
-                           title = "Transit activity: boardings and alightings per square mile",
-                           height = "2rem",
-                           fill = "#FFF"
-                         ),
-                         "Transit mix"
-                       ),
-                       style = "color:#FFF;
+                                       )
+                                     )
+                                   ),
+                     
+                     card(
+                       card_body_fill(
+                         style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                         tags$button(
+                           type = "button",
+                           id = "transit_button",
+                           HTML(
+                             fontawesome::fa(
+                               "city",
+                               title = "Population density",
+                               height = "2rem",
+                               fill = "#FFF"
+                             ),
+                             "Density mix"
+                           ),
+                           style = "color:#FFF;
                      width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #9b51e0",
                      class = "btn action-button shiny-bound-input"
-                     )
-                   ))
-                 ),
-                 
-                 HTML("<p><b>Or create a custom set of weights:</b></p>"),
-                 div(
-                   class = "label-left",
-                   s_amb2,
-                   s_vis2,
-                   s_old2,
-                   
-                   s_kid2,
-                   s_zca2,
-                   s_cta2,
-                   
-                   s_den2,
-                   s_sno2,
-                   s_vac2
-                 )
-               ),
-               
-               
-               #....layers -----
-               nav(
-                 title = HTML(
-                   glue::glue(
-                     "{fontawesome::fa('layer-group', height = '2rem')}
+                         )
+                       )
+                     )),
+                
+                HTML("<p><b>Or create a custom set of weights:</b></p>"),
+                div(
+                  class = "label-left",
+                  s_amb2,
+                  s_vis2,
+                  s_old2,
+                  
+                  s_kid2,
+                  s_zca2,
+                  s_inc2,
+                  s_cta2,
+                  
+                  s_den2,
+                  s_sno2,
+                  s_vac2
+                )
+              ),
+              
+              
+              #....layers -----
+              nav(
+                title = HTML(
+                  glue::glue(
+                    "{fontawesome::fa('layer-group', height = '2rem')}
                                         <br>
                                         <p style = 'font-size:0.8rem'>
                                         Layers</p>"
-                   )
-                 ),
-                 
-                 HTML(
-                   "<h4 style = 'font-size:1.2rem'>View additional layers on the map</h4>"
-                 ),
-                 checkboxInput(
-                   inputId = 'ward_layer',
-                   label = "Ward boundaries",
-                   value = FALSE
-                 ),
-                 checkboxInput(
-                   inputId = 'sno_layer',
-                   label = "311 Sidewalk Snow Removal Requests",
-                   value = FALSE
-                 ),
-                 checkboxInput(
-                   inputId = 'vac_layer',
-                   label = "311 Vacant Building Reports",
-                   value = FALSE
-                 ),
-                 checkboxInput(
-                   inputId = 'l_stops_layer',
-                   label = "L stations",
-                   value = FALSE
-                 )
-                 
-               ),
-               
-               nav(
-                 title = HTML(
-                   glue::glue(
-                     "{fontawesome::fa('filter', height = '2rem')}<br>
+                  )
+                ),
+                
+                HTML(
+                  "<h4 style = 'font-size:1.2rem'>View additional layers on the map</h4>"
+                ),
+                checkboxInput(
+                  inputId = 'ward_layer',
+                  label = "Ward boundaries",
+                  value = FALSE
+                ),
+                checkboxInput(
+                  inputId = 'sno_layer',
+                  label = "311 Sidewalk Snow Removal Requests",
+                  value = FALSE
+                ),
+                checkboxInput(
+                  inputId = 'vac_layer',
+                  label = "311 Vacant Building Reports",
+                  value = FALSE
+                ),
+                checkboxInput(
+                  inputId = 'l_stops_layer',
+                  label = "L stations",
+                  value = FALSE
+                )
+                
+              ),
+              
+              nav(
+                title = HTML(
+                  glue::glue(
+                    "{fontawesome::fa('filter', height = '2rem')}<br>
                                         <p style = 'font-size:0.8rem'>
                                         Filters</p>"
-                   )
-                 ),
-                 
-                 #...filters ----
-                 br(),
-                 div(
-                   class = "label-left",
-                   id = "filtersliders",
-                   tags$style(
-                     " #filtersliders .irs-bar {
+                  )
+                ),
+                
+                #...filters ----
+                br(),
+                div(
+                  class = "label-left",
+                  id = "filtersliders",
+                  tags$style(
+                    " #filtersliders .irs-bar {
                     left: 0px;
                     width: 100%;
                   }
@@ -1214,7 +1448,7 @@ ui <- bslib::page_fluid(
                     height: 8px;
                     border-top: 0px;
                     border-bottom: 0px;
-                    background: linear-gradient(to right,
+                    background: linear-gradient(to left,
                     #0D0887, #47039F, #7301A8, #9C179E, #BD3786,
                     #D8576B, #ED7953, #FA9E3B, #FDC926, #F0F921);
                   }
@@ -1248,7 +1482,7 @@ ui <- bslib::page_fluid(
                       line-height: 1rem;
                     }
                     "
-                   ),
+                  ),
                   HTML(
                     "<h4 style = 'font-size:1.2rem'>Filter by total score weighted by your priorities </h4>"
                   ),
@@ -1265,130 +1499,135 @@ ui <- bslib::page_fluid(
                   
                   f_kid,
                   f_zca,
+                  f_inc,
                   f_cta,
                   
                   f_den,
                   f_sno,
                   f_vac
-                 )
-               ),
-               
-               nav(
-                 title = HTML(
-                   glue::glue(
-                     "{fontawesome::fa('clipboard', height = '2rem')}<br>
+                )
+              ),
+              
+              nav(
+                title = HTML(
+                  glue::glue(
+                    "{fontawesome::fa('clipboard', height = '2rem')}<br>
                                         <p style = 'font-size:0.8rem'>
                                         Scores</p>"
-                   )
-                 ),
-                 
-                 #....score ----
-                 
-                 HTML(
-                   "<p><b>
+                  )
+                ),
+                
+                #....score ----
+                
+                HTML(
+                  "<p><b>
                                        Draw a zone to see how well your suggested pilot zone
                                        serves our priorities.
                                        </b></p>"
-                 ),
-                 gt_output("scorecard")
-               )
-             ))),
+                ),
+                gt_output("scorecard")
+              )
+            )
+          )
+        ),
         
         #....map ----
         card(
           full_screen = T,
           class = "p-0",
-          card_header(layout_column_wrap(
-            width = 1 / 3,
-            
-            gap = "0.25rem",
-            card(
-              style = "--bs-card-spacer-y: 0rem;
+          card_header(
+            layout_column_wrap(
+              width = 1 / 3,
+              
+              gap = "0.25rem",
+              card(
+                style = "--bs-card-spacer-y: 0rem;
                      --bs-card-spacer-x: 0rem;
                      --bs-card-title-spacer-y: 0rem;
                      --bs-card-border-width: 0px;
                      --bs-card-bg: transparent;
                      --bs-card-img-overlay-padding: 0rem;",
-              card_body_fill(
-                shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
-                shinyjs::extendShinyjs(text = jsedit, functions = c("edit_click")),
-                tags$button(
-                  type = "button",
-                  id = "polygon_button",
-                  HTML(fontawesome::fa(
-                    "pencil",
-                    height = "2rem",
-                    fill = "#FFF"
-                  ),
-                  "Draw"),
-                  style = "color:#FFF;
+                card_body_fill(
+                  shinyjs::extendShinyjs(text = jspolygon, functions = c("polygon_click")),
+                  shinyjs::extendShinyjs(text = jsedit, functions = c("edit_click")),
+                  tags$button(
+                    type = "button",
+                    id = "polygon_button",
+                    HTML(fontawesome::fa(
+                      "pencil",
+                      height = "2rem",
+                      fill = "#FFF"
+                    ),
+                    "Draw"),
+                    style = "color:#FFF;
                      width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                   font-size: 0.8rem;
                          background-color: #9b51e0",
                   class = "btn action-button shiny-bound-input"
+                  )
                 )
-              )
-            ),
-            card(
-              style = "--bs-card-spacer-y: 0rem;
+              ),
+              card(
+                style = "--bs-card-spacer-y: 0rem;
                      --bs-card-spacer-x: 0rem;
                      --bs-card-title-spacer-y: 0rem;
                      --bs-card-border-width: 0px;
                      --bs-card-bg: transparent;
                      --bs-card-img-overlay-padding: 0rem;",
-              
-              card_body_fill(
-                tags$button(
-                  type = "button",
-                  id = "edit_button",
-                  HTML(
-                    fontawesome::fa("pen-to-square",
-                                    height = "2rem",
-                                    fill = "#FFF"),
-                    "Edit"
-                  ),
-                  style = "color:#FFF;
+                
+                card_body_fill(
+                  tags$button(
+                    type = "button",
+                    id = "edit_button",
+                    HTML(
+                      fontawesome::fa("pen-to-square",
+                                      height = "2rem",
+                                      fill = "#FFF"),
+                      "Edit"
+                    ),
+                    style = "color:#FFF;
                      width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                   font-size: 0.8rem;
                          background-color: #9b51e0",
                   class = "btn action-button shiny-bound-input"
+                  )
                 )
-              )
-            ),
-            
-            card(
-              style = "--bs-card-spacer-y: 0rem;
+              ),
+              
+              card(
+                style = "--bs-card-spacer-y: 0rem;
                      --bs-card-spacer-x: 0rem;
                      --bs-card-title-spacer-y: 0rem;
                      --bs-card-border-width: 0px;
                      --bs-card-bg: transparent;
                      --bs-card-img-overlay-padding: 0rem;",
-              
-              card_body_fill(
-                tags$button(
-                  type = "button",
-                  id = "submit_button",
-                  HTML(
-                    fontawesome::fa("paper-plane",
-                                    height = "2rem",
-                                    fill = "#FFF"),
-                    "Submit"
-                  ),
-                  style = "color:#FFF;
+                
+                card_body_fill(
+                  tags$button(
+                    type = "button",
+                    id = "submit_button",
+                    HTML(
+                      fontawesome::fa("paper-plane",
+                                      height = "2rem",
+                                      fill = "#FFF"),
+                      "Submit"
+                    ),
+                    style = "color:#FFF;
                          width:100%;
                          font-size: 0.8rem;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #9b51e0",
-                  class = "btn action-button shiny-bound-input"
+                    class = "btn action-button shiny-bound-input"
+                  )
                 )
               )
             )
-          )),
+          ),
           # end buttons
           card_body_fill(leafglOutput("mapDraw"))
         )
