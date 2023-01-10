@@ -7,61 +7,56 @@ library(units)
 
 
 # Load data ----
-##... Tracts ----
+## ... Tracts ----
 tracts <- readRDS("data/acs_tracts_chicago.RDS") %>%
   # get rid of 0-hh tracts (Ohare airport)
   filter(n_hhs > 0) %>%
   st_transform(crs = 4326) %>%
-  # get square mileage by tract: 
+  # get square mileage by tract:
   mutate(tract_area_mi2 = units::set_units(tract_area, "mi^2"))
 
 st_agr(tracts) <- "constant"
 
-##... Chicago ----
+## ... Chicago ----
 chicago <- readRDS("data/plow_geo.RDS") %>%
   purrr::pluck("chi_city") %>%
   st_transform(crs = 4326) %>%
-  # get rid of O'hare airport: 
-  st_crop(xmin = -87.865, xmax = -86, ymin = 0, ymax = 90) 
+  # get rid of O'hare airport:
+  st_crop(xmin = -87.865, xmax = -86, ymin = 0, ymax = 90)
 
 st_agr(chicago) <- "constant"
 
-##... Hex grid -----
-hexgrid <- 
-  # make grid: 
+## ... Hex grid -----
+hexgrid <-
+  # make grid:
   sf::st_make_grid(
-    # use tracts as our boundaries: 
-    tracts %>% 
+    # use tracts as our boundaries:
+    tracts %>%
       # must project to use cellsize argument
       st_transform(crs = 26916),
     # these units are very strange, still do not fully understand
     # https://github.com/r-spatial/sf/issues/1505,
-    # but this works: 
+    # but this works:
     cellsize = 1223, # 865 = 0.25 sq mi; 1223 = 0.5 sq mi
     crs = 26916,
     what = "polygons",
     square = FALSE # make hexagonal
   ) %>%
-  
-  # make sf object: 
+  # make sf object:
   st_sf() %>%
-  
-  # make hexid: 
+  # make hexid:
   mutate(hexid = row_number()) %>%
   # back to lat-long proj:
   st_transform(crs = 4326) %>%
-  
-  # crop to the boundary of chicago: 
+  # crop to the boundary of chicago:
   st_intersection(chicago) %>%
-  
   # simplify shapes -- not necessary with hexagonal grid
   # st_simplify(dTolerance = 100) %>% # 100 m
-  
-  # make valid: 
+
+  # make valid:
   st_make_valid() %>%
-  
-  # calculate area: 
-  mutate(hex_area_mi2 = units::set_units(st_area(geometry), "mi^2")) %>% 
+  # calculate area:
+  mutate(hex_area_mi2 = units::set_units(st_area(geometry), "mi^2")) %>%
   # get rid of overly-small hex units -- should be at least 1/4 mile
   filter(as.numeric(hex_area_mi2) >= 0.25)
 
@@ -107,7 +102,8 @@ acs_ls <-
 names(acs_ls) <- acs_var_abbr
 
 # condense to one data frame
-acs <- acs_ls %>% purrr:::reduce(inner_join, by = "GEOID") %>%
+acs <- acs_ls %>%
+  purrr:::reduce(inner_join, by = "GEOID") %>%
   # get rid of NAs (three tracts)
   filter(!is.na(vis_pct_ppl)) %>%
   # rename household-based columns with 'hh' suffix instead of 'pop'
@@ -126,17 +122,17 @@ acs <- acs_ls %>% purrr:::reduce(inner_join, by = "GEOID") %>%
 st_agr(acs) <- "constant"
 
 
-##... 311 data -----
-requests311 <- readRDS("data/311_requests_chicago.RDS") 
+## ... 311 data -----
+requests311 <- readRDS("data/311_requests_chicago.RDS")
 
-##... CTA boardings -----
+## ... CTA boardings -----
 cta_chicago <- readRDS("data/cta_stop_activity_chicago.RDS")
 
-##... Sidewalks -----
+## ... Sidewalks -----
 
 
 # Tally by hex -----
-##... Census data ----
+## ... Census data ----
 acs_hex <-
   st_intersection(acs, hexgrid) %>%
   st_make_valid() %>%
@@ -152,7 +148,8 @@ acs_hex <-
     across(
       matches("n_ppl|n_hh"),
       ~ sum(., na.rm = T)
-    )) %>%
+    )
+  ) %>%
   ungroup() %>%
   # Refresh proportional data:
   # ... per-area variables:
@@ -160,40 +157,50 @@ acs_hex <-
     n_ppl_permi2 = n_ppl / hex_area_mi2
   ) %>%
   # ... population variables:
-  mutate(across(c(contains("n_ppl"),
-                  # don't change the master column, total population
-                  -"n_ppl",
-                  -"n_ppl_permi2"),
-                ~ . / n_ppl,
-                .names = "{sub('n_ppl', 'pct_ppl', col)}")) %>%
+  mutate(across(
+    c(
+      contains("n_ppl"),
+      # don't change the master column, total population
+      -"n_ppl",
+      -"n_ppl_permi2"
+    ),
+    ~ . / n_ppl,
+    .names = "{sub('n_ppl', 'pct_ppl', col)}"
+  )) %>%
   # ... household-based variables:
-  mutate(across(c(contains("n_hhs"),
-                  # don't change the total household column
-                  -"n_hhs"),
-                ~ . / n_hhs,
-                .names = "{sub('n_hh', 'pct_hh', col)}")) %>%
+  mutate(across(
+    c(
+      contains("n_hhs"),
+      # don't change the total household column
+      -"n_hhs"
+    ),
+    ~ . / n_hhs,
+    .names = "{sub('n_hh', 'pct_hh', col)}"
+  )) %>%
   # .... get rid of mi2 units:
-  mutate(across(contains("mi2"), 
-                ~ as.numeric(.)))
+  mutate(across(
+    contains("mi2"),
+    ~ as.numeric(.)
+  ))
 
 gc()
 
 ## ... 311 data ----
-sno_hex <- 
+sno_hex <-
   st_intersection(requests311$sno, hexgrid) %>%
   st_drop_geometry() %>%
   group_by(hexid) %>%
   tally(n = "n_sno") %>%
-  ungroup() 
+  ungroup()
 
 gc()
 
-vac_hex <- 
+vac_hex <-
   st_intersection(requests311$vac, hexgrid) %>%
   st_drop_geometry() %>%
   group_by(hexid) %>%
   tally(n = "n_vac") %>%
-  ungroup() 
+  ungroup()
 
 gc()
 
@@ -202,31 +209,32 @@ bad_hex <- sno_hex %>%
   mutate(n_bad = n_sno + n_vac)
 
 ## ... CTA boardings -----
-cta_hex <- 
+cta_hex <-
   st_intersection(cta_chicago, hexgrid) %>%
   st_drop_geometry() %>%
   group_by(hexid) %>%
-  summarize(n_cta =sum(activity)) %>%
-  ungroup() 
+  summarize(n_cta = sum(activity)) %>%
+  ungroup()
 
-gc() 
+gc()
 
-##... Sidewalks ----
+## ... Sidewalks ----
 
 # Combine ------
-master <- list(acs_hex,
-               bad_hex,
-               cta_hex) %>% 
+master <- list(
+  acs_hex,
+  bad_hex,
+  cta_hex
+) %>%
   purrr::reduce(left_join, by = "hexid") %>%
-  
   # .... get per-area variables:
-  mutate(n_cta_permi2 = n_cta/hex_area_mi2,
-         n_sno_permi2 = n_sno/hex_area_mi2,
-         n_vac_permi2 = n_vac/hex_area_mi2) %>%
-  
-  # ..... if numeric, replace NA with 0: 
-  mutate(across(where(is.numeric), ~tidyr::replace_na(.,0))) %>%
-  
+  mutate(
+    n_cta_permi2 = n_cta / hex_area_mi2,
+    n_sno_permi2 = n_sno / hex_area_mi2,
+    n_vac_permi2 = n_vac / hex_area_mi2
+  ) %>%
+  # ..... if numeric, replace NA with 0:
+  mutate(across(where(is.numeric), ~ tidyr::replace_na(., 0))) %>%
   # .... scale numeric variables:
   # mutate(across(
   #   c(matches(

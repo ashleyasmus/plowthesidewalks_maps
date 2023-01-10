@@ -6,7 +6,7 @@ if (exists("plotly_layout") == FALSE) {
     t = 80,
     pad = 0.5
   )
-  
+
   hov_lab_list <- list(
     font = list(
       size = 18,
@@ -22,7 +22,7 @@ if (exists("plotly_layout") == FALSE) {
     ),
     padding = list(l = 5, r = 5, b = 5, t = 5)
   )
-  
+
   plotly_layout <-
     function(a_plotly,
              x_title,
@@ -183,7 +183,7 @@ if (exists("plotly_layout") == FALSE) {
           hoverlabel = hov_lab_list
         )
     }
-  
+
   cli::cli_inform(
     c("v" = "plotly layout\n")
   )

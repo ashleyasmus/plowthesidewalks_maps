@@ -17,7 +17,7 @@ dat311_filter <-
   # SR_TYPE: Vacant/Abandoned Building Complaint
   # SR_SHORT_CODE: BBK
   # SR_TYPE: Snow – Uncleared Sidewalk Complaint
-  # SR_SHORT_CODE: SWSNOREM   
+  # SR_SHORT_CODE: SWSNOREM
   filter(sr_short_code %in% c("BBK", "SWSNOREM")) %>%
   ## last 3 years --- (arbitrary)
   mutate(created_datetime = lubridate::parse_date_time(created_date, orders = c("%m/%d/%Y %I/%M/%S %p"))) %>%
