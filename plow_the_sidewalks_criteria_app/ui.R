@@ -262,7 +262,7 @@ ui <- bslib::page_fluid(
               a half-square-mile (0.5 mi<sup>2</sup>).
               </b> There are about 32 city blocks
               in a half-square mile. A pilot zone (2.5 to 3 square miles)
-              would encompass approximately five to six half-sqaure-mile areas.
+              would encompass approximately five to six half-square-mile areas.
             </p>"
         ),
         
@@ -437,7 +437,7 @@ ui <- bslib::page_fluid(
           "Meanwhile, the areas that
                    rank highest for the share of population under 5
                    are scattered across the City. Areas along the lake shore
-                   rank lowest for under-5 population share."
+                   rank lowest for under-5 populaton share."
         ),
         p(
           "As might be expected, areas that rank
@@ -1138,7 +1138,7 @@ ui <- bslib::page_fluid(
             id = "purple",
             HTML(
               "<p>
-            You can create your own mix of these priorities
+            You can create your own mix of these priorites
           using the sliders below. Increase the importance of
           any priority by moving the slider to the right.
             </p>"

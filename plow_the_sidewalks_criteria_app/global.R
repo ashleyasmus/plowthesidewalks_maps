@@ -328,7 +328,7 @@ priorities_df <-
   )
 
 
-priorites_tab <-
+priorities_tab <-
   priorities_df %>%
   gt::gt() %>%
   gt::fmt_markdown(columns = desc) %>%

@@ -827,12 +827,11 @@ server <- function(input, output, session) {
       # intersect, calculate area stats
       intersection <-
         st_intersection(user_zone(), master)
+   
       
-      
-      
-      saveRDS(intersection,
-              paste0("scrap/intersection_",
-                     sample(1:1000, 1), ".RDS"))
+      # saveRDS(intersection,
+      #         paste0("scrap/intersection_",
+      #                sample(1:1000, 1), ".RDS"))
       
       output$scorecard <-
         render_gt(create_scorecard(intersection))
