@@ -42,6 +42,9 @@ library(leaflet.extras)
 library(geojsonsf)
 library(jsonify)
 
+# write data: 
+library(googlesheets4)
+
 
 # data ----
 master <- readRDS("data/scoring_master.RDS") %>%
@@ -367,6 +370,7 @@ priorities_df <-
         "car-tunnel",
         "city",
         "bus",
+        "circle-dollar-to-slot",
         "building-circle-exclamation"
       ),
     desc =
@@ -375,12 +379,16 @@ priorities_df <-
          and vision disabilities, who may use assistive devices like wheelchairs and canes</p>",
         "<p style = 'font-size: 1.2rem;'><b>Elders</b>, who are more vulnerable to serious fall-related injuries,
          and may be unable to shovel their own sidewalks, regardless of
-         whether they identify as having a disability.</p>",
+         whether they identify as having a disability</p>",
         "<p style = 'font-size: 1.2rem;'><b>Young children</b> and their caretakers, who may use strollers</p>",
         "<p style = 'font-size: 1.2rem;'><b>Households without cars</b>, who are more likely to rely on walking to meet their needs</p>",
         "<p style = 'font-size: 1.2rem;'><b>Population-dense areas</b>, to maximize the benefit of each mile of clear sidewalk</p>",
         "<p style = 'font-size: 1.2rem;'><b>Areas with high transit activity</b>, because the vast majority of riders get to
        and from their stop by walking</p>",
+       "<p style = 'font-size: 1.2rem;'><b>Low-income households</b>, who are not only less
+          likely to own a car, but also are 
+          less able to afford the <b>fines</b> levied by our current penalty-based enforcement system, 
+          let alone a <b>hired snow removal service</b></p>",
         "<p style = 'font-size: 1.2rem;'><b>Known problem areas</b>, specifically those with many 311 reports of unclear sidewalks and
         vacant buildings</p>"
       )

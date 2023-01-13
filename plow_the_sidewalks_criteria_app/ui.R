@@ -116,6 +116,7 @@ ui <- bslib::page_fluid(
           <a href ='https://github.com/ashleyasmus/plowthesidewalks_maps'
           target = '_blank'>
           {fontawesome::fa('arrow-up-right-from-square',
+          title = 'Go to link',
           fill = '#270075',
           height = '1.5rem')}
           </a><br>
@@ -197,82 +198,13 @@ ui <- bslib::page_fluid(
           in a way that prioritizes:"
         )
       ),
+      
       div(
         class = "well",
         priorities_tab
       ),
 
-      ## Rank percentiles introduced -----
-      div(
-        class = "row mt-5",
-        HTML("<h3>
-              Data sources and methods
-              </h3>"),
-        HTML(
-          "<p><b>Data sources.</b>
-          We relied on a mix of publicly-available data for this project.
-          The <a href = 'https://www.census.gov/data/developers/data-sets/acs-5year.html'>
-          Census' American Community Survey (ACS)</a>,
-          mapped at the tract level and averaged over the
-          five years from 2016 to 2021, was our main source of
-          demographic information, including
-          car ownership,
-          disability status,
-          population,
-          and population by age.
-          To measure transit activity, we
-          summed the number of average weekday boardings
-          and alightings
-          for each transit stop, as reported in
-          <a href = 'https://data.cityofchicago.org/Transportation/CTA-Ridership-Avg-Weekday-Bus-Stop-Boardings-in-Oc/mq3i-nnqe'>
-          CTA's October 2012 Average Weekday Bus Stop dataset</a> [data update pending].
-          Finally, we used
-          <a href = 'https://data.cityofchicago.org/Service-Requests/311-Service-Requests/v6vf-nfxy'>
-          the City's 311 complaints database to find indicators of known problem areas,
-          </a> filtering to sidewalk snow and ice complaints and vacant building reports, December 2018 to present.
-          </p>"
-        ),
-        HTML(
-          "<p>
-          <b>Data standardization.</b>
-          To enable easier comparison across variables
-          with very different scales, we have
-          we have <b>standardized</b> all our measures to
-          <b>rank-percentiles</b> that range from 0 to 100. A neighborhood
-          that ranks in the
-          99th percentile for the share of people older than 65,
-          for example, corresponds to a half-mile square area that
-          ranks higher than 99% of the other half-mile square areas in Chicago
-          for that measure.</p>"
-        ),
-        HTML(
-          "<p>
-          <b>Map boundaries.</b>
-            To help identify pilot zone areas
-              that cross political, census, or other
-              boundaries, we have mapped these populations
-              and variables (e.g., transit boardings, 311 complaints)
-              across the city in a uniform grid where each cell is
-              <b>
-              a half-square-mile (0.5 mi<sup>2</sup>).
-              </b> There are about 32 city blocks
-              in a half-square mile. A pilot zone (2.5 to 3 square miles)
-              would encompass approximately five to six half-square-mile areas.
-            </p>"
-        ),
-        HTML(glue::glue(
-          "<p>
-            All of our sources and methods - including this website- are open-source, written in the R
-          programming language.
-            You can comment and collaborate on our GitHub repository here
-          <a href ='https://github.com/ashleyasmus/plowthesidewalks_maps'
-          target = '_blank'>
-          {fontawesome::fa('arrow-up-right-from-square',
-          fill = '#270075',
-          height = '1.2rem')}
-          </a></p>"
-        ))
-      ),
+      
 
 
       ## Static maps -----
@@ -293,7 +225,7 @@ ui <- bslib::page_fluid(
       layout_column_wrap(
         width = 1 / 5,
         height = "350px",
-        height_mobile = "300px",
+        height_mobile = "225px",
         card(
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
@@ -308,11 +240,17 @@ ui <- bslib::page_fluid(
                 --bs-card-bg: #fff;
                 --bs-card-img-overlay-padding: 1rem;
                 --bs-card-group-margin: 0rem;",
-          card_body_fill(img(src = "Rplot.png"),
+          card_body_fill(img(src = "Rplot.png",
+                             alt = "Color legend for the maps in this section.
+                                    Title: Percentile rank. 
+                                    90-100 (high) values are in dark purple.
+                                    0-10 (low) values are in light yellow. 
+                                    Values in the middle span from light orange to deep magenta."),
             class = "p-0 mx-auto mt-3"
           )
         ),
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-title-spacer-y: .5rem;
@@ -340,6 +278,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-title-spacer-y: .5rem;
@@ -367,6 +306,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-title-spacer-y: .5rem;
@@ -394,6 +334,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-title-spacer-y: .5rem;
@@ -441,8 +382,9 @@ ui <- bslib::page_fluid(
       layout_column_wrap(
         width = 1 / 6,
         height = "350px",
-        height_mobile = "300px",
+        height_mobile = "225px",
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-color: transparent;
@@ -472,6 +414,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-color: transparent;
@@ -501,6 +444,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-title-spacer-y: .5rem;
@@ -529,6 +473,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-title-spacer-y: .5rem;
@@ -548,7 +493,7 @@ ui <- bslib::page_fluid(
             fontawesome::fa(
               "snowplow",
               fill = "#270075",
-              title = "311 complaints of icy/snowy sidewalks",
+              title = "311 reports of icy/snowy sidewalks",
               height = "1.5rem"
             )
           ),
@@ -557,6 +502,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-title-spacer-y: .5rem;
@@ -585,6 +531,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
+          full_screen = T,
           style = "--bs-card-spacer-y: 0rem;
                 --bs-card-spacer-x: 0rem;
                 --bs-card-title-spacer-y: .5rem;
@@ -769,7 +716,8 @@ ui <- bslib::page_fluid(
                      --bs-card-img-overlay-padding: 0rem;",
           HTML(
             "<p style = 'text-align: center; font-size:1.2rem'>
-            311 complaints will also be considered, but to a lesser extent."
+            311 reports of vacant lots and snowy sidewalks will also
+            be considered, but to a lesser extent."
           ),
           div(
             class = "mx-auto",
@@ -782,7 +730,7 @@ ui <- bslib::page_fluid(
             ),
             fontawesome::fa(
               "snowplow",
-              title = "311 complaints of icy/snowy sidewalks",
+              title = "311 reports of icy/snowy sidewalks",
               fill = "#270075",
               height = "2rem"
             )
@@ -792,40 +740,7 @@ ui <- bslib::page_fluid(
 
 
 
-      ## Weighting -----
-      div(
-        class = "row",
-        HTML(
-          "<h3>We propose using a
-                <span style=
-        'text-decoration: underline;
-        text-decoration-color: #9b51e0;
-        text-decoration-thickness: 0.4rem'>
-                weighting approach
-                </span>to
-                identify places that might
-                be a good fit for a pilot zone.</h3>"
-        ),
-        HTML(
-          "<p><b>
-              Weighting</b>
-              calculates a single score from
-              many different measures. Numerical
-              importance values are assigned to each
-              measure, with higher importance values
-              given to measures with greater priority.
-              You might remember taking a class where the
-              final exam was worth half of your grade -- your teacher was using weighting.</p>"
-        ),
-        HTML(
-          "<p>The concept is the same in our case: we'll assign higher importance values
-             to our key population measures (e.g., the share of population with disabilities),
-             and lower importance values to population density and 311 reports. We can
-             then rank our half-square-mile areas according to their overall weighted scores for these
-             measures."
-        )
-      ),
-
+      
 
 
       ### Begin scroll ------
@@ -835,8 +750,7 @@ ui <- bslib::page_fluid(
         scrolly_graph(
           width = "50%",
           height = "90vh",
-          div(
-            class = "well",
+          card(
             style = "padding: 0;
                     height = '90vh';
                     margin-bottom:2rem;
@@ -942,7 +856,7 @@ ui <- bslib::page_fluid(
               ),
               fontawesome::fa(
                 "snowplow",
-                title = "311 complaints of icy/snowy sidewalks",
+                title = "311 reports of icy/snowy sidewalks",
                 fill = "#270075",
                 height = "2rem"
               ),
@@ -964,7 +878,7 @@ ui <- bslib::page_fluid(
            the percentage of people with disabilities and elders,
           with less weight given to elders, children, transit activity,
           zero-car households and low-income households. Vacant building reports and
-          snow removal complaints are also in this mix, but are assigned
+          snow removal reports are also in this mix, but are assigned
           a lower importance value than other demographic factors.
             </p>"
             ),
@@ -1031,7 +945,7 @@ ui <- bslib::page_fluid(
               ),
               fontawesome::fa(
                 "snowplow",
-                title = "311 complaints of icy/snowy sidewalks",
+                title = "311 reports of icy/snowy sidewalks",
                 fill = "#270075",
                 height = "2rem"
               )
@@ -1110,7 +1024,7 @@ ui <- bslib::page_fluid(
               ),
               fontawesome::fa(
                 "snowplow",
-                title = "311 complaints of icy/snowy sidewalks",
+                title = "311 reports of icy/snowy sidewalks",
                 fill = "#270075",
                 height = "2rem"
               )
@@ -1166,10 +1080,12 @@ ui <- bslib::page_fluid(
           div(
             class = "col-sm-6 offset-sm-3",
             offset = 3,
-            div(
-              class = "well",
+            card(
               style = "padding: 1rem;
-                  margin-top: 0.5rem;",
+                  margin-top: 0.5rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-color: #270075;
+                --bs-card-bg: #F9F9F9;",
               HTML(
                 "<p style = 'text-align:center; font-size:1.4rem;'><b>All pilot zones</b></p>"
               ),
@@ -1194,19 +1110,19 @@ ui <- bslib::page_fluid(
         ),
 
         # ...special zones -----
-        div(
-          class = "row",
-          style = "margin-left:0px; padding: 0px;",
+       layout_column_wrap(
+         width = 1/2,
           # ........disabilities rules -----
-          div(
-            class = "col-sm-6",
-            div(
-              class = "well",
-              # style = "max-width: 400px;",
+          card(
+            style = "padding: 1rem;
+                  margin-top: 0.5rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-color: #270075;
+                --bs-card-bg: #F9F9F9;",
               HTML(
                 "<p style = 'text-align:center;
             font-size:1.4rem'><b>In the two pilot zones that
-            prioritize people with disabilities:</b></p>"
+            prioritize people with disabilities should contain: </b></p>"
               ),
               HTML(
                 glue::glue(
@@ -1216,7 +1132,7 @@ ui <- bslib::page_fluid(
                             title = 'People with ambulatory disabilities',
                             height = '1.6rem')}
                       At least 9%
-                       of people <b>(approximately 15,000 people)</b> should have an ambulatory (walking)
+                       of people <b>(approximately 15,000 people)</b> with an ambulatory (walking)
                        disability</p>"
                 )
               ),
@@ -1228,18 +1144,18 @@ ui <- bslib::page_fluid(
                             title = 'People with vision disabilities',
                             height = '1.6rem')}
                         At least 3%
-                       of people <b>(approximately 5,000 people)</b>should have an vision
+                       of people <b>(approximately 5,000 people)</b> with a vision
                        disability</p>"
                 )
               )
-            )
-          ),
+            ),
           # ........transit/kids rules -----
-          div(
-            class = "col-sm-6 ms-auto",
-            div(
-              class = "well",
-              # style = "max-width: 400px;",
+          card(
+            style = "padding: 1rem;
+                  margin-top: 0.5rem;
+                --bs-card-title-spacer-y: .5rem;
+                --bs-card-border-color: #270075;
+                --bs-card-bg: #F9F9F9;",
               HTML(
                 "<p style = 'text-align:center; font-size:1.4rem'><b>
                  In the two pilot zones focusing on dense neighborhoods:</b></p>"
@@ -1257,10 +1173,7 @@ ui <- bslib::page_fluid(
                 )
               )
             )
-          )
-        )
-      )
-    ),
+      ))),
     # Tab 2: Tool ----
 
     nav(
@@ -1327,7 +1240,7 @@ ui <- bslib::page_fluid(
                       style = "margin-left: 0px; margin-right: 0px; padding: 5px",
                       tags$button(
                         type = "button",
-                        id = "transit_button",
+                        id = "density_button",
                         HTML(
                           fontawesome::fa(
                             "city",
@@ -1576,7 +1489,7 @@ ui <- bslib::page_fluid(
                      --bs-card-bg: transparent;
                      --bs-card-img-overlay-padding: 0rem;",
                 card_body_fill(
-                  tags$button(
+                    tags$button(
                     type = "button",
                     id = "submit_button",
                     HTML(
@@ -1603,14 +1516,118 @@ ui <- bslib::page_fluid(
         )
       )
     ),
-
-
-
-    # Tab 3: Draft ---
+    
     nav(
-      title = "Read the draft ordinance",
-      id = "draft_tab",
-      p("some text")
+      title = "Data sources & methods",
+      id = "data_tab",
+      ## Rank percentiles introduced -----
+      div(
+        class = "row mt-5",
+        HTML("<h3>
+              Data sources and methods
+              </h3>"),
+        HTML(
+          "<p><b>Data sources.</b>
+          We relied on a mix of publicly-available data for this project.
+          The <a href = 'https://www.census.gov/data/developers/data-sets/acs-5year.html'>
+          Census' American Community Survey (ACS)</a>,
+          mapped at the tract level and averaged over the
+          five years from 2016 to 2021, was our main source of
+          demographic information, including
+          car ownership,
+          disability status,
+          population,
+          and population by age.
+          To measure transit activity, we
+          summed the number of average weekday boardings
+          and alightings
+          for each transit stop, as reported in
+          <a href = 'https://data.cityofchicago.org/Transportation/CTA-Ridership-Avg-Weekday-Bus-Stop-Boardings-in-Oc/mq3i-nnqe'>
+          CTA's October 2012 Average Weekday Bus Stop dataset</a> [data update pending].
+          Finally, we used
+          <a href = 'https://data.cityofchicago.org/Service-Requests/311-Service-Requests/v6vf-nfxy'>
+          the City's 311 reports database to find indicators of known problem areas,
+          </a> filtering to sidewalk snow and ice reports and vacant building reports, December 2018 to present.
+          </p>"
+        ),
+        HTML(
+          "<p>
+          <b>Data standardization.</b>
+          To enable easier comparison across variables
+          with very different scales, we have
+          we have <b>standardized</b> all our measures to
+          <b>rank-percentiles</b> that range from 0 to 100. A neighborhood
+          that ranks in the
+          99th percentile for the share of people older than 65,
+          for example, corresponds to a half-mile square area that
+          ranks higher than 99% of the other half-mile square areas in Chicago
+          for that measure.</p>"
+        ),
+        HTML(
+          "<p>
+          <b>Map boundaries.</b>
+            To help identify pilot zone areas
+              that cross political, census, or other
+              boundaries, we have mapped these populations
+              and variables (e.g., transit boardings, 311 reports)
+              across the city in a uniform grid where each cell is
+              <b>
+              a half-square-mile (0.5 mi<sup>2</sup>).
+              </b> There are about 32 city blocks
+              in a half-square mile. A pilot zone (2.5 to 3 square miles)
+              would encompass approximately five to six half-square-mile areas.
+            </p>"
+        ),
+        HTML(glue::glue(
+          "<p>
+            All of our sources and methods - including this website- are open-source, written in the R
+          programming language.
+            You can comment and collaborate on our GitHub repository here
+          <a href ='https://github.com/ashleyasmus/plowthesidewalks_maps',
+          target = '_blank'>
+          {fontawesome::fa('arrow-up-right-from-square',
+          fill = '#270075',
+          title = 'Go to link',
+          height = '1.2rem')}
+          </a></p>"
+        ))
+      ),
+      
+      ## Weighting -----
+      div(
+        class = "row",
+        HTML(
+          "<h3>About weighted scores</h3>"
+        ),
+        HTML(
+          "<p><b>
+              Weighting</b>
+              calculates a single score from
+              many different measures. Numerical
+              importance values are assigned to each
+              measure, with higher importance values
+              given to measures with greater priority.
+              You might remember taking a class where the
+              final exam was worth half of your grade -- your teacher was using weighting.</p>"
+        ),
+        HTML(
+          "<p>The concept is the same in our case: we'll assign higher importance values
+             to our key population measures (e.g., the share of population with disabilities),
+             and lower importance values to population density and 311 reports. We can
+             then rank our half-square-mile areas according to their overall weighted scores for these
+             measures."
+        )
+      ),
+      
     )
+
+
+
+    # # Tab 3: Draft ---
+    # nav(
+    #   title = "Read the draft ordinance",
+    #   id = "draft_tab",
+    #   p("some text")
+    # )
   )
 )
