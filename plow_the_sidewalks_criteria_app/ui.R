@@ -130,13 +130,12 @@ ui <- bslib::page_fluid(
           in a way that prioritizes:"
         )
       ),
-      
       div(
         class = "well",
         priorities_tab
       ),
 
-      
+
 
 
       ## Static maps -----
@@ -172,12 +171,15 @@ ui <- bslib::page_fluid(
                 --bs-card-bg: #fff;
                 --bs-card-img-overlay-padding: 1rem;
                 --bs-card-group-margin: 0rem;",
-          card_body_fill(img(src = "legend.png",
-                             alt = "Color legend for the maps in this section.
-                                    Title: Percentile rank. 
+          card_body_fill(
+            img(
+              src = "legend.png",
+              alt = "Color legend for the maps in this section.
+                                    Title: Percentile rank.
                                     90-100 (high) values are in dark purple.
-                                    0-10 (low) values are in light yellow. 
-                                    Values in the middle span from light orange to deep magenta."),
+                                    0-10 (low) values are in light yellow.
+                                    Values in the middle span from light orange to deep magenta."
+            ),
             class = "p-0 mx-auto mt-3"
           )
         ),
@@ -672,7 +674,7 @@ ui <- bslib::page_fluid(
 
 
 
-      
+
 
 
       ### Begin scroll ------
@@ -1042,8 +1044,8 @@ ui <- bslib::page_fluid(
         ),
 
         # ...special zones -----
-       layout_column_wrap(
-         width = 1/2,
+        layout_column_wrap(
+          width = 1 / 2,
           # ........disabilities rules -----
           card(
             style = "padding: 1rem;
@@ -1051,14 +1053,14 @@ ui <- bslib::page_fluid(
                 --bs-card-title-spacer-y: .5rem;
                 --bs-card-border-color: #270075;
                 --bs-card-bg: #F9F9F9;",
-              HTML(
-                "<p style = 'text-align:center;
+            HTML(
+              "<p style = 'text-align:center;
             font-size:1.4rem'><b>In the two pilot zones that
             prioritize people with disabilities should contain: </b></p>"
-              ),
-              HTML(
-                glue::glue(
-                  "<p style = 'font-size:1.2rem'>
+            ),
+            HTML(
+              glue::glue(
+                "<p style = 'font-size:1.2rem'>
                        {fontawesome::fa('wheelchair-move',
                             fill = '#270075',
                             title = 'People with ambulatory disabilities',
@@ -1066,11 +1068,11 @@ ui <- bslib::page_fluid(
                       At least 9%
                        of people <b>(approximately 15,000 people)</b> with an ambulatory (walking)
                        disability</p>"
-                )
-              ),
-              HTML(
-                glue::glue(
-                  "<p style = 'font-size:1.2rem'>
+              )
+            ),
+            HTML(
+              glue::glue(
+                "<p style = 'font-size:1.2rem'>
                        {fontawesome::fa('person-walking-with-cane',
                             fill = '#270075',
                             title = 'People with vision disabilities',
@@ -1078,9 +1080,9 @@ ui <- bslib::page_fluid(
                         At least 3%
                        of people <b>(approximately 5,000 people)</b> with a vision
                        disability</p>"
-                )
               )
-            ),
+            )
+          ),
           # ........transit/kids rules -----
           card(
             style = "padding: 1rem;
@@ -1088,13 +1090,13 @@ ui <- bslib::page_fluid(
                 --bs-card-title-spacer-y: .5rem;
                 --bs-card-border-color: #270075;
                 --bs-card-bg: #F9F9F9;",
-              HTML(
-                "<p style = 'text-align:center; font-size:1.4rem'><b>
+            HTML(
+              "<p style = 'text-align:center; font-size:1.4rem'><b>
                  In the two pilot zones focusing on dense neighborhoods:</b></p>"
-              ),
-              HTML(
-                glue::glue(
-                  "<p style = 'font-size:1.2rem;'>
+            ),
+            HTML(
+              glue::glue(
+                "<p style = 'font-size:1.2rem;'>
                          {fontawesome::fa('city',
                             title = 'Population density',
                             fill = '#270075',
@@ -1102,10 +1104,12 @@ ui <- bslib::page_fluid(
                         Population density should exceed 11,000 people
                     per square mile, for a total of
                     <b>29,000 to 35,000 residents</b> in a 2.5-to-3 square mile zone.</p>"
-                )
               )
             )
-      ))),
+          )
+        )
+      )
+    ),
     # Tab 2: Tool ----
 
     nav(
@@ -1421,7 +1425,7 @@ ui <- bslib::page_fluid(
                      --bs-card-bg: transparent;
                      --bs-card-img-overlay-padding: 0rem;",
                 card_body_fill(
-                    tags$button(
+                  tags$button(
                     type = "button",
                     id = "submit_button",
                     HTML(
@@ -1448,7 +1452,6 @@ ui <- bslib::page_fluid(
         )
       )
     ),
-    
     nav(
       title = "Data sources & methods",
       id = "data_tab",
@@ -1524,7 +1527,7 @@ ui <- bslib::page_fluid(
           </a></p>"
         ))
       ),
-      
+
       ## Weighting -----
       div(
         class = "row",
@@ -1550,7 +1553,6 @@ ui <- bslib::page_fluid(
              measures."
         )
       ),
-      
     )
 
 

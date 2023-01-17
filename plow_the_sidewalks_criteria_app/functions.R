@@ -1,8 +1,8 @@
-summarize_poly <- 
-  function(intersection){
+summarize_poly <-
+  function(intersection) {
     # intersection <-
     #   readRDS("plow_the_sidewalks_criteria_app/scrap/intersection_514.RDS")
-    
+
     pop_summary <-
       intersection %>%
       mutate(intersect_area = st_area(geometry)) %>%
@@ -37,40 +37,40 @@ summarize_poly <-
       ) %>%
       # ... population variables:
       mutate(across(contains("n_ppl"),
-                    ~ . / n_ppl,
-                    .names = "{sub('n_ppl', 'pct_ppl', col)}"
+        ~ . / n_ppl,
+        .names = "{sub('n_ppl', 'pct_ppl', col)}"
       )) %>%
       # ... household-based variables:
       mutate(across(contains("n_hh"),
-                    ~ . / n_hhs,
-                    .names = "{sub('n_hh', 'pct_hh', col)}"
+        ~ . / n_hhs,
+        .names = "{sub('n_hh', 'pct_hh', col)}"
       )) %>%
       st_transform(crs = 4326)
-    
+
     sno_count <-
       st_intersection(bad_chicago$sno, pop_summary %>%
-                        select(X_leaflet_id)) %>%
+        select(X_leaflet_id)) %>%
       st_drop_geometry() %>%
       group_by(X_leaflet_id) %>%
       tally(n = "n_sno") %>%
       ungroup()
-    
-    
+
+
     vac_count <-
       st_intersection(bad_chicago$vac, pop_summary %>% select(X_leaflet_id)) %>%
       st_drop_geometry() %>%
       group_by(X_leaflet_id) %>%
       tally(n = "n_vac") %>%
       ungroup()
-    
+
     cta_total <-
       st_intersection(cta_chicago, pop_summary %>% select(X_leaflet_id)) %>%
       st_drop_geometry() %>%
       group_by(X_leaflet_id) %>%
       summarize(n_cta = sum(activity)) %>%
       ungroup()
-    
-    
+
+
     summary <- list(
       pop_summary,
       sno_count,
@@ -83,13 +83,10 @@ summarize_poly <-
         n_sno_permi2 = n_sno / total_area_mi2,
         n_vac_permi2 = n_vac / total_area_mi2
       )
-    
-    
   }
 
 create_scorecard <-
   function(summary) {
-  
     summary_tab <-
       data.frame(
         icon =

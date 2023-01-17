@@ -40,7 +40,7 @@ library(leaflet.extras)
 library(geojsonsf)
 library(jsonify)
 
-# write data: 
+# write data:
 library(googlesheets4)
 
 
@@ -380,9 +380,9 @@ priorities_df <-
         "<p style = 'font-size: 1.2rem;'><b>Population-dense areas</b>, to maximize the benefit of each mile of clear sidewalk</p>",
         "<p style = 'font-size: 1.2rem;'><b>Areas with high transit activity</b>, because the vast majority of riders get to
        and from their stop by walking</p>",
-       "<p style = 'font-size: 1.2rem;'><b>Low-income households</b>, who are not only less
-          likely to own a car, but also are 
-          less able to afford the <b>fines</b> levied by our current penalty-based enforcement system, 
+        "<p style = 'font-size: 1.2rem;'><b>Low-income households</b>, who are not only less
+          likely to own a car, but also are
+          less able to afford the <b>fines</b> levied by our current penalty-based enforcement system,
           let alone a <b>hired snow removal service</b></p>",
         "<p style = 'font-size: 1.2rem;'><b>Known problem areas</b>, specifically those with many 311 reports of unclear sidewalks and
         vacant buildings</p>"

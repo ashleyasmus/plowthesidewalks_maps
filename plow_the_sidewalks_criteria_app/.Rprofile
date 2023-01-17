@@ -2,7 +2,6 @@
 # set values in options
 options(
   gargle_oauth_cache = ".secrets",
-  gargle_oauth_email = TRUE, 
+  gargle_oauth_email = TRUE,
   gargle_verbosity = "debug"
 )
-

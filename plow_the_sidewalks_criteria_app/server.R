@@ -19,110 +19,128 @@ server <- function(input, output, session) {
     }
   })
 
-  output$ambmap <- renderPlot({
-    pctile_maps[["amb_pctile"]]
-  },
-  alt = "Ambulatory disabilities map ...
+  output$ambmap <- renderPlot(
+    {
+      pctile_maps[["amb_pctile"]]
+    },
+    alt = "Ambulatory disabilities map ...
                                            This is a map of Chicago divided into half-square-mile
                                            hexagons. Each hexagon is colored by its percentile
                                            ranking, from 0 to 100, for the share of population with an ambulatory disability.
                                            Some of the neighborhoods that have a high share of people with an ambulatory
                                            disability include the South and West Sides. The hexagons
                                            covering Englewood, for example, rank in the 96th to 99th percentile.
-                                           Most of the central north side ranks below the 10th percentile.")
+                                           Most of the central north side ranks below the 10th percentile."
+  )
 
 
-  output$vismap <- renderPlot({
-    info <- getCurrentOutputInfo()
-    pctile_maps[["vis_pctile"]]
-  },
-  alt = "Vision disabilities map ...This is a map of Chicago divided into half-square-mile
+  output$vismap <- renderPlot(
+    {
+      info <- getCurrentOutputInfo()
+      pctile_maps[["vis_pctile"]]
+    },
+    alt = "Vision disabilities map ...This is a map of Chicago divided into half-square-mile
                                            hexagons. Each hexagon is colored by its percentile
                                            ranking, from 0 to 100, for the share of population with a vision disability.
                                            The map is similar to that of the one for people with ambulatory
                                            disabilities, with the inclusion of more of the Austin neighborhood
-                                           on the westside ranking highly for this measure.")
+                                           on the westside ranking highly for this measure."
+  )
 
 
-  output$oldmap <- renderPlot({
-    pctile_maps[["old_pctile"]]
-  },
-  alt = "Over-65 population map ....
+  output$oldmap <- renderPlot(
+    {
+      pctile_maps[["old_pctile"]]
+    },
+    alt = "Over-65 population map ....
                                            Map of Chicago divided into half-square-mile
                                            hexagons. Each hexagon is colored by its percentile
                                            ranking, from 0 to 100, for the share of population that is over 65 years old.
-                                           The map is similar to that of the ones for people with 
+                                           The map is similar to that of the ones for people with
                                            disabilities but with some notable differences: the northwest side (Norridge, Harwood Heights, Norwood Park, Dunning)
-                                           all rank highly for this measure, as well do a handful of half-square on the lake shore (Edgewater, Near North, Hyde Park).")
+                                           all rank highly for this measure, as well do a handful of half-square on the lake shore (Edgewater, Near North, Hyde Park)."
+  )
 
 
-  output$kidmap <- renderPlot({
-    pctile_maps[["kid_pctile"]]
-  },
-  alt = "Under-5 population map ... 
+  output$kidmap <- renderPlot(
+    {
+      pctile_maps[["kid_pctile"]]
+    },
+    alt = "Under-5 population map ...
                                       `    This is a map of Chicago divided into half-square-mile
                                            hexagons. Each hexagon is colored by its percentile
                                            ranking, from 0 to 100, for the share of population that is under 5 years old.
                                            Areas that rank highly for the proportion of the population under 5 are scattered across the city , with
                                            much less spatial clustering than for the previous groups. The areas that score the lowest are around the Loop and Near North, as well as
-                                           on the south side near Calumet Heights and South Deering.")
+                                           on the south side near Calumet Heights and South Deering."
+  )
 
 
-  output$zcamap <- renderPlot({
-    pctile_maps[["zca_pctile"]]
-  }, 
-  alt = "Zero-car households population map ... 
+  output$zcamap <- renderPlot(
+    {
+      pctile_maps[["zca_pctile"]]
+    },
+    alt = "Zero-car households population map ...
                                       `    This is a map of Chicago divided into half-square-mile
                                            hexagons. Each hexagon is colored by its percentile
                                            ranking, from 0 to 100, for the share of households that don't own a vehicle.
-                                           Areas that rank highly for this measure are concentrated along the 
-                                           lake shore from Rogers Park to South Shore, 
+                                           Areas that rank highly for this measure are concentrated along the
+                                           lake shore from Rogers Park to South Shore,
                                            in south side neighborhoods including Englewood,
-                                           and from east to west in a narrow band along the Eisenhower Expressway (I-90).")
+                                           and from east to west in a narrow band along the Eisenhower Expressway (I-90)."
+  )
 
-  output$incmap <- renderPlot({
-    pctile_maps[["inc_pctile"]]
-  }, 
-  alt = "Low-income households population map ... 
+  output$incmap <- renderPlot(
+    {
+      pctile_maps[["inc_pctile"]]
+    },
+    alt = "Low-income households population map ...
                                       `    This is a map of Chicago divided into half-square-mile
                                            hexagons. Each hexagon is colored by its percentile
                                            ranking, from 0 to 100, for the share of households that make less than $50,000 per year.
-                                           The most affluent neighborhoods in Chicago are on the North Side, 
-                                           from North Center to the Loop and Near North Side.")
+                                           The most affluent neighborhoods in Chicago are on the North Side,
+                                           from North Center to the Loop and Near North Side."
+  )
 
-  output$ctamap <- renderPlot({
-    pctile_maps[["n_cta_pctile"]]
-  },
-  alt = "Density map ... 
+  output$ctamap <- renderPlot(
+    {
+      pctile_maps[["n_cta_pctile"]]
+    },
+    alt = "Density map ...
                                       `    This is a map of Chicago divided into half-square-mile
                                            hexagons. Each hexagon is colored by its percentile
                                            ranking, from 0 to 100, for its population density.
-                                           The north side, from Albany Park east to Edgewater 
-                                            and south to the Loop, rank highest for this measure.")
+                                           The north side, from Albany Park east to Edgewater
+                                            and south to the Loop, rank highest for this measure."
+  )
 
   output$denmap <- renderPlot({
     pctile_maps[["n_ppl_pctile"]]
   })
 
 
-  output$snomap <- renderPlot({
-    pctile_maps[["n_sno_pctile"]]
-  }, 
-  alt = "Snow/ice complaints map ... 
+  output$snomap <- renderPlot(
+    {
+      pctile_maps[["n_sno_pctile"]]
+    },
+    alt = "Snow/ice complaints map ...
                                       `    This is a map of Chicago divided into half-square-mile
                                            hexagons. Each hexagon is colored by its percentile
                                            ranking, from 0 to 100, for its total number of 311 reports of
-                                           snowy/icy sidewalks. The map is nearly identical to the map of pouplation density.")
+                                           snowy/icy sidewalks. The map is nearly identical to the map of pouplation density."
+  )
 
-  output$vacmap <- renderPlot({
-    pctile_maps[["n_vac_pctile"]]
-  },
-  alt = "Vacant buildings complaints map ... 
+  output$vacmap <- renderPlot(
+    {
+      pctile_maps[["n_vac_pctile"]]
+    },
+    alt = "Vacant buildings complaints map ...
                                       `    This is a map of Chicago divided into half-square-mile
                                            hexagons. Each hexagon is colored by its percentile
                                            ranking, from 0 to 100, for its total number of 311 reports of
-                                           vacant buildings. The map is an inverse of the population density map.")
-  
+                                           vacant buildings. The map is an inverse of the population density map."
+  )
+
 
 
 
@@ -861,25 +879,25 @@ server <- function(input, output, session) {
         clearGroup("lstops")
     }
   })
-  
+
   # react to weight choosing ----
-  observeEvent(input$disability_button,{
+  observeEvent(input$disability_button, {
     runjs("document.getElementById('disability_button').style.backgroundColor = '#9b51e0';")
     runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
   })
-  
-  observeEvent(input$density_button,{
+
+  observeEvent(input$density_button, {
     runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
     runjs("document.getElementById('density_button').style.backgroundColor = '#9b51e0';")
   })
-  
 
-  
+
+
 
   # react to polygon draw button -------
   observeEvent(input$polygon_button, {
     js$polygon_click()
-    
+
     # shinyjs::enable(input$submit_button)
     # shinyjs::enable(input$edit_button)
   })
@@ -965,7 +983,7 @@ server <- function(input, output, session) {
       clearControls() %>%
       addControl(area_text, position = "topleft", className = "map-title")
   })
-  
+
   poly_summary <- reactiveVal()
   # scorecard -----
   observeEvent(user_area(), ignoreNULL = T, {
@@ -973,16 +991,16 @@ server <- function(input, output, session) {
       user_area() > 1.9) {
       shinyjs::enable("submit_button")
       # intersect, calculate area stats
-      
+
       intersection <- st_intersection(user_zone(), master)
-      
+
       # saveRDS(intersection,
       #         paste0("scrap/intersection_",
       #                sample(1:1000, 1), ".RDS"))
-      
+
       intersection <- readRDS("plow_the_sidewalks_criteria_app/scrap/intersection_514.RDS")
-      
-      summary <- summarize_poly(intersection) 
+
+      summary <- summarize_poly(intersection)
       poly_summary(summary)
 
 
@@ -990,22 +1008,21 @@ server <- function(input, output, session) {
         render_gt(create_scorecard(summary))
     }
   })
-  
+
   # submit ----
   observeEvent(input$submit_button, {
-    wkt_poly <- 
+    wkt_poly <-
       summary %>%
       select(-total_area, -X_leaflet_id, -do.union) %>%
       cbind(data.frame(first_weights)) %>%
       mutate(timestamp = Sys.time()) %>%
       mutate(wkt_col = st_as_text(geometry)) %>%
       st_drop_geometry()
-    
+
     googlesheets4::sheet_append(
       "https://docs.google.com/spreadsheets/d/1h6FH1-Kgr27dfsGcRhVbn7ChwS9V8WgdOQmWN4dUl8k/edit?usp=sharing",
       sheet = "submissions",
       data = wkt_poly
     )
-    
   })
 }
