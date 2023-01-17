@@ -1,4 +1,4 @@
-colors <- 
+colors <-
   list(
     "black" = "#000000",
     "cyan_bluish_gray" = "#abb8c3",
@@ -18,4 +18,3 @@ colors <-
     "off_white" = "#F9F9F9",
     "light_gray" = "#979797"
   )
-

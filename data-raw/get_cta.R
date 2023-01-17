@@ -10,7 +10,7 @@ ctadat_raw <-
   read.csv("data-raw/CTA_-_Ridership_-_Avg._Weekday_Bus_Stop_Boardings_in_October_2012.csv") %>%
   janitor::clean_names()
 
-ctadat <- 
+ctadat <-
   ctadat_raw %>%
   # add boardings & alightings ----
   mutate(activity = boardings + alightings) %>%
@@ -22,8 +22,10 @@ ctadat <-
 ctadat_sf <-
   ctadat %>%
   mutate(location = gsub(pattern = "[(]|[)]", replace = "", location)) %>%
-  mutate(lat = stringr::word(location, 1, sep = ", "),
-         lon = stringr::word(location, 2, sep = ", ")) %>%
+  mutate(
+    lat = stringr::word(location, 1, sep = ", "),
+    lon = stringr::word(location, 2, sep = ", ")
+  ) %>%
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
 
 plot(ctadat_sf)
