@@ -2,7 +2,7 @@ ui <- bslib::page_fluid(
   title = "#PlowTheSidewalks Pilot",
   theme = bs_theme(version = 5, bootswatch = "pulse"),
   useShinyjs(),
-  # css tags -----
+  # css -----
   tags$head(
     tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css?family=Montserrat"),
     tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css?family=Poppins"),
@@ -11,9 +11,10 @@ ui <- bslib::page_fluid(
   ),
 
 
-  # About --------
+  # Navbar --------
   navs_bar(
     bg = "#270075",
+    ## Brand ----
     nav_item(
       class = "navbar-brand",
       HTML(
@@ -31,7 +32,7 @@ ui <- bslib::page_fluid(
        #PLOW THE SIDEWALKS </h2>"
       )
     ),
-    # Footer ------
+    ## Footer ------
     footer = tags$div(
       style = "font-size: 1.5rem;
              display: block;
@@ -56,6 +57,7 @@ ui <- bslib::page_fluid(
           </h6>"
         )
       ),
+      ### Logos ----
       tags$div(
         img(
           src = "access_living_logo.png",
@@ -73,6 +75,7 @@ ui <- bslib::page_fluid(
         )
       ),
     ),
+    # Tab 1: About ----
     nav(
       title = "About the pilot",
       id = "about_tab",
@@ -82,22 +85,22 @@ ui <- bslib::page_fluid(
         class = "well",
         HTML(
           "<h3 style = 'margin-top: 0rem;
-        margin-bottom: 0rem;'>Where should Chicago try municipal sidewalk plowing
-              <span style=
-        'text-decoration: underline;
-        text-decoration-thickness: 0.4rem;
-        text-decoration-color: #9b51e0;'>first</span>?</h3>"
+           margin-bottom: 0rem;'>Where should Chicago try municipal sidewalk plowing
+           <span style=
+          'text-decoration: underline;
+          text-decoration-thickness: 0.4rem;
+          text-decoration-color: #9b51e0;'>first</span>?</h3>"
         ),
         HTML(
           "<h4
           style = 'font-size: 1rem;
-      font-weight: 500;
-      margin-top:0rem;
-      margin-bottom:0rem;
-      letter-spacing: 0.05rem;
-      color: #270075;'>
-      An initiative of Better Streets Chicago and Access Living
-      </span></h4>"
+          font-weight: 500;
+          margin-top:0rem;
+          margin-bottom:0rem;
+          letter-spacing: 0.05rem;
+          color: #270075;'>
+          An initiative of Better Streets Chicago and Access Living
+          </span></h4>"
         )
       ),
       div(
@@ -120,6 +123,7 @@ ui <- bslib::page_fluid(
             for the people that need it most.</p>'
         )
       ),
+      
       ## Priorities table -----
       div(
         class = "row mt-3",
@@ -158,21 +162,9 @@ ui <- bslib::page_fluid(
         height = "350px",
         height_mobile = "225px",
         card(
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           card_body_fill(
             img(
+              style = "object-fit: scale-down;",
               src = "legend.png",
               alt = "Color legend for the maps in this section.
                                     Title: Percentile rank.
@@ -180,24 +172,11 @@ ui <- bslib::page_fluid(
                                     0-10 (low) values are in light yellow.
                                     Values in the middle span from light orange to deep magenta."
             ),
-            class = "p-0 mx-auto mt-3"
+            class = "p-0 mx-auto mt-1"
           )
         ),
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -213,19 +192,6 @@ ui <- bslib::page_fluid(
         ),
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -241,19 +207,6 @@ ui <- bslib::page_fluid(
         ),
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -269,19 +222,6 @@ ui <- bslib::page_fluid(
         ),
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -319,21 +259,6 @@ ui <- bslib::page_fluid(
         height_mobile = "225px",
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-color: transparent;
-                --bs-card-bg: transparent;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -349,21 +274,6 @@ ui <- bslib::page_fluid(
         ),
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-color: transparent;
-                --bs-card-bg: transparent;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           card_header(
             align = "center",
             fontawesome::fa(
@@ -379,19 +289,6 @@ ui <- bslib::page_fluid(
         ),
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           height = "300px",
           card_header(
             align = "center",
@@ -408,19 +305,6 @@ ui <- bslib::page_fluid(
         ),
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           height = "300px",
           card_header(
             align = "center",
@@ -437,19 +321,6 @@ ui <- bslib::page_fluid(
         ),
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           height = "300px",
           card_header(
             align = "center",
@@ -466,19 +337,6 @@ ui <- bslib::page_fluid(
         ),
         card(
           full_screen = T,
-          style = "--bs-card-spacer-y: 0rem;
-                --bs-card-spacer-x: 0rem;
-                --bs-card-title-spacer-y: .5rem;
-                --bs-card-border-width: 0;
-                --bs-card-border-color: transparent;
-                --bs-card-border-radius: 0rem;
-                --bs-card-inner-border-radius: 0rem;
-                --bs-card-cap-padding-y: 0rem;
-                --bs-card-cap-padding-x: 1rem;
-                --bs-card-cap-bg: transparent;
-                --bs-card-bg: #fff;
-                --bs-card-img-overlay-padding: 1rem;
-                --bs-card-group-margin: 0rem;",
           height = "300px",
           card_header(
             align = "center",
@@ -520,9 +378,9 @@ ui <- bslib::page_fluid(
           "<h3>
             No one neighborhood will best serve
             <span style=
-        'text-decoration: underline;
-        text-decoration-color: #9b51e0;
-        text-decoration-thickness: 0.4rem;'>
+            'text-decoration: underline;
+            text-decoration-color: #9b51e0;
+            text-decoration-thickness: 0.4rem;'>
             all
             </span>of these priorities at once</h3>"
         ),
@@ -542,13 +400,9 @@ ui <- bslib::page_fluid(
         class = "well p-3",
         layout_column_wrap(
           width = 1 / 2,
+          ### People with disabilities ----
           card(
-            style = "--bs-card-spacer-y: 0.5rem;
-                     --bs-card-spacer-x: 0rem;
-                     --bs-card-title-spacer-y: 0rem;
-                     --bs-card-border-width: 0px;
-                     --bs-card-bg: transparent;
-                     --bs-card-img-overlay-padding: 0rem;",
+            style = "--bs-card-bg: transparent;",
             HTML(
               "<p style = 'text-align: center; font-size:1.2rem'>Two zones will focus on
                   <b>people with disabilities</b></p>"
@@ -570,13 +424,10 @@ ui <- bslib::page_fluid(
               )
             )
           ),
+          
+          ### Dense neighborhoods ----
           card(
-            style = "--bs-card-spacer-y: 0.5rem;
-                     --bs-card-spacer-x: 0rem;
-                     --bs-card-title-spacer-y: 0rem;
-                     --bs-card-border-width: 0px;
-                     --bs-card-bg: transparent;
-                     --bs-card-img-overlay-padding: 0rem;",
+            style = "--bs-card-bg: transparent;",
             HTML(
               "<p style = 'text-align: center; font-size:1.2rem'>Two zones will focus on
                       <b>dense neighborhoods</b></p>"
@@ -594,12 +445,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
-          style = "--bs-card-spacer-y: 0.5rem;
-                     --bs-card-spacer-x: 0rem;
-                     --bs-card-title-spacer-y: 0rem;
-                     --bs-card-border-width: 0px;
-                     --bs-card-bg: transparent;
-                     --bs-card-img-overlay-padding: 0rem;",
+          style = "--bs-card-bg: transparent;",
           HTML(
             "<p style = 'text-align: center; font-size:1.2rem'>
             All four zones will be selected in a way that also considers
@@ -642,12 +488,7 @@ ui <- bslib::page_fluid(
           )
         ),
         card(
-          style = "--bs-card-spacer-y: 0.5rem;
-                     --bs-card-spacer-x: 0rem;
-                     --bs-card-title-spacer-y: 0rem;
-                     --bs-card-border-width: 0px;
-                     --bs-card-bg: transparent;
-                     --bs-card-img-overlay-padding: 0rem;",
+          style = "--bs-card-bg: transparent;",
           HTML(
             "<p style = 'text-align: center; font-size:1.2rem'>
             311 reports of vacant lots and snowy sidewalks will also
@@ -677,18 +518,18 @@ ui <- bslib::page_fluid(
 
 
 
-      ### Begin scroll ------
+      ### Scrollytelling section ------
       scrolly_container(
         "scr",
-        ### place map -----
+        ### Map (sticky element) -----
         scrolly_graph(
           width = "50%",
           height = "90vh",
           card(
             style = "padding: 0;
                     height = '90vh';
-                    margin-bottom:2rem;
-                    margin-top:10px;
+                    margin-bottom:5vh;
+                    margin-top:5vh;
                     background-color: transparent;
                     border: 2px solid #270075;",
             leafletOutput("mapBuild",
@@ -696,7 +537,8 @@ ui <- bslib::page_fluid(
             )
           )
         ),
-        ### scroll sections -----
+        
+        ### Text (scrolling) -----
         scrolly_sections(
           width = "45%",
 
@@ -710,8 +552,8 @@ ui <- bslib::page_fluid(
             ),
             HTML(
               "<p>
-            The map on the right scores neighborhoods from
-            <b style = '
+              The map on the right scores neighborhoods from
+              <b style = '
               color: white;
               background-color: #0D0887;
               margin-top:0rem;
@@ -719,10 +561,10 @@ ui <- bslib::page_fluid(
               letter-spacing: 0.05rem;
               padding-left: 0.5rem;
               padding-right: 0.5rem;'>
-             high
-            </b>
-             to
-            <b style = '
+              high
+              </b>
+               to
+              <b style = '
               color: black;
               background-color: #F0F921;
               margin-top:0rem;
@@ -730,12 +572,12 @@ ui <- bslib::page_fluid(
               letter-spacing: 0.05rem;
               padding-left: 0.5rem;
               padding-right: 0.5rem;'>
-            low
-            </b>
-            based on how well they measure up for
-            all of our priorities. On this map, all of our priorities
-            are weighted equally.
-            </p>"
+              low
+              </b>
+              based on how well they measure up for
+              all of our priorities. On this map, all of our priorities
+              are weighted equally.
+              </p>"
             ),
             div(
               class = "mx-auto",
@@ -808,13 +650,13 @@ ui <- bslib::page_fluid(
             id = "disabilities",
             HTML(
               "<p>
-            Now the map shows areas that score highly for
-           the percentage of people with disabilities and elders,
-          with less weight given to elders, children, transit activity,
-          zero-car households and low-income households. Vacant building reports and
-          snow removal reports are also in this mix, but are assigned
-          a lower importance value than other demographic factors.
-            </p>"
+              Now the map shows areas that score highly for
+              the percentage of people with disabilities and elders,
+              with less weight given to elders, children, transit activity,
+              zero-car households and low-income households. Vacant building reports and
+              snow removal reports are also in this mix, but are assigned
+              a lower importance value than other demographic factors.
+              </p>"
             ),
             div(
               class = "mx-auto",
@@ -893,12 +735,12 @@ ui <- bslib::page_fluid(
             id = "transit",
             HTML(
               "<p>
-            Finally, this map shows the areas with a
-          high percentage of children, zero-car households,
-          and transit activity, with less importance
-          given to density and known problem areas. Once again,
-          indicators of known problem areas are included, but weighted to a lesser
-          extent than our demographic variables.
+              Finally, this map shows the areas with a
+              high percentage of children, zero-car households,
+              and transit activity, with less importance
+              given to density and known problem areas. Once again,
+              indicators of known problem areas are included, but weighted to a lesser
+              extent than our demographic variables.
             </p>"
             ),
             div(
@@ -972,10 +814,10 @@ ui <- bslib::page_fluid(
             id = "purple",
             HTML(
               "<p>
-            You can create your own mix of these priorites
-          using the sliders below. Increase the importance of
-          any priority by moving the slider to the right.
-            </p>"
+              You can create your own mix of these priorites
+              using the sliders below. Increase the importance of
+              any priority by moving the slider to the right.
+              </p>"
             ),
             div(
               class = "label-left",
@@ -1055,8 +897,8 @@ ui <- bslib::page_fluid(
                 --bs-card-bg: #F9F9F9;",
             HTML(
               "<p style = 'text-align:center;
-            font-size:1.4rem'><b>In the two pilot zones that
-            prioritize people with disabilities should contain: </b></p>"
+              font-size:1.4rem'><b>In the two pilot zones that
+              prioritize people with disabilities should contain: </b></p>"
             ),
             HTML(
               glue::glue(
@@ -1083,7 +925,7 @@ ui <- bslib::page_fluid(
               )
             )
           ),
-          # ........transit/kids rules -----
+          # ........density rules -----
           card(
             style = "padding: 1rem;
                   margin-top: 0.5rem;
@@ -1111,25 +953,19 @@ ui <- bslib::page_fluid(
       )
     ),
     # Tab 2: Tool ----
-
     nav(
       title = "Suggest a pilot zone",
       id = "map_tab",
       layout_column_wrap(
         width = 1 / 2,
 
-        # panel with controls ----
+        # Controls ----
         card(
           card_body_fill(
             class = "p-0",
             style = "padding-left: 0px;",
             full_screen = T,
             navs_tab_card(
-              # well = FALSE,
-              # widths = c(2, 10),
-              # color = "#9b51e0",
-              # contentWidth = 10,
-              # id = "toolnav",
               # ...sliders ----
               nav(
                 title = HTML(
@@ -1143,7 +979,7 @@ ui <- bslib::page_fluid(
                 HTML(
                   "<h4 style = 'font-size:1.2rem'>Color the map according to your priorities</h4>"
                 ),
-                # preset weights -----
+                #....preset weights -----
                 HTML("<p><b>Use our pre-set weights: </b></p>"),
                 layout_column_wrap(
                   width = 1 / 2,
@@ -1163,7 +999,7 @@ ui <- bslib::page_fluid(
                           "Disability mix"
                         ),
                         style = "color:#FFF;
-                     width:100%;
+                          width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #9b51e0",
@@ -1187,7 +1023,7 @@ ui <- bslib::page_fluid(
                           "Density mix"
                         ),
                         style = "color:#FFF;
-                     width:100%;
+                         width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #9b51e0",
@@ -1261,53 +1097,6 @@ ui <- bslib::page_fluid(
                 div(
                   class = "label-left",
                   id = "filtersliders",
-                  tags$style(
-                    " #filtersliders .irs-bar {
-                    left: 0px;
-                    width: 100%;
-                  }
-                  #filtersliders .irs-line {
-                    left: 0px;
-                    width: 100%;
-                    top: 25px;
-                    height: 8px;
-                    border-top: 0px;
-                    border-bottom: 0px;
-                    background: linear-gradient(to left,
-                    #0D0887, #47039F, #7301A8, #9C179E, #BD3786,
-                    #D8576B, #ED7953, #FA9E3B, #FDC926, #F0F921);
-                  }
-                  #filtersliders .irs--shiny .irs-bar {
-                    visibility: hidden;
-                  }
-                   #filtersliders .irs-handle {
-                    top: 50%;
-                   }
-                  #filtersliders .irs-handle {
-                    top: 50%;
-                  }
-
-                   #filtersliders .irs--shiny .irs-handle {
-                    width: 20px;
-                    height: 20px;
-                    border: 1px solid #000;
-                    background-color: white;
-                    box-shadow: 1px 1px 1px #000, 0px 0px 1px #0d0d0d;
-                    border-radius: 20px;
-                  }
-
-                  #filtersliders .irs--shiny .irs-from, .irs--shiny .irs-to, .irs--shiny .irs-single {
-                      color: #270075;
-                      text-shadow: none;
-                      padding: 1px 3px;
-                      font-family: Poppins, sans-serif;
-                      background-color: transparent;
-                      border-radius: 3px;
-                      font-size: 0.8rem;
-                      line-height: 1rem;
-                    }
-                    "
-                  ),
                   HTML(
                     "<h4 style = 'font-size:1.2rem'>Filter by total score weighted by your priorities </h4>"
                   ),
@@ -1337,7 +1126,6 @@ ui <- bslib::page_fluid(
                 ),
 
                 # ....score ----
-
                 HTML(
                   "<p><b>
                                        Draw a zone to see how well your suggested pilot zone
@@ -1350,7 +1138,7 @@ ui <- bslib::page_fluid(
           )
         ),
 
-        # ....map ----
+        # Map ----
         card(
           full_screen = T,
           class = "p-0",
@@ -1452,6 +1240,7 @@ ui <- bslib::page_fluid(
         )
       )
     ),
+    # Tab 3: Data/methods -----
     nav(
       title = "Data sources & methods",
       id = "data_tab",
@@ -1557,7 +1346,7 @@ ui <- bslib::page_fluid(
 
 
 
-    # # Tab 3: Draft ---
+    # Tab 4: Draft ordinance----
     # nav(
     #   title = "Read the draft ordinance",
     #   id = "draft_tab",
