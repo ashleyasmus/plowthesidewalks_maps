@@ -3,8 +3,6 @@
 library(shiny)
 library(shinyjs)
 library(bslib)
-
-# vertical tabset panel:
 library(shinyWidgets)
 
 # scrolly
@@ -58,9 +56,6 @@ bad_chicago$sno <- bad_chicago$sno %>%
 bad_chicago$vac <- bad_chicago$vac %>%
   st_transform(crs = 4326)
 
-cta_chicago <- readRDS("data/cta_stop_activity_chicago.RDS") %>%
-  st_transform(crs = 4326)
-
 wards <- readRDS("data/wards.RDS") %>%
   st_transform(crs = 4326)
 
@@ -77,7 +72,7 @@ pctile_maps <- readRDS("data/pctile_maps.RDS")
 source("_colors.R")
 
 # scorecard function ----
-source("fun_create_scorecard.R")
+source("functions.R")
 
 
 

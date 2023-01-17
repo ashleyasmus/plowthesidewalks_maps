@@ -255,3 +255,38 @@
 .irs--shiny .irs-grid-pol.small {
   background-color: #999999;
 }
+
+/* put labels on the left instead of above each sliders*/
+.label-left .form-group {
+          display: flex;              /* Use flexbox for positioning children */
+          flex-direction: row;        /* Place children on a row (default) */
+          width: 90%;                /* Set width for container */
+          align-self: center;
+          height: 2rem;
+          max-width: 400px;
+        }
+        .label-left label {
+          margin-right: 1rem;         /* Add spacing between label and slider */
+          align-self: center;         /* Vertical align in center of row */
+          text-align: left;
+          flex-basis: 2rem;          /* Target width for label */
+          height: 2rem;
+        }
+        .label-left .irs{
+          flex-basis: 300px;          /* Target width for slider */
+          align-self: center;
+          height: 2rem;
+        }
+        .label-left .irs-line {
+            top: 1rem;
+            bottom: 1rem;
+        }
+        .label-left .irs-bar {
+            top: 1rem;
+            bottom: 1rem;
+        }
+
+        .label-left .irs-handle {
+            top: 0.3rem;
+            bottom: 0rem;
+          }

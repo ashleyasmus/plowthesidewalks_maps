@@ -1,5 +1,5 @@
 ui <- bslib::page_fluid(
-  title = "Where should we #PlowTheSidewalks first?",
+  title = "#PlowTheSidewalks Pilot",
   theme = bs_theme(version = 5, bootswatch = "pulse"),
   useShinyjs(),
   # css tags -----
@@ -8,74 +8,6 @@ ui <- bslib::page_fluid(
     tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css?family=Poppins"),
     tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "irs_style.css"),
-    ## ... extra styling for sliders
-    tags$style(
-      HTML(
-        ".label-left .form-group {
-          display: flex;              /* Use flexbox for positioning children */
-          flex-direction: row;        /* Place children on a row (default) */
-          width: 90%;                /* Set width for container */
-          align-self: center;
-          height: 2rem;
-          max-width: 400px;
-        }
-        .label-left label {
-          margin-right: 1rem;         /* Add spacing between label and slider */
-          align-self: center;         /* Vertical align in center of row */
-          text-align: left;
-          flex-basis: 2rem;          /* Target width for label */
-          height: 2rem;
-        }
-        .label-left .irs{
-          flex-basis: 300px;          /* Target width for slider */
-          align-self: center;
-          height: 2rem;
-        }
-        .label-left .irs-line {
-            top: 1rem;
-            bottom: 1rem;
-        }
-        .label-left .irs-bar {
-            top: 1rem;
-            bottom: 1rem;
-        }
-
-        .label-left .irs-handle {
-            top: 0.3rem;
-            bottom: 0rem;
-          }
-        "
-      )
-    ),
-
-
-    ## ...draw polygon button ----
-    tags$style(
-      HTML(
-        "
-      a.leaflet-draw-draw-polygon {
-      display: inline;
-      visibility: hidden !important;
-      }
-     div.leaflet-draw-toolbar{
-       box-shadow: 0 0px 0px rgba(0,0,0,0) !important;
-      -moz-box-shadow:0 0px 0px rgba(0,0,0,0) !important;
-      -webkit-box-shadow: 0 0px 0px rgba(0,0,0,0) !important;
-      border-color: rgba(0,0,0,0) !important;
-      }"
-      )
-    ),
-
-    ## ...edit polygon button ----
-    tags$style(
-      HTML(
-        "
-      a.leaflet-draw-edit-edit {
-      display: inline;
-      visibility: hidden !important;
-      }"
-      )
-    )
   ),
 
 
@@ -126,14 +58,14 @@ ui <- bslib::page_fluid(
       ),
       tags$div(
         img(
-          src = "main-logo.png",
+          src = "access_living_logo.png",
           href = "https://www.betterstreetschicago.org/plow-the-sidewalks",
           height = "60px",
           alt = "Access Living",
           class = "float-right"
         ),
         img(
-          src = "second-logo.png",
+          src = "better_streets_logo.png",
           href = "https://www.accessliving.org/defending-our-rights/accessible-transportation/plow-the-sidewalks-a-campaign-to-make-snow-clearance-a-municipal-responsibility/",
           height = "60px",
           alt = "Better Streets Chicago",
@@ -240,7 +172,7 @@ ui <- bslib::page_fluid(
                 --bs-card-bg: #fff;
                 --bs-card-img-overlay-padding: 1rem;
                 --bs-card-group-margin: 0rem;",
-          card_body_fill(img(src = "Rplot.png",
+          card_body_fill(img(src = "legend.png",
                              alt = "Color legend for the maps in this section.
                                     Title: Percentile rank. 
                                     90-100 (high) values are in dark purple.

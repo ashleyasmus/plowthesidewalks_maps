@@ -6,7 +6,6 @@ library(ggplot2)
 library(plotly)
 library(showtext)
 showtext::showtext_auto()
-source("R/_plotly_layout.R")
 source("R/_access_color_pal.R")
 source("R/_ggplot_theme.R")
 
