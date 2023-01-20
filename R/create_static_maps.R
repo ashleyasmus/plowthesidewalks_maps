@@ -99,7 +99,7 @@ leg_plot <-
 
 # leg_plot
 
-ggsave("plow_the_sidewalks_criteria_app/www/legend.png",
+ggsave("app/www/legend.png",
   leg_plot,
   height = 3000,
   width = 4000,
@@ -204,4 +204,4 @@ ggsave("plow_the_sidewalks_criteria_app/www/legend.png",
 # hist
 #
 # pctile_maps[["histogram"]] <- hist
-saveRDS(pctile_maps, "plow_the_sidewalks_criteria_app/data/pctile_maps.RDS")
+saveRDS(pctile_maps, "app/data/pctile_maps.RDS")

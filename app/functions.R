@@ -1,7 +1,7 @@
 summarize_poly <-
   function(intersection) {
     # intersection <-
-    #   readRDS("plow_the_sidewalks_criteria_app/scrap/intersection_514.RDS")
+      # readRDS("app/intersection_789.RDS")
 
     pop_summary <-
       intersection %>%
@@ -191,7 +191,7 @@ create_scorecard <-
         )
       ) %>%
       mutate(meets_requirement = case_when(
-        score_minimum == 0 ~ NA_character_,
+        # score_minimum == 0 ~ NA_character_,
         score >= score_minimum ~ "circle-check",
         score < score_minimum ~ "xmark"
       )) %>%
@@ -202,7 +202,8 @@ create_scorecard <-
         height = "1.5rem",
         palette = c(
           "circle-check" = "#9b51e0",
-          "xmark" = "#abb8c3"
+          "xmark" = "#abb8c3", 
+          "white"
         )
       ) %>%
       gtExtras::gt_fa_column(icon,
@@ -239,11 +240,11 @@ create_scorecard <-
         rows = requirement_applies_to == "Secondary",
       ) %>%
       tab_row_group(
-        label = toupper("Requirements that apply to density-focused pilot zones"),
+        label = toupper("Density-focused zone requirements"),
         rows = requirement_applies_to == "Density-focused zones"
       ) %>%
       tab_row_group(
-        label = toupper("Requirements that apply to disability-focused pilot zones"),
+        label = toupper("Disability-focused zone requirements"),
         rows = requirement_applies_to == "Disability-focused zones"
       ) %>%
       gt::cols_hide(c("requirement_applies_to", "score_minimum")) %>%

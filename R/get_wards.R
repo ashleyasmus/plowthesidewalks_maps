@@ -18,7 +18,7 @@ st_agr(wards) <- "constant"
 
 # Write data -----
 saveRDS(wards, "data/wards.RDS")
-saveRDS(wards, "plow_the_sidewalks_criteria_app/data/wards.RDS")
+saveRDS(wards, "app/data/wards.RDS")
 
 # Centroids ------
 plot.new()
@@ -37,4 +37,4 @@ ward_centroids <-
 
 # Write data -----
 saveRDS(ward_centroids, "data/ward_centroids.RDS")
-saveRDS(ward_centroids, "plow_the_sidewalks_criteria_app/data/ward_centroids.RDS")
+saveRDS(ward_centroids, "app/data/ward_centroids.RDS")

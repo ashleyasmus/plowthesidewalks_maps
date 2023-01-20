@@ -65,6 +65,9 @@ ward_centroids <- readRDS("data/ward_centroids.RDS") %>%
 l_stops <- readRDS("data/l_stops.RDS") %>%
   st_transform(crs = 4326)
 
+cta_chicago <- readRDS("data/cta_stop_activity_chicago.RDS")%>%
+  st_transform(crs = 4326)
+
 # static maps ----
 pctile_maps <- readRDS("data/pctile_maps.RDS")
 

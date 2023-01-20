@@ -84,8 +84,8 @@ rm(trs, bgs)
 
 
 # save data
-saveRDS(object = plow_geo, file = "plow_the_sidewalks_criteria_app/plow_geo.RDS", compress = "xz")
-saveRDS(plow_demo, "plow_the_sidewalks_criteria_app/plow_demo.RDS", compress = "xz")
+saveRDS(object = plow_geo, file = "app/plow_geo.RDS", compress = "xz")
+saveRDS(plow_demo, "app/plow_demo.RDS", compress = "xz")
 
 saveRDS(object = plow_geo, file = "data/plow_geo.RDS", compress = "xz")
 saveRDS(plow_demo, "data/plow_demo.RDS", compress = "xz")

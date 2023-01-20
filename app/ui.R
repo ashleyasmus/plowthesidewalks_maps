@@ -9,8 +9,8 @@ ui <- bslib::page_fluid(
     tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "irs_style.css"),
   ),
-
-
+  
+  
   # Navbar --------
   navs_bar(
     bg = "#270075",
@@ -79,7 +79,7 @@ ui <- bslib::page_fluid(
     nav(
       title = "About the pilot",
       id = "about_tab",
-
+      
       ## Introduction -----
       div(
         class = "well",
@@ -134,14 +134,12 @@ ui <- bslib::page_fluid(
           in a way that prioritizes:"
         )
       ),
-      div(
-        class = "well",
-        priorities_tab
-      ),
-
-
-
-
+      div(class = "well",
+          priorities_tab),
+      
+      
+      
+      
       ## Static maps -----
       div(
         class = "row mt-3",
@@ -161,20 +159,18 @@ ui <- bslib::page_fluid(
         width = 1 / 5,
         height = "350px",
         height_mobile = "225px",
-        card(
-          card_body_fill(
-            img(
-              style = "object-fit: scale-down;",
-              src = "legend.png",
-              alt = "Color legend for the maps in this section.
+        card(card_body_fill(
+          img(
+            style = "object-fit: scale-down;",
+            src = "legend.png",
+            alt = "Color legend for the maps in this section.
                                     Title: Percentile rank.
                                     90-100 (high) values are in dark purple.
                                     0-10 (low) values are in light yellow.
                                     Values in the middle span from light orange to deep magenta."
-            ),
-            class = "p-0 mx-auto mt-1"
-          )
-        ),
+          ),
+          class = "p-0 mx-auto mt-1"
+        )),
         card(
           full_screen = T,
           card_header(
@@ -187,8 +183,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("ambmap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         ),
         card(
           full_screen = T,
@@ -202,8 +197,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("vismap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         ),
         card(
           full_screen = T,
@@ -217,8 +211,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("oldmap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         ),
         card(
           full_screen = T,
@@ -232,8 +225,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("kidmap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         )
       ),
       div(
@@ -269,8 +261,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("zcamap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         ),
         card(
           full_screen = T,
@@ -284,8 +275,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("incmap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         ),
         card(
           full_screen = T,
@@ -300,8 +290,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("ctamap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         ),
         card(
           full_screen = T,
@@ -316,8 +305,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("snomap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         ),
         card(
           full_screen = T,
@@ -332,8 +320,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("denmap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         ),
         card(
           full_screen = T,
@@ -348,8 +335,7 @@ ui <- bslib::page_fluid(
             )
           ),
           card_body_fill(plotOutput("vacmap"),
-            class = "p-0"
-          )
+                         class = "p-0")
         )
       ),
       div(
@@ -370,7 +356,7 @@ ui <- bslib::page_fluid(
             to our current system of sidewalk shoveling."
         )
       ),
-
+      
       ## Two types of zones -----
       div(
         class = "row",
@@ -394,7 +380,7 @@ ui <- bslib::page_fluid(
               constituency that will benefit most from sidewalk plowing:</p>"
         )
       ),
-
+      
       ## Zone Type table -----
       div(
         class = "well p-3",
@@ -512,12 +498,12 @@ ui <- bslib::page_fluid(
           )
         )
       ),
-
-
-
-
-
-
+      
+      
+      
+      
+      
+      
       ### Scrollytelling section ------
       scrolly_container(
         "scr",
@@ -533,15 +519,14 @@ ui <- bslib::page_fluid(
                     background-color: transparent;
                     border: 2px solid #270075;",
             leafletOutput("mapBuild",
-              height = "90vh"
-            )
+                          height = "90vh")
           )
         ),
         
         ### Text (scrolling) -----
         scrolly_sections(
           width = "45%",
-
+          
           # ...1: Equal priorities ------
           scrolly_section(
             id = "equal",
@@ -644,7 +629,7 @@ ui <- bslib::page_fluid(
               )
             )
           ),
-
+          
           # ...2: disabilities ------
           scrolly_section(
             id = "disabilities",
@@ -729,7 +714,7 @@ ui <- bslib::page_fluid(
             br(),
             br()
           ),
-
+          
           # ...3: transit ------
           scrolly_section(
             id = "transit",
@@ -808,7 +793,7 @@ ui <- bslib::page_fluid(
             br(),
             br()
           ),
-
+          
           # ...4: try it ---------
           scrolly_section(
             id = "purple",
@@ -838,7 +823,7 @@ ui <- bslib::page_fluid(
           )
         )
       ),
-
+      
       # Zone rules  -----
       div(
         class = "row",
@@ -849,34 +834,32 @@ ui <- bslib::page_fluid(
           Our draft ordinance has some extra rules about the
           how these zones are drawn.</p>"
         ),
-
+        
         # ...all zones: ----
-        div(
-          class = "row",
-          div(
-            class = "col-sm-6 offset-sm-3",
-            offset = 3,
-            card(
-              style = "padding: 1rem;
+        div(class = "row",
+            div(
+              class = "col-sm-6 offset-sm-3",
+              offset = 3,
+              card(
+                style = "padding: 1rem;
                   margin-top: 0.5rem;
                 --bs-card-title-spacer-y: .5rem;
                 --bs-card-border-color: #270075;
                 --bs-card-bg: #F9F9F9;",
-              HTML(
-                "<p style = 'text-align:center; font-size:1.4rem;'><b>All pilot zones</b></p>"
-              ),
-              HTML(
-                glue::glue(
-                  "<p style = 'font-size:1.2rem;'>
+                HTML(
+                  "<p style = 'text-align:center; font-size:1.4rem;'><b>All pilot zones</b></p>"
+                ),
+                HTML(
+                  glue::glue(
+                    "<p style = 'font-size:1.2rem;'>
                      {fontawesome::fa('chart-area',
                             fill = '#270075',
                             height = '1.6rem')}
                       Must be <b>2 to 3 square miles</b> in area</p>"
+                  )
                 )
               )
-            )
-          )
-        ),
+            )),
         HTML(
           "<p>
           These additional cutoffs are set at the <b>75th percentile</b> for each measure, compared across
@@ -884,7 +867,7 @@ ui <- bslib::page_fluid(
           In other words, if our pilot zones were ranked against all Chicago census tracts,
           it would rank in the <b>top 25 percent.</b></p>"
         ),
-
+        
         # ...special zones -----
         layout_column_wrap(
           width = 1 / 2,
@@ -956,188 +939,191 @@ ui <- bslib::page_fluid(
     nav(
       title = "Suggest a pilot zone",
       id = "map_tab",
+      
       layout_column_wrap(
         width = 1 / 2,
-
+        height = "80vh",
+        
         # Controls ----
-        card(
-          card_body_fill(
-            class = "p-0",
-            style = "padding-left: 0px;",
-            full_screen = T,
-            navs_tab_card(
-              # ...sliders ----
-              nav(
-                title = HTML(
-                  glue::glue(
-                    "{fontawesome::fa('scale-unbalanced-flip', height = '2rem')}<br>
+        
+        navs_tab_card(
+          id = "toolnav",
+          
+          #...weights ----
+          nav(
+            style = "margin-top:10px;",
+            title = HTML(
+              glue::glue(
+                "{fontawesome::fa('scale-unbalanced-flip', height = '2rem')}<br>
                                         <p style = 'font-size:0.75rem'>
                   Weights</p>"
-                  )
-                ),
-                id = "sliders",
-                HTML(
-                  "<h4 style = 'font-size:1.2rem'>Color the map according to your priorities</h4>"
-                ),
-                #....preset weights -----
-                HTML("<p><b>Use our pre-set weights: </b></p>"),
-                layout_column_wrap(
-                  width = 1 / 2,
-                  card(
-                    card_body_fill(
-                      style = "margin-left: 0px; margin-right: 0px; padding: 5px",
-                      tags$button(
-                        type = "button",
-                        id = "disability_button",
-                        HTML(
-                          fontawesome::fa(
-                            "wheelchair-move",
-                            height = "2rem",
-                            title = "People with ambulatory disabilities",
-                            fill = "#FFF"
-                          ),
-                          "Disability mix"
-                        ),
-                        style = "color:#FFF;
+              )
+            ),
+            id = "sliders",
+            
+            HTML(
+              "<h4 style = 'font-size:1.2rem; margin-top:1px;'>Color the map according to your priorities</h4>"
+            ),
+            
+            HTML("<p><b>Use our pre-set weights: </b></p>"),
+            layout_column_wrap(width = 1 / 2,
+                               card(
+                                 card_body_fill(
+                                   style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                                   tags$button(
+                                     type = "button",
+                                     id = "disability_button",
+                                     HTML(
+                                       fontawesome::fa(
+                                         "wheelchair-move",
+                                         height = "2rem",
+                                         title = "People with ambulatory disabilities",
+                                         fill = "#FFF"
+                                       ),
+                                       "Disability mix"
+                                     ),
+                                     style = "color:#FFF;
                           width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #9b51e0",
-                        class = "btn action-button shiny-bound-input"
-                      )
-                    )
-                  ),
-                  card(
-                    card_body_fill(
-                      style = "margin-left: 0px; margin-right: 0px; padding: 5px",
-                      tags$button(
-                        type = "button",
-                        id = "density_button",
-                        HTML(
-                          fontawesome::fa(
-                            "city",
-                            title = "Population density",
-                            height = "2rem",
-                            fill = "#FFF"
-                          ),
-                          "Density mix"
-                        ),
-                        style = "color:#FFF;
+                                     class = "btn action-button shiny-bound-input"
+                                   )
+                                 )
+                               ),
+                               card(
+                                 card_body_fill(
+                                   style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                                   tags$button(
+                                     type = "button",
+                                     id = "density_button",
+                                     HTML(
+                                       fontawesome::fa(
+                                         "city",
+                                         title = "Population density",
+                                         height = "2rem",
+                                         fill = "#FFF"
+                                       ),
+                                       "Density mix"
+                                     ),
+                                     style = "color:#FFF;
                          width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #9b51e0",
-                        class = "btn action-button shiny-bound-input"
-                      )
-                    )
-                  )
-                ),
-                HTML("<p><b>Or create a custom set of weights:</b></p>"),
-                div(
-                  class = "label-left",
-                  s_amb2,
-                  s_vis2,
-                  s_old2,
-                  s_kid2,
-                  s_zca2,
-                  s_inc2,
-                  s_cta2,
-                  s_den2,
-                  s_sno2,
-                  s_vac2
-                )
-              ),
-
-
-              # ....layers -----
-              nav(
-                title = HTML(
-                  glue::glue(
-                    "{fontawesome::fa('layer-group', height = '2rem')}
+                                     class = "btn action-button shiny-bound-input"
+                                   )
+                                 )
+                               )),
+            HTML("<p><b>Or create a custom set of weights:</b></p>"),
+            div(
+              class = "label-left",
+              s_amb2,
+              s_vis2,
+              s_old2,
+              s_kid2,
+              s_zca2,
+              s_inc2,
+              s_cta2,
+              s_den2,
+              s_sno2,
+              s_vac2
+            )
+          ),
+          
+          
+          # ....layers -----
+          nav(
+            style = "margin-top:10px;",
+            title = HTML(
+              glue::glue(
+                "{fontawesome::fa('layer-group', height = '2rem')}
                                         <br>
                                         <p style = 'font-size:0.8rem'>
                                         Layers</p>"
-                  )
-                ),
-                HTML(
-                  "<h4 style = 'font-size:1.2rem'>View additional layers on the map</h4>"
-                ),
-                checkboxInput(
-                  inputId = "ward_layer",
-                  label = "Ward boundaries",
-                  value = FALSE
-                ),
-                checkboxInput(
-                  inputId = "sno_layer",
-                  label = "311 Sidewalk Snow Removal Requests",
-                  value = FALSE
-                ),
-                checkboxInput(
-                  inputId = "vac_layer",
-                  label = "311 Vacant Building Reports",
-                  value = FALSE
-                ),
-                checkboxInput(
-                  inputId = "l_stops_layer",
-                  label = "L stations",
-                  value = FALSE
-                )
-              ),
-              nav(
-                title = HTML(
-                  glue::glue(
-                    "{fontawesome::fa('filter', height = '2rem')}<br>
+              )
+            ),
+            HTML(
+              "<h4 style = 'font-size:1.2rem'>View additional layers on the map</h4>"
+            ),
+            checkboxInput(
+              inputId = "ward_layer",
+              label = "Ward boundaries",
+              value = FALSE
+            ),
+            checkboxInput(
+              inputId = "sno_layer",
+              label = "311 Sidewalk Snow Removal Requests",
+              value = FALSE
+            ),
+            checkboxInput(
+              inputId = "vac_layer",
+              label = "311 Vacant Building Reports",
+              value = FALSE
+            ),
+            checkboxInput(
+              inputId = "l_stops_layer",
+              label = "L stations",
+              value = FALSE
+            )
+          ),
+          #....filters ----
+          nav(
+            style = "margin-top:10px;",
+            title = HTML(
+              glue::glue(
+                "{fontawesome::fa('filter', height = '2rem')}<br>
                                         <p style = 'font-size:0.8rem'>
                                         Filters</p>"
-                  )
-                ),
-
-                # ...filters ----
-                br(),
-                div(
-                  class = "label-left",
-                  id = "filtersliders",
-                  HTML(
-                    "<h4 style = 'font-size:1.2rem'>Filter by total score weighted by your priorities </h4>"
-                  ),
-                  f_score,
-                  HTML(
-                    "<h4 style = 'font-size:1.2rem'>Filter to areas by percentile rank (0-100) for individual measures</h4>"
-                  ),
-                  f_amb,
-                  f_vis,
-                  f_old,
-                  f_kid,
-                  f_zca,
-                  f_inc,
-                  f_cta,
-                  f_den,
-                  f_sno,
-                  f_vac
-                )
+              )
+            ),
+            
+            
+            br(),
+            div(
+              class = "label-left",
+              id = "filtersliders",
+              HTML(
+                "<h4 style = 'font-size:1.2rem'>Filter by total score weighted by your priorities </h4>"
               ),
-              nav(
-                title = HTML(
-                  glue::glue(
-                    "{fontawesome::fa('clipboard', height = '2rem')}<br>
+              f_score,
+              HTML(
+                "<h4 style = 'font-size:1.2rem'>Filter to areas by percentile rank (0-100) for individual measures</h4>"
+              ),
+              f_amb,
+              f_vis,
+              f_old,
+              f_kid,
+              f_zca,
+              f_inc,
+              f_cta,
+              f_den,
+              f_sno,
+              f_vac
+            )
+          ),
+          # ....score ----
+          nav(
+            style = "margin-top:10px;",
+            title = HTML(
+              glue::glue(
+                "{fontawesome::fa('clipboard', height = '2rem')}<br>
                                         <p style = 'font-size:0.8rem'>
                                         Scores</p>"
-                  )
-                ),
-
-                # ....score ----
-                HTML(
-                  "<p><b>
+              )
+            ),
+            
+            
+            HTML(
+              "<p><b>
                                        Draw a zone to see how well your suggested pilot zone
                                        serves our priorities.
                                        </b></p>"
-                ),
-                gt_output("scorecard")
-              )
-            )
+            ),
+            gt_output("scorecard")
           )
         ),
-
+        
         # Map ----
         card(
           full_screen = T,
@@ -1159,14 +1145,12 @@ ui <- bslib::page_fluid(
                   tags$button(
                     type = "button",
                     id = "polygon_button",
-                    HTML(
-                      fontawesome::fa(
-                        "pencil",
-                        height = "2rem",
-                        fill = "#FFF"
-                      ),
-                      "Draw"
+                    HTML(fontawesome::fa(
+                      "pencil",
+                      height = "2rem",
+                      fill = "#FFF"
                     ),
+                    "Draw"),
                     style = "color:#FFF;
                      width:100%;
                          font-family: Poppins, sans-serif;
@@ -1190,9 +1174,8 @@ ui <- bslib::page_fluid(
                     id = "edit_button",
                     HTML(
                       fontawesome::fa("pen-to-square",
-                        height = "2rem",
-                        fill = "#FFF"
-                      ),
+                                      height = "2rem",
+                                      fill = "#FFF"),
                       "Edit"
                     ),
                     style = "color:#FFF;
@@ -1218,9 +1201,8 @@ ui <- bslib::page_fluid(
                     id = "submit_button",
                     HTML(
                       fontawesome::fa("paper-plane",
-                        height = "2rem",
-                        fill = "#FFF"
-                      ),
+                                      height = "2rem",
+                                      fill = "#FFF"),
                       "Submit"
                     ),
                     style = "color:#FFF;
@@ -1302,8 +1284,9 @@ ui <- bslib::page_fluid(
               would encompass approximately five to six half-square-mile areas.
             </p>"
         ),
-        HTML(glue::glue(
-          "<p>
+        HTML(
+          glue::glue(
+            "<p>
             All of our sources and methods - including this website- are open-source, written in the R
           programming language.
             You can comment and collaborate on our GitHub repository here
@@ -1314,15 +1297,14 @@ ui <- bslib::page_fluid(
           title = 'Go to link',
           height = '1.2rem')}
           </a></p>"
-        ))
+          )
+        )
       ),
-
+      
       ## Weighting -----
       div(
         class = "row",
-        HTML(
-          "<h3>About weighted scores</h3>"
-        ),
+        HTML("<h3>About weighted scores</h3>"),
         HTML(
           "<p><b>
               Weighting</b>
@@ -1343,9 +1325,9 @@ ui <- bslib::page_fluid(
         )
       ),
     )
-
-
-
+    
+    
+    
     # Tab 4: Draft ordinance----
     # nav(
     #   title = "Read the draft ordinance",

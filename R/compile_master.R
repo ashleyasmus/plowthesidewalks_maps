@@ -258,4 +258,4 @@ master <- list(
 
 # Write data -----
 saveRDS(master, file = "data/scoring_master.RDS")
-saveRDS(master, file = "plow_the_sidewalks_criteria_app/data/scoring_master.RDS")
+saveRDS(master, file = "app/data/scoring_master.RDS")

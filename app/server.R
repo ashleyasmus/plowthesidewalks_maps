@@ -987,18 +987,8 @@ server <- function(input, output, session) {
   poly_summary <- reactiveVal()
   # scorecard -----
   observeEvent(user_area(), ignoreNULL = T, {
-    if (user_area() < 3.1 &
-      user_area() > 1.9) {
-      shinyjs::enable("submit_button")
-      # intersect, calculate area stats
 
       intersection <- st_intersection(user_zone(), master)
-
-      # saveRDS(intersection,
-      #         paste0("scrap/intersection_",
-      #                sample(1:1000, 1), ".RDS"))
-
-      intersection <- readRDS("plow_the_sidewalks_criteria_app/scrap/intersection_514.RDS")
 
       summary <- summarize_poly(intersection)
       poly_summary(summary)
@@ -1006,13 +996,12 @@ server <- function(input, output, session) {
 
       output$scorecard <-
         render_gt(create_scorecard(summary))
-    }
   })
 
   # submit ----
   observeEvent(input$submit_button, {
     wkt_poly <-
-      summary %>%
+      poly_summary() %>%
       select(-total_area, -X_leaflet_id, -do.union) %>%
       cbind(data.frame(first_weights)) %>%
       mutate(timestamp = Sys.time()) %>%

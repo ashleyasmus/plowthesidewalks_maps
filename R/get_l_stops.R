@@ -19,4 +19,4 @@ st_agr(l_stops) <- "constant"
 
 # Write data -----
 saveRDS(l_stops, "data/l_stops.RDS")
-saveRDS(l_stops, "plow_the_sidewalks_criteria_app/data/l_stops.RDS")
+saveRDS(l_stops, "app/data/l_stops.RDS")

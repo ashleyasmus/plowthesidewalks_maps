@@ -27,7 +27,7 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 plowthesidewalks_maps.Rproj
-plow_the_sidewalks_criteria_app/rsconnect/
+app/rsconnect/
 ~$ioritizatin logic.docx
 data-raw/311_Service_Requests.csv
 ~$ioritization logic.docx
