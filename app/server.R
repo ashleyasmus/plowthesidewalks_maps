@@ -5,10 +5,6 @@ server <- function(input, output, session) {
     scrollytell()
   })
 
-  output$scr2 <- renderScrollytell({
-    scrollytell()
-  })
-
   # Static plots ------
   output$hist_ex <- renderPlot({
     info <- getCurrentOutputInfo()
