@@ -43,6 +43,13 @@ library(jsonify)
 # write data:
 library(googlesheets4)
 
+options(
+  # whenever there is one account token found, use the cached token
+  gargle_oauth_email = TRUE,
+  # specify auth tokens should be stored in a hidden directory ".secrets"
+  gargle_oauth_cache = ".secrets"
+)
+
 
 # data ----
 master <- readRDS("data/scoring_master.RDS") %>%

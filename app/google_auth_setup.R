@@ -10,3 +10,6 @@ options(
 
 googledrive::drive_auth()
 googlesheets4::gs4_auth() 
+
+# check that token is stored: 
+list.files("app/.secrets/")
