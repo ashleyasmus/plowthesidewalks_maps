@@ -55,6 +55,9 @@ options(
 master <- readRDS("data/scoring_master.RDS") %>%
   st_transform(crs = 4326)
 
+master_gl <- master %>%
+  st_cast("POLYGON")
+
 bad_chicago <- readRDS("data/311_requests_chicago.RDS")
 
 bad_chicago$sno <- bad_chicago$sno %>%

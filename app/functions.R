@@ -1,3 +1,205 @@
+mini_map <- function(percentile_measure = "amb_pctile") {
+  master_tr <-
+    master_gl %>%
+    mutate(
+      score_bin =
+        case_when(
+          !!(rlang::sym(percentile_measure))< 0.1 ~ "0-10 (Low)",
+          !!(rlang::sym(percentile_measure))< 0.3 ~ "20-30",
+          !!(rlang::sym(percentile_measure))< 0.4 ~ "30-40",
+          !!(rlang::sym(percentile_measure))< 0.5 ~ "40-50",
+          !!(rlang::sym(percentile_measure))< 0.6 ~ "50-60",
+          !!(rlang::sym(percentile_measure))< 0.7 ~ "60-70",
+          !!(rlang::sym(percentile_measure))< 0.8 ~ "70-80",
+          !!(rlang::sym(percentile_measure))< 0.9 ~ "80-90",
+          !!(rlang::sym(percentile_measure))<= 1 ~ "90-100 (High)"
+        )
+    ) %>%
+    mutate(score_bin = factor(score_bin,
+                              levels = c(
+                                "90-100 (High)",
+                                "80-90",
+                                "70-80",
+                                "60-70",
+                                "50-60",
+                                "40-50",
+                                "30-40",
+                                "20-30",
+                                "10-20",
+                                "0-10 (Low)"
+                              )
+    ))
+  
+  color_data <- master_tr$score_bin
+  
+  my_pal <-
+    colorFactor("plasma",
+                color_data,
+                reverse = FALSE
+    )
+  
+  leaflet(options = leafletOptions(
+    minZoom = 9.5, maxZoom = 9.5,
+    zoomControl = F,
+    attributionControl = FALSE,
+    bg = "#fff"
+  )) %>%
+    setView(
+      lat =
+        41.840675,
+      lng =
+        -87.679365,
+      zoom = 9.5
+    ) %>%
+    setMaxBounds(
+      lat1 = chi_bbox[["ymin"]],
+      lat2 = chi_bbox[["ymax"]],
+      lng1 = chi_bbox[["xmin"]],
+      lng2 = chi_bbox[["xmax"]]
+    ) %>%
+    addGlPolygons(
+      data = master_gl,
+      fillOpacity = 0.9,
+      color = my_pal(color_data),
+      fillColor = my_pal(color_data)
+    ) 
+}
+
+fullscreen_map <- function(absolute_measure = "amb_n_ppl",
+                           round_absolute = -2,
+                           relative_measure = "amb_pct_ppl", 
+                           relative_transform = 100,
+                           round_relative = 0,
+                           percentile_measure = "amb_pctile",
+                           measure_units = "people",
+                           measure_quality = "have an ambulatory disability",
+                           relative_units = "%% of people") {
+  
+  tooltips <- sprintf(
+    "<p align='center' 
+     style='font-family: Poppins, sans-serif;
+     font-size:1rem;
+     color: #000000'>
+      
+      In this area,
+      
+      <b>
+      %s %s 
+      </b>
+      
+      <b>
+      (%s%s)
+      </b>
+      %s,
+      
+      ranking it in the
+      
+      <br>
+      <b>
+      %sth percentile
+      </b>
+      
+      <br>
+      of all 450 half-square mile areas areas in Chicago.
+      ",
+    ifelse(round(master[[absolute_measure]], round_absolute) == 0, 
+           paste0("<1", rep("0", abs(round_absolute))),
+           prettyNum(round(master[[absolute_measure]], round_absolute),
+           big.mark = ",")),
+    
+    measure_units,
+    
+    ifelse(round(relative_transform * master[[relative_measure]], round_relative) == 0,
+           paste0("<1", rep("0", abs(round_absolute))),
+           prettyNum(round(relative_transform * master[[relative_measure]], round_relative),
+                     big.mark = ",")),
+    
+    relative_units,
+    measure_quality,
+    round(100 * master[[percentile_measure]])
+  ) %>%
+    lapply(htmltools::HTML)
+   
+  
+  
+  master_tr <-
+    master %>%
+    mutate(
+      score_bin =
+        case_when(
+          !!(rlang::sym(percentile_measure)) < 0.1 ~ "0-10 (Low)",
+          !!(rlang::sym(percentile_measure)) < 0.2 ~ "10-20",
+          !!(rlang::sym(percentile_measure)) < 0.3 ~ "20-30",
+          !!(rlang::sym(percentile_measure)) < 0.4 ~ "30-40",
+          !!(rlang::sym(percentile_measure)) < 0.5 ~ "40-50",
+          !!(rlang::sym(percentile_measure)) < 0.6 ~ "50-60",
+          !!(rlang::sym(percentile_measure)) < 0.7 ~ "60-70",
+          !!(rlang::sym(percentile_measure)) < 0.8 ~ "70-80",
+          !!(rlang::sym(percentile_measure)) < 0.9 ~ "80-90",
+          !!(rlang::sym(percentile_measure)) <= 1 ~ "90-100 (High)"
+        )
+    ) %>%
+    mutate(score_bin = factor(score_bin,
+                              levels = c(
+                                "90-100 (High)",
+                                "80-90",
+                                "70-80",
+                                "60-70",
+                                "50-60",
+                                "40-50",
+                                "30-40",
+                                "20-30",
+                                "10-20",
+                                "0-10 (Low)"
+                              )
+    ))
+  
+  color_data <- master_tr$score_bin
+  
+  my_pal <-
+    colorFactor("plasma",
+                color_data,
+                reverse = FALSE
+    )
+  
+  leaflet(options = leafletOptions(
+    minZoom = 10, maxZoom = 15,
+    zoomControl = T,
+    attributionControl = FALSE
+  )) %>%
+    addProviderTiles("CartoDB.Positron") %>%
+    setView(
+      lat =
+        41.840675,
+      lng =
+        -87.679365,
+      zoom = 11
+    ) %>%
+    setMaxBounds(
+      lat1 = chi_bbox[["ymin"]] - .1,
+      lat2 = chi_bbox[["ymax"]] + .1,
+      lng1 = chi_bbox[["xmin"]] - .1,
+      lng2 = chi_bbox[["xmax"]] + .1
+    ) %>%
+    addPolygons(
+      data = master,
+      layerId = ~hexid,
+      label = ~tooltips,
+      stroke = TRUE,
+      weight = 1,
+      color = my_pal(color_data),
+      fillOpacity = 0.7,
+      fillColor = my_pal(color_data)
+    ) %>%
+    addLegend(
+      position = "topright",
+      pal = my_pal,
+      group = "score_tiles",
+      values = unique(color_data),
+      title = "Rank percentile"
+    )
+}
+
 summarize_poly <-
   function(intersection) {
     # intersection <-

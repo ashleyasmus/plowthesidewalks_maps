@@ -5,145 +5,546 @@ server <- function(input, output, session) {
     scrollytell()
   })
 
-  # Static plots ------
-  output$hist_ex <- renderPlot({
-    info <- getCurrentOutputInfo()
-    if (info$width() > 600) {
-      pctile_maps[["histogram"]]
+  # Individual maps ------
+  ## ... captions -----
+  output$ambmap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for the share of population 
+      with an ambulatory disability. Neighborhoods on the South and West Sides rank highest for this measure: the hexagons covering Englewood, 
+      for example, rank in the 96th to 99th percentile.
+      Most of the central north side ranks below the 10th percentile."
+      
+    map_width <- session$clientData[["output_ambmap_width"]]
+    if (map_width < 300) {
+      HTML(
+      paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           Ambulatory disabilities
+           <span class = 'visually-hidden'>
+           ...",
+           caption,
+           "</span>
+           </p>"))
     } else {
-      pctile_maps[["histogram"]]
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+      caption,
+      "</p>"))
+    }
+  })
+  
+  output$vismap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for the share of population with a vision disability.
+      The map is similar to that of the one for people with ambulatory
+      disabilities, with the inclusion of more of the Austin neighborhood 
+      on the west side ranking highly for this measure."
+    
+    map_width <- session$clientData[["output_vismap_width"]]
+    if (map_width < 300) {
+      HTML(
+        paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           Vision disabilities
+           <span class = 'visually-hidden'>
+           ...",
+               caption,
+               "</span>
+           </p>"))
+    } else {
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+               caption,
+               "</p>"))
+    }
+  })
+  
+  
+  output$oldmap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for the share of population that is over 65 years old.
+      In addition to areas that rank highly for people with disabilities (the south and west sides), 
+      disabilities, with the South and West sides both ranking highly. 
+      However, there are some notable differences: the northwest side 
+      (Norridge, Norwood Park, Dunning) 
+      and a handful of areas on the lake shore (Edgewater, Near North, Hyde Park)
+      all have relatively older populations."
+    
+    map_width <- session$clientData[["output_oldmap_width"]]
+    if (map_width < 300) {
+      HTML(
+        paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           65 and older
+           <span class = 'visually-hidden'>
+           ...",
+               caption,
+               "</span>
+           </p>"))
+    } else {
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+               caption,
+               "</p>"))
+    }
+  })
+  
+  output$kidmap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for the share of population that is under 5 years old.
+      Areas that rank highly for the proportion of the population under 5 are scattered across the city , with
+      much less spatial clustering than for our other prioritized demographic groups. 
+      The areas that score the lowest are around the Loop and Near North, as well as
+      on the south side near Calumet Heights and South Deering."
+    
+    map_width <- session$clientData[["output_kidmap_width"]]
+    if (map_width < 300) {
+      HTML(
+        paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           Kids under 5
+           <span class = 'visually-hidden'>
+           ...",
+               caption,
+               "</span>
+           </p>"))
+    } else {
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+               caption,
+               "</p>"))
+    }
+  })
+  
+  
+  output$denmap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for its population density.
+      Areas on the north side, from Albany Park east to Edgewater
+      and south to the Loop, rank highest for this measure."
+    
+    map_width <- session$clientData[["output_denmap_width"]]
+    if (map_width < 300) {
+      HTML(
+        paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           Population density
+           <span class = 'visually-hidden'>
+           ...",
+               caption,
+               "</span>
+           </p>"))
+    } else {
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+               caption,
+               "</p>"))
+    }
+  })
+  
+  output$incmap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for the share of households that make less than $50,000 per year.
+      The most affluent neighborhoods in Chicago are on the North Side,
+      from North Center to the Loop, ending around the Near North Side."
+    
+    map_width <- session$clientData[["output_incmap_width"]]
+    if (map_width < 300) {
+      HTML(
+        paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           Low-income households
+           <span class = 'visually-hidden'>
+           ...",
+               caption,
+               "</span>
+           </p>"))
+    } else {
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+               caption,
+               "</p>"))
+    }
+  })
+  
+  output$zcamap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for the share of households that don't own a vehicle.
+      Areas that rank highly for this measure are concentrated along the
+      lake shore from Rogers Park to South Shore,
+      in south side neighborhoods including Englewood,
+      and from east to west in a narrow band along the Eisenhower Expressway (I-90)."
+    
+    map_width <- session$clientData[["output_zcamap_width"]]
+    if (map_width < 300) {
+      HTML(
+        paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           Zero-car households
+           <span class = 'visually-hidden'>
+           ...",
+               caption,
+               "</span>
+           </p>"))
+    } else {
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+               caption,
+               "</p>"))
+    }
+  })
+  
+  
+  output$snomap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for its total number of 311 reports of
+      snowy/icy sidewalks. The map is nearly identical to the map of population density,
+      and corresponds with relative affluence."
+    
+    map_width <- session$clientData[["output_snomap_width"]]
+    if (map_width < 300) {
+      HTML(
+        paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           Snow/ice complaints
+           <span class = 'visually-hidden'>
+           ...",
+               caption,
+               "</span>
+           </p>"))
+    } else {
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+               caption,
+               "</p>"))
+    }
+  })
+  
+  output$ctamap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for its total number of transit boardings and alightings (what we are calling 'transit activity'). 
+      The map shows a patchy distribution of high-ranking half-square-mile areas,
+      mostly corresponding with L stations and areas downtown."
+    
+    map_width <- session$clientData[["output_ctamap_width"]]
+    if (map_width < 300) {
+      HTML(
+        paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           Transit activity
+           <span class = 'visually-hidden'>
+           ...",
+               caption,
+               "</span>
+           </p>"))
+    } else {
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+               caption,
+               "</p>"))
+    }
+  })
+  
+  output$vacmap_caption <- renderUI({
+    
+    caption <- "In this map, Chicago is divided into half-square-mile
+      hexagons. Each hexagon is colored by its percentile
+      ranking, from 0 to 100, for its total number of 311 reports of
+      vacant buildings. The map is an inverse of the population density map, 
+      and corresponds to areas with lower household incomes and greater shares of
+      people with disabilities. Areas on the Southside rank highest for this measure."
+    
+    map_width <- session$clientData[["output_vacmap_width"]]
+    if (map_width < 300) {
+      HTML(
+        paste0("<p align = 'right' style = 'font-size:0.8rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>
+           Vacant buildings
+           <span class = 'visually-hidden'>
+           ...",
+               caption,
+               "</span>
+           </p>"))
+    } else {
+      HTML(
+        paste0("<p align = 'center' style = 'font-size:1rem; font-family: 'Montserrat', sans-serif; color:#000000; margin-top:0; margin-bottom:0;'>",
+               caption,
+               "</p>"))
+    }
+  })
+  
+  ##... titles ----
+  dynamic_title <- function(var = "amb", 
+                            icon = 'wheelchair-move', 
+                            title  = "People with ambulatory disabilities"){
+    
+    map_id <- paste0("output_", var, "map_width")
+    map_width <- session$clientData[[map_id]]
+    if (map_width < 300) {
+      fontawesome::fa(
+        icon,
+        fill = '#000000',
+        height = '1.5rem'
+      )
+    } else {
+      HTML(glue::glue(
+        paste0("<p style = 
+              'font-size:1.5rem;
+              color: #000000;
+              margin-bottom:0px;margin-top:0px'>{fontawesome::fa('",
+              icon,
+              "', fill = '#000000',
+              height = '2rem'
+            )}<br>",
+            title,
+            "</p>"),
+      ))
+    }
+  }
+    
+  
+  output$ambmap_title <- renderUI({
+    dynamic_title(var = "amb",
+                  icon = "wheelchair-move",
+                  title = "People with ambulatory disabilities")
+  })
+  
+  output$vismap_title <- renderUI({
+    dynamic_title(var = "vis",
+                  icon = "person-walking-with-cane",
+                  title = "People with vision disabilities")
+  })
+  
+  output$oldmap_title <- renderUI({
+    dynamic_title(var = "old",
+                  icon = "user-plus",
+                  title = "People 65 and older")
+  })
+  
+  output$kidmap_title <- renderUI({
+    dynamic_title(var = "kid",
+                  icon = "baby-carriage",
+                  title = "Kids under 5")
+  })
+  
+  output$zcamap_title <- renderUI({
+    dynamic_title(var = "zca",
+                  icon = "car-tunnel",
+                  title = "Households without cars")
+  })
+  
+  output$incmap_title <- renderUI({
+    dynamic_title(var = "inc",
+                  icon = "circle-dollar-to-slot",
+                  title = "Low-income households")
+  })
+  
+  output$ctamap_title <- renderUI({
+    dynamic_title(var = "cta",
+                  icon = "bus",
+                  title = "Transit activity")
+  })
+  
+  output$denmap_title <- renderUI({
+    dynamic_title(var = "den",
+                  icon = "city",
+                  title = "Population density")
+  })
+  
+  output$snomap_title <- renderUI({
+    dynamic_title(var = "sno",
+                  icon = "snowplow",
+                  title = "Snow/ice reports")
+  })
+  
+  output$vacmap_title <- renderUI({
+    dynamic_title(var = "vac",
+                  icon = "building-circle-exclamation",
+                  title = "Vacant buildings")
+  })
+  
+  # ... maps ----
+  output$ambmap <- 
+    renderLeaflet({
+    info <- getCurrentOutputInfo()
+    if (info$width() < 300) {
+      mini_map(percentile_measure = "amb_pctile")
+    } else {
+      fullscreen_map(absolute_measure = "amb_n_ppl",
+                     round_absolute = -2,
+                     relative_measure = "amb_pct_ppl", 
+                     round_relative = 0,
+                     percentile_measure = "amb_pctile",
+                     measure_units = "people",
+                     measure_quality = "have an ambulatory disability",
+                     relative_units = "% of people")
+    }
+  })
+    
+
+    
+  
+  output$vismap <- renderLeaflet({
+    info <- getCurrentOutputInfo()
+      if (info$width() < 300) {
+        mini_map(percentile_measure = "vis_pctile")
+      } else {
+        fullscreen_map(absolute_measure = "vis_n_ppl",
+                       round_absolute = -2,
+                       relative_measure = "vis_pct_ppl", 
+                       round_relative = 0,
+                       percentile_measure = "old_pctile",
+                       measure_units = "people",
+                       measure_quality = "have an vision disability",
+                       relative_units = "% of people")
+      }
+  })
+
+    
+  output$oldmap <- renderLeaflet({
+    info <- getCurrentOutputInfo()
+    if (info$width() < 300) {
+      mini_map(percentile_measure = "old_pctile")
+    } else {
+      fullscreen_map(absolute_measure = "old_n_ppl",
+                     round_absolute = -3,
+                     relative_measure = "old_pct_ppl", 
+                     round_relative = 0,
+                     percentile_measure = "old_pctile",
+                     measure_units = "people",
+                     measure_quality = "are 65 or older",
+                     relative_units = "% of people")
     }
   })
 
-  output$ambmap <- renderPlot(
-    {
-      pctile_maps[["amb_pctile"]]
-    },
-    alt = "Ambulatory disabilities map ...
-                                           This is a map of Chicago divided into half-square-mile
-                                           hexagons. Each hexagon is colored by its percentile
-                                           ranking, from 0 to 100, for the share of population with an ambulatory disability.
-                                           Some of the neighborhoods that have a high share of people with an ambulatory
-                                           disability include the South and West Sides. The hexagons
-                                           covering Englewood, for example, rank in the 96th to 99th percentile.
-                                           Most of the central north side ranks below the 10th percentile."
-  )
+  
+  output$kidmap <- renderLeaflet({
+    info <- getCurrentOutputInfo()
+    if (info$width() < 300) {
+      mini_map(percentile_measure = "kid_pctile")
+    } else {
+      fullscreen_map(absolute_measure = "kid_n_ppl",
+                     round_absolute = -3,
+                     relative_measure = "kid_pct_ppl", 
+                     round_relative = 0,
+                     percentile_measure = "kid_pctile",
+                     measure_units = "people",
+                     measure_quality = "are under 5",
+                     relative_units = "% of people")
+    }
+  })
+  
+  
 
+  output$zcamap <- renderLeaflet({
+    info <- getCurrentOutputInfo()
+    if (info$width() < 300) {
+      mini_map(percentile_measure = "zca_pctile")
+    } else {
+      fullscreen_map(absolute_measure = "zca_n_hhs",
+                     round_absolute = -3,
+                     relative_measure = "zca_pct_hhs", 
+                     round_relative = 0,
+                     percentile_measure = "zca_pctile",
+                     measure_units = "households",
+                     measure_quality = "lack a private vehicle",
+                     relative_units = "% of households")
+    }
+  })
+  
 
-  output$vismap <- renderPlot(
-    {
-      info <- getCurrentOutputInfo()
-      pctile_maps[["vis_pctile"]]
-    },
-    alt = "Vision disabilities map ...This is a map of Chicago divided into half-square-mile
-                                           hexagons. Each hexagon is colored by its percentile
-                                           ranking, from 0 to 100, for the share of population with a vision disability.
-                                           The map is similar to that of the one for people with ambulatory
-                                           disabilities, with the inclusion of more of the Austin neighborhood
-                                           on the westside ranking highly for this measure."
-  )
+  output$incmap <- renderLeaflet({
+    info <- getCurrentOutputInfo()
+    if (info$width() < 300) {
+      mini_map(percentile_measure = "inc_pctile")
+    } else {
+      fullscreen_map(absolute_measure = "inc_n_hhs",
+                     round_absolute = -3,
+                     relative_measure = "inc_pct_hhs", 
+                     round_relative = 0,
+                     percentile_measure = "inc_pctile",
+                     measure_units = "households",
+                     measure_quality = "make less than $50K per year",
+                     relative_units = "% of households")
+    }
+  })
 
+  output$ctamap <- renderLeaflet({
+    info <- getCurrentOutputInfo()
+    if (info$width() < 300) {
+      mini_map(percentile_measure = "n_cta_pctile")
+    } else {
+      fullscreen_map(absolute_measure = "n_cta",
+                     round_absolute = -3,
+                     relative_measure = "n_cta_permi2", 
+                     round_relative = -3,
+                     relative_transform = 1,
+                     percentile_measure = "n_cta_pctile",
+                     measure_units = "transit boardings\nand alightings",
+                     measure_quality = "occur on a typical weekday",
+                     relative_units = "boardings and alightings per square mile")
+    }
+  })
 
-  output$oldmap <- renderPlot(
-    {
-      pctile_maps[["old_pctile"]]
-    },
-    alt = "Over-65 population map ....
-                                           Map of Chicago divided into half-square-mile
-                                           hexagons. Each hexagon is colored by its percentile
-                                           ranking, from 0 to 100, for the share of population that is over 65 years old.
-                                           The map is similar to that of the ones for people with
-                                           disabilities but with some notable differences: the northwest side (Norridge, Harwood Heights, Norwood Park, Dunning)
-                                           all rank highly for this measure, as well do a handful of half-square on the lake shore (Edgewater, Near North, Hyde Park)."
-  )
-
-
-  output$kidmap <- renderPlot(
-    {
-      pctile_maps[["kid_pctile"]]
-    },
-    alt = "Under-5 population map ...
-                                      `    This is a map of Chicago divided into half-square-mile
-                                           hexagons. Each hexagon is colored by its percentile
-                                           ranking, from 0 to 100, for the share of population that is under 5 years old.
-                                           Areas that rank highly for the proportion of the population under 5 are scattered across the city , with
-                                           much less spatial clustering than for the previous groups. The areas that score the lowest are around the Loop and Near North, as well as
-                                           on the south side near Calumet Heights and South Deering."
-  )
-
-
-  output$zcamap <- renderPlot(
-    {
-      pctile_maps[["zca_pctile"]]
-    },
-    alt = "Zero-car households population map ...
-                                      `    This is a map of Chicago divided into half-square-mile
-                                           hexagons. Each hexagon is colored by its percentile
-                                           ranking, from 0 to 100, for the share of households that don't own a vehicle.
-                                           Areas that rank highly for this measure are concentrated along the
-                                           lake shore from Rogers Park to South Shore,
-                                           in south side neighborhoods including Englewood,
-                                           and from east to west in a narrow band along the Eisenhower Expressway (I-90)."
-  )
-
-  output$incmap <- renderPlot(
-    {
-      pctile_maps[["inc_pctile"]]
-    },
-    alt = "Low-income households population map ...
-                                      `    This is a map of Chicago divided into half-square-mile
-                                           hexagons. Each hexagon is colored by its percentile
-                                           ranking, from 0 to 100, for the share of households that make less than $50,000 per year.
-                                           The most affluent neighborhoods in Chicago are on the North Side,
-                                           from North Center to the Loop and Near North Side."
-  )
-
-  output$ctamap <- renderPlot(
-    {
-      pctile_maps[["n_cta_pctile"]]
-    },
-    alt = "Density map ...
-                                      `    This is a map of Chicago divided into half-square-mile
-                                           hexagons. Each hexagon is colored by its percentile
-                                           ranking, from 0 to 100, for its population density.
-                                           The north side, from Albany Park east to Edgewater
-                                            and south to the Loop, rank highest for this measure."
-  )
-
-  output$denmap <- renderPlot({
-    pctile_maps[["n_ppl_pctile"]]
+  output$denmap <- renderLeaflet({
+    info <- getCurrentOutputInfo()
+    if (info$width() < 300) {
+      mini_map(percentile_measure = "n_ppl_pctile")
+    } else {
+      fullscreen_map(absolute_measure = "n_ppl",
+                     round_absolute = -3,
+                     relative_measure = "n_ppl_permi2", 
+                     round_relative = -3,
+                     relative_transform = 1,
+                     percentile_measure = "n_ppl_pctile",
+                     measure_units = "people",
+                     measure_quality = "are residents",
+                     relative_units = "people per square mile")
+    }
   })
 
 
-  output$snomap <- renderPlot(
-    {
-      pctile_maps[["n_sno_pctile"]]
-    },
-    alt = "Snow/ice complaints map ...
-                                      `    This is a map of Chicago divided into half-square-mile
-                                           hexagons. Each hexagon is colored by its percentile
-                                           ranking, from 0 to 100, for its total number of 311 reports of
-                                           snowy/icy sidewalks. The map is nearly identical to the map of pouplation density."
-  )
+  output$snomap <- renderLeaflet({
+    info <- getCurrentOutputInfo()
+    if (info$width() < 300) {
+      mini_map(percentile_measure = "n_sno_pctile")
+    } else {
+      fullscreen_map(absolute_measure = "n_sno",
+                     round_absolute = 0,
+                     relative_measure = "n_sno_permi2", 
+                     round_relative = 0,
+                     relative_transform = 1,
+                     percentile_measure = "n_sno_pctile",
+                     measure_units = "snowy/icy sidewalk reports",
+                     measure_quality = "have been filed with 311 since 2018",
+                     relative_units = "reports per square mile")
+    }
+  })
 
-  output$vacmap <- renderPlot(
-    {
-      pctile_maps[["n_vac_pctile"]]
-    },
-    alt = "Vacant buildings complaints map ...
-                                      `    This is a map of Chicago divided into half-square-mile
-                                           hexagons. Each hexagon is colored by its percentile
-                                           ranking, from 0 to 100, for its total number of 311 reports of
-                                           vacant buildings. The map is an inverse of the population density map."
-  )
-
-
-
-
-
-
-
-
+  output$vacmap <- renderLeaflet({
+    info <- getCurrentOutputInfo()
+    if (info$width() < 300) {
+      mini_map(percentile_measure = "n_vac_pctile")
+    } else {
+      fullscreen_map(absolute_measure = "n_vac",
+                     round_absolute = 0,
+                     relative_measure = "n_vac_permi2", 
+                     round_relative = 0,
+                     relative_transform = 1,
+                     percentile_measure = "n_vac_pctile",
+                     measure_units = "vacant building reports",
+                     measure_quality = "have been filed with 311 since 2018",
+                     relative_units = "vacant buildings per square mile")
+    }
+  })
 
   # update weights ------
   weights <- reactiveVal(first_weights)

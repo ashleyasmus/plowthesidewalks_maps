@@ -8,6 +8,9 @@ ui <- bslib::page_fluid(
     tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css?family=Poppins"),
     tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "irs_style.css"),
+    tags$style(
+      ".leaflet-tooltip{ width: 200px; white-space: normal; }"
+    )
   ),
   
   
@@ -140,20 +143,20 @@ ui <- bslib::page_fluid(
       
       
       
-      ## Static maps -----
+      ## Small maps -----
       div(
         class = "row mt-3",
         HTML("<h3>
               Our priorities, mapped
               </h3>"),
-        p(
-          "South (Englewood) and West Chicago (Austin, Humboldt Park) tend to have the highest
-          shares of people with ambulatory and vision disabilities.
-          These areas overlap somewhat -- but not completely -- with
-          the Chicago neighborhoods whose population skews older,
-          which are located farther southside (e.g., Avalon Park)
-          and in communities northwest (e.g., Jefferson Park)."
-        )
+        
+        p("In the maps below, Chicago is divided into a grid of half-square mile hexagons. 
+        Each hexagon is colored by its percentile ranking from high (100) to low (zero), 
+        for the numerical measure we have chosen to reprent our priorities."),
+        
+        HTML("<em style = 'font-size:0.8rem;
+             margin-bottom:0.5rem'>Click on the lower corner of any map for an interactive version and descriptive caption.</em>")
+      
       ),
       layout_column_wrap(
         width = 1 / 5,
@@ -161,7 +164,7 @@ ui <- bslib::page_fluid(
         height_mobile = "225px",
         card(card_body_fill(
           img(
-            style = "object-fit: scale-down;",
+            style = "object-fit: scale-down;overflow:hidden;",
             src = "legend.png",
             alt = "Color legend for the maps in this section.
                                     Title: Percentile rank.
@@ -175,61 +178,72 @@ ui <- bslib::page_fluid(
           full_screen = T,
           card_header(
             align = "center",
-            fontawesome::fa(
-              "wheelchair-move",
-              title = "People with ambulatory disabilities",
-              fill = "#270075",
-              height = "1.5rem"
-            )
+            uiOutput("ambmap_title")
           ),
-          card_body_fill(plotOutput("ambmap"),
-                         class = "p-0")
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("ambmap")),
+          card_footer(
+                uiOutput("ambmap_caption",
+                         align = "center")
+          )
+                         
         ),
         card(
           full_screen = T,
           card_header(
             align = "center",
-            fontawesome::fa(
-              "person-walking-with-cane",
-              title = "People with vision disabilities",
-              fill = "#270075",
-              height = "1.5rem"
-            )
+            uiOutput("vismap_title")
           ),
-          card_body_fill(plotOutput("vismap"),
-                         class = "p-0")
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("vismap")),
+          
+          card_footer(
+            uiOutput("vismap_caption",
+                     align = "center")
+          )
         ),
         card(
           full_screen = T,
           card_header(
             align = "center",
-            fontawesome::fa(
-              "user-plus",
-              fill = "#270075",
-              title = "People 65 and older",
-              height = "1.5rem"
-            )
+            uiOutput("oldmap_title")
           ),
-          card_body_fill(plotOutput("oldmap"),
-                         class = "p-0")
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("oldmap")),
+          card_footer(
+            uiOutput("oldmap_caption",
+                     align = "center")
+          )
         ),
         card(
           full_screen = T,
           card_header(
             align = "center",
-            fontawesome::fa(
-              "baby-carriage",
-              fill = "#270075",
-              title = "Children 5 and younger",
-              height = "1.5rem"
-            )
+            uiOutput("kidmap_title")
           ),
-          card_body_fill(plotOutput("kidmap"),
-                         class = "p-0")
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("kidmap")),
+          card_footer(
+            uiOutput("kidmap_caption",
+                     align = "center")
+          )
         )
       ),
       div(
         class = "row",
+        p(
+          "South (Englewood) and West Chicago (Austin, Humboldt Park) tend to have the highest
+          shares of people with ambulatory and vision disabilities.
+          These areas overlap somewhat -- but not completely -- with
+          the Chicago neighborhoods whose population skews older,
+          which are located farther southside (e.g., Avalon Park)
+          and in communities northwest (e.g., Jefferson Park)."
+        ),
+        
         p(
           "Meanwhile, the areas that
                    rank highest for the share of population under 5
@@ -253,89 +267,89 @@ ui <- bslib::page_fluid(
           full_screen = T,
           card_header(
             align = "center",
-            fontawesome::fa(
-              "car-tunnel",
-              title = "Households without cars",
-              fill = "#270075",
-              height = "1.5rem"
-            )
+            uiOutput("zcamap_title")
           ),
-          card_body_fill(plotOutput("zcamap"),
-                         class = "p-0")
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("zcamap")),
+          card_footer(
+            uiOutput("zcamap_caption",
+                     align = "center")
+          )
         ),
         card(
           full_screen = T,
           card_header(
             align = "center",
-            fontawesome::fa(
-              "circle-dollar-to-slot",
-              title = "Households without low incomes",
-              fill = "#270075",
-              height = "1.5rem"
-            )
+            uiOutput("incmap_title")
           ),
-          card_body_fill(plotOutput("incmap"),
-                         class = "p-0")
-        ),
-        card(
-          full_screen = T,
-          height = "300px",
-          card_header(
-            align = "center",
-            fontawesome::fa(
-              "bus",
-              fill = "#270075",
-              title = "Transit activity: boardings and alightings per square mile",
-              height = "1.5rem"
-            )
-          ),
-          card_body_fill(plotOutput("ctamap"),
-                         class = "p-0")
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("incmap")),
+          card_footer(
+            uiOutput("incmap_caption",
+                     align = "center")
+          )
         ),
         card(
           full_screen = T,
           height = "300px",
           card_header(
             align = "center",
-            fontawesome::fa(
-              "snowplow",
-              fill = "#270075",
-              title = "311 reports of icy/snowy sidewalks",
-              height = "1.5rem"
-            )
+            uiOutput("ctamap_title")
           ),
-          card_body_fill(plotOutput("snomap"),
-                         class = "p-0")
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("ctamap")),
+          card_footer(
+            uiOutput("ctamap_caption",
+                     align = "center")
+          )
         ),
         card(
           full_screen = T,
           height = "300px",
           card_header(
             align = "center",
-            fontawesome::fa(
-              "city",
-              fill = "#270075",
-              title = "Population density: people per square mile",
-              height = "1.5rem"
-            )
+            uiOutput("snomap_title")
           ),
-          card_body_fill(plotOutput("denmap"),
-                         class = "p-0")
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("snomap")),
+          card_footer(
+            uiOutput("snomap_caption",
+                     align = "center")
+          )
         ),
         card(
           full_screen = T,
           height = "300px",
           card_header(
             align = "center",
-            fontawesome::fa(
-              "building-circle-exclamation",
-              title = "311 reports of vacant buildings per square  mile",
-              fill = "#270075",
-              height = "1.5rem"
-            )
+            uiOutput("denmap_title")
           ),
-          card_body_fill(plotOutput("vacmap"),
-                         class = "p-0")
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("denmap")),
+          card_footer(
+            uiOutput("denmap_caption",
+                     align = "center")
+          )
+        ),
+        card(
+          full_screen = T,
+          height = "300px",
+          card_header(
+            align = "center",
+            uiOutput("vacmap_title")
+          ),
+          card_body_fill(class = "p-0 mx-auto",
+                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         leafglOutput("vacmap")),
+          card_footer(
+            uiOutput("vacmap_caption",
+                     align = "center")
+          )
         )
       ),
       div(
@@ -510,7 +524,7 @@ ui <- bslib::page_fluid(
         ### Map (sticky element) -----
         scrolly_graph(
           width = "50%",
-          height = "90vh",
+          # height = "90vh",
           card(
             style = "padding: 0;
                     height = '90vh';
@@ -805,7 +819,7 @@ ui <- bslib::page_fluid(
               </p>"
             ),
             div(
-              class = "label-left",
+              class = "label-left pb-10",
               s_amb,
               s_vis,
               s_old,
@@ -817,9 +831,15 @@ ui <- bslib::page_fluid(
               s_sno,
               s_vac
             ),
-            br(),
-            br(),
-            br()
+            div(class = "row p-0 mx-auto mt-5",
+                align = "center",
+                icon("chevron-down", lib = "glyphicon",
+                     style = "font-size:5rem; color:#270075"),
+                icon("chevron-down", lib = "glyphicon",
+                     style = "font-size:7.5rem; color:#270075"),
+                icon("chevron-down", lib = "glyphicon",
+                     style = "font-size:10rem; color:#270075"))
+            
           )
         )
       ),
