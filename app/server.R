@@ -851,7 +851,7 @@ server <- function(input, output, session) {
   # base map -----
   output$mapBuild <- renderLeaflet({
     leaflet(options = leafletOptions(
-      minZoom = 10, maxZoom = 10,
+      minZoom = 10, maxZoom = 14,
       zoomControl = F,
       attributionControl = FALSE
     )) %>%
