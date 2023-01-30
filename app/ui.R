@@ -21,23 +21,25 @@ ui <- bslib::page_fluid(
     nav_item(
       class = "navbar-brand",
       HTML(
+        glue::glue(
         "<h2
       style =
-      'font-size: 1.5rem;
+      'margin-left = 0; 
+      font-size: 1.5rem;
       font-weight: 300;
       color: white;
-      background-color: #9b51e0;
       margin-top:0rem;
       margin-bottom:0rem;
       letter-spacing: 0.05rem;
       padding-left: 0.5rem;
       padding-right: 0.5rem;'>
-       #PLOW THE SIDEWALKS </h2>"
-      )
+      #PlowTheSidewalks
+        {fontawesome::fa('snowplow')}</h2>"
+      ))
     ),
     ## Footer ------
     footer = tags$div(
-      style = "font-size: 1.5rem;
+      style = "font-size: 1.2rem;
              display: block;
              text-align: right;
              padding: 1%;",
@@ -45,7 +47,7 @@ ui <- bslib::page_fluid(
       class = "pull-down-right",
       HTML(
         glue::glue(
-          "<h6
+          "<p
           margin-top:0rem;
           margin-bottom:0rem;'>
           This project is open-source. See our GitHub repository here
@@ -54,10 +56,10 @@ ui <- bslib::page_fluid(
           {fontawesome::fa('arrow-up-right-from-square',
           title = 'Go to link',
           fill = '#270075',
-          height = '1.5rem')}
+          height = '1rem')}
           </a><br>
           App last updated 2023-01-09
-          </h6>"
+          </p>"
         )
       ),
       ### Logos ----
@@ -87,23 +89,23 @@ ui <- bslib::page_fluid(
       div(
         class = "well",
         HTML(
-          "<h3 style = 'margin-top: 0rem;
-           margin-bottom: 0rem;'>Where should Chicago try municipal sidewalk plowing
-           <span style=
-          'text-decoration: underline;
-          text-decoration-thickness: 0.4rem;
-          text-decoration-color: #9b51e0;'>first</span>?</h3>"
-        ),
-        HTML(
-          "<h4
+          "<b
           style = 'font-size: 1rem;
           font-weight: 500;
           margin-top:0rem;
           margin-bottom:0rem;
           letter-spacing: 0.05rem;
           color: #270075;'>
-          An initiative of Better Streets Chicago and Access Living
-          </span></h4>"
+          Plow The Sidewalks | An initiative of Better Streets Chicago and Access Living
+          </span></b>"
+        ),
+        HTML(
+          "<h3 style = 'margin-top: 0rem;
+           margin-bottom: 0rem;'>Where should Chicago try municipal sidewalk plowing
+           <span style=
+          'text-decoration: underline;
+          text-decoration-thickness: 0.4rem;
+          text-decoration-color: #9b51e0;'>first</span>?</h3>"
         )
       ),
       div(
@@ -545,39 +547,45 @@ ui <- bslib::page_fluid(
           scrolly_section(
             id = "equal",
             HTML(
-              "<h3>
-              Here's what our weighted priorities look like on the map.
+              "<h3 style = 'margin-top: 10vh'>
+              Where our priorities overlap
               </h3>"
             ),
             HTML(
-              "<p>
+              "<p align = 'center'>
               The map on the right scores neighborhoods from
+              <br>
               <b style = '
               color: white;
               background-color: #0D0887;
               margin-top:0rem;
               margin-bottom:0rem;
               letter-spacing: 0.05rem;
-              padding-left: 0.5rem;
-              padding-right: 0.5rem;'>
+              padding-left: 1rem;
+              padding-right: 1rem;
+              padding-top:.1rem;
+              padding-bottom:.1rem;
+              background-image: 
+              linear-gradient(transparent, transparent),
+              linear-gradient(transparent, transparent),
+              linear-gradient(to right, 
+              #0D0887, #47039F, #7301A8, #9C179E, #BD3786,
+              #D8576B, #ED7953, #FA9E3B, #FDC926, #F0F921);'>
               high
-              </b>
-               to
-              <b style = '
-              color: black;
-              background-color: #F0F921;
-              margin-top:0rem;
-              margin-bottom:0rem;
-              letter-spacing: 0.05rem;
-              padding-left: 0.5rem;
-              padding-right: 0.5rem;'>
+              to 
+              <span style = '
+              color: black;'>
               low
+              </span>
               </b>
+              <br>
               based on how well they measure up for
               all of our priorities. On this map, all of our priorities
               are weighted equally.
               </p>"
             ),
+            
+           
             div(
               class = "mx-auto",
               align = "center",
