@@ -864,10 +864,10 @@ server <- function(input, output, session) {
         zoom = 10
       ) %>%
       setMaxBounds(
-        lat1 = chi_bbox[["ymin"]],
-        lat2 = chi_bbox[["ymax"]],
-        lng1 = chi_bbox[["xmin"]],
-        lng2 = chi_bbox[["xmax"]]
+        lat1 = chi_bbox[["ymin"]] - 0.5,
+        lat2 = chi_bbox[["ymax"]] + 0.5,
+        lng1 = chi_bbox[["xmin"]] + 0.5,
+        lng2 = chi_bbox[["xmax"]] - 0.5
       )
   })
 
@@ -1036,10 +1036,10 @@ server <- function(input, output, session) {
         zoom = 10
       ) %>%
       setMaxBounds(
-        lat1 = chi_bbox[["ymin"]],
-        lat2 = chi_bbox[["ymax"]],
-        lng1 = chi_bbox[["xmin"]],
-        lng2 = chi_bbox[["xmax"]]
+        lat1 = chi_bbox[["ymin"]] - 0.5,
+        lat2 = chi_bbox[["ymax"]] + 0.5,
+        lng1 = chi_bbox[["xmin"]] + 0.5,
+        lng2 = chi_bbox[["xmax"]] - 0.5
       ) %>%
       # draw rectangle tool ----
       leaflet.extras::addDrawToolbar(
@@ -1061,8 +1061,10 @@ server <- function(input, output, session) {
       addPolygons(
         data = map_data,
         label = ~tooltips,
-        stroke = FALSE,
+        stroke = TRUE,
+        weight = 1,
         fillOpacity = 0.7,
+        color = my_pal(color_data),
         fillColor = my_pal(color_data),
         group = "score_tiles",
         options = pathOptions(pane = "hex")
@@ -1168,8 +1170,10 @@ server <- function(input, output, session) {
       addPolygons(
         data = map_data,
         label = ~tooltips,
-        stroke = FALSE,
+        stroke = TRUE,
+        weight = 1,
         fillOpacity = 0.7,
+        color = my_pal(color_data),
         fillColor = my_pal(color_data),
         group = "score_tiles",
         options = pathOptions(pane = "hex")

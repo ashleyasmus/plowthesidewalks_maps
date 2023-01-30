@@ -8,9 +8,26 @@ ui <- bslib::page_fluid(
     tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css?family=Poppins"),
     tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "irs_style.css"),
-    tags$style(
-      ".leaflet-tooltip{ width: 200px; white-space: normal; }"
-    )
+    tags$style(".leaflet-tooltip{ width: 200px; white-space: normal; }"),
+    # from https://stackoverflow.com/questions/72143611/internal-link-between-tabs-to-specific-section-in-r-shiny-app
+    tags$head(tags$script(
+      HTML(
+        '
+                        var fakeClick = function(tabName, anchorName) {
+                          var dropdownList = document.getElementsByTagName("a");
+                          for (var i = 0; i < dropdownList.length; i++) {
+                            var link = dropdownList[i];
+                            if(link.getAttribute("data-value") == tabName) {
+                              link.click();
+                              document.getElementById(anchorName).scrollIntoView({
+                                behavior: "smooth"
+                                });
+                            };
+                          }
+                        };
+                               '
+      )
+    )),
   ),
   
   
@@ -18,13 +35,12 @@ ui <- bslib::page_fluid(
   navs_bar(
     bg = "#270075",
     ## Brand ----
-    nav_item(
-      class = "navbar-brand",
-      HTML(
-        glue::glue(
-        "<h2
+    nav_item(class = "navbar-brand",
+             HTML(
+               glue::glue(
+                 "<h2
       style =
-      'margin-left = 0; 
+      'margin-left = 0;
       font-size: 1.5rem;
       font-weight: 300;
       color: white;
@@ -35,8 +51,8 @@ ui <- bslib::page_fluid(
       padding-right: 0.5rem;'>
       #PlowTheSidewalks
         {fontawesome::fa('snowplow')}</h2>"
-      ))
-    ),
+               )
+             )),
     ## Footer ------
     footer = tags$div(
       style = "font-size: 1.2rem;
@@ -123,9 +139,22 @@ ui <- bslib::page_fluid(
         ),
         HTML(
           '<p><b>This page asks, "Where should we try sidewalk plowing first?"</b>
-            Using our interactive tool, you can help us translate our priorities
+            In the text below, we explain our reasoning behind a people-centered
+            and data-driven approach to answering this question. Using our<u style="color:#270075;">'
+        ),
+        
+        span("interactive tool", onclick = "fakeClick('Suggest a pilot zone')"),
+        
+        HTML(
+          glue::glue(
+            "<sup>{fontawesome::fa('arrow-up-right-from-square',
+          title = 'More info',
+          fill = '#270075',
+          height = '0.75rem')}</sup></u>
+          in the next tab, you can help us translate our priorities
             into a map of places where a test of sidewalk snow plowing would have greatest impact
-            for the people that need it most.</p>'
+            for the people that need it most.</p>"
+          )
         )
       ),
       
@@ -152,13 +181,28 @@ ui <- bslib::page_fluid(
               Our priorities, mapped
               </h3>"),
         
-        p("In the maps below, Chicago is divided into a grid of half-square mile hexagons. 
-        Each hexagon is colored by its percentile ranking from high (100) to low (zero), 
-        for the numerical measure we have chosen to reprent our priorities."),
+        HTML(
+          "<p>In the maps below, Chicago is divided into a grid of half-square mile hexagons.
+        Each hexagon is colored by its <u style='color:#270075;'>"
+        ),
         
-        HTML("<em style = 'font-size:0.8rem;
-             margin-bottom:0.5rem'>Click on the lower corner of any map for an interactive version and descriptive caption.</em>")
-      
+        span("percentile ranking", onclick = "fakeClick('Data sources & methods', 'data_standardization')"),
+        
+        HTML(
+          glue::glue(
+            "<sup>{fontawesome::fa('question-circle',
+          title = 'More info',
+          fill = '#270075',
+          height = '0.75rem')}</sup></u> from high (100) to low (zero),
+          for the numerical measure we have chosen to reprent our priorities.</p>"
+          )
+        ),
+        
+        HTML(
+          "<em style = 'font-size:0.8rem;
+             margin-bottom:0.5rem'>Click on the lower corner of any map for an interactive version and descriptive caption.</em>"
+        )
+        
       ),
       layout_column_wrap(
         width = 1 / 5,
@@ -178,61 +222,53 @@ ui <- bslib::page_fluid(
         )),
         card(
           full_screen = T,
-          card_header(
-            align = "center",
-            uiOutput("ambmap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("ambmap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("ambmap")),
-          card_footer(
-                uiOutput("ambmap_caption",
-                         align = "center")
-          )
-                         
+          card_footer(uiOutput("ambmap_caption",
+                               align = "center"))
+          
         ),
         card(
           full_screen = T,
-          card_header(
-            align = "center",
-            uiOutput("vismap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("vismap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("vismap")),
           
-          card_footer(
-            uiOutput("vismap_caption",
-                     align = "center")
-          )
+          card_footer(uiOutput("vismap_caption",
+                               align = "center"))
         ),
         card(
           full_screen = T,
-          card_header(
-            align = "center",
-            uiOutput("oldmap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("oldmap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("oldmap")),
-          card_footer(
-            uiOutput("oldmap_caption",
-                     align = "center")
-          )
+          card_footer(uiOutput("oldmap_caption",
+                               align = "center"))
         ),
         card(
           full_screen = T,
-          card_header(
-            align = "center",
-            uiOutput("kidmap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("kidmap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("kidmap")),
-          card_footer(
-            uiOutput("kidmap_caption",
-                     align = "center")
-          )
+          card_footer(uiOutput("kidmap_caption",
+                               align = "center"))
         )
       ),
       div(
@@ -267,91 +303,79 @@ ui <- bslib::page_fluid(
         height_mobile = "225px",
         card(
           full_screen = T,
-          card_header(
-            align = "center",
-            uiOutput("zcamap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("zcamap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("zcamap")),
-          card_footer(
-            uiOutput("zcamap_caption",
-                     align = "center")
-          )
+          card_footer(uiOutput("zcamap_caption",
+                               align = "center"))
         ),
         card(
           full_screen = T,
-          card_header(
-            align = "center",
-            uiOutput("incmap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("incmap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("incmap")),
-          card_footer(
-            uiOutput("incmap_caption",
-                     align = "center")
-          )
+          card_footer(uiOutput("incmap_caption",
+                               align = "center"))
         ),
         card(
           full_screen = T,
           height = "300px",
-          card_header(
-            align = "center",
-            uiOutput("ctamap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("ctamap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("ctamap")),
-          card_footer(
-            uiOutput("ctamap_caption",
-                     align = "center")
-          )
+          card_footer(uiOutput("ctamap_caption",
+                               align = "center"))
         ),
         card(
           full_screen = T,
           height = "300px",
-          card_header(
-            align = "center",
-            uiOutput("snomap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("snomap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("snomap")),
-          card_footer(
-            uiOutput("snomap_caption",
-                     align = "center")
-          )
+          card_footer(uiOutput("snomap_caption",
+                               align = "center"))
         ),
         card(
           full_screen = T,
           height = "300px",
-          card_header(
-            align = "center",
-            uiOutput("denmap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("denmap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("denmap")),
-          card_footer(
-            uiOutput("denmap_caption",
-                     align = "center")
-          )
+          card_footer(uiOutput("denmap_caption",
+                               align = "center"))
         ),
         card(
           full_screen = T,
           height = "300px",
-          card_header(
-            align = "center",
-            uiOutput("vacmap_title")
-          ),
+          card_header(align = "center",
+                      uiOutput("vacmap_title")),
           card_body_fill(class = "p-0 mx-auto",
-                         tags$style(HTML(".leaflet-container { background: #FFF; }")),
+                         tags$style(
+                           HTML(".leaflet-container { background: #FFF; }")
+                         ),
                          leafglOutput("vacmap")),
-          card_footer(
-            uiOutput("vacmap_caption",
-                     align = "center")
-          )
+          card_footer(uiOutput("vacmap_caption",
+                               align = "center"))
         )
       ),
       div(
@@ -521,12 +545,15 @@ ui <- bslib::page_fluid(
       
       
       ### Scrollytelling section ------
+      
       scrolly_container(
         "scr",
+        
         ### Map (sticky element) -----
         scrolly_graph(
           width = "50%",
           # height = "90vh",
+          
           card(
             style = "padding: 0;
                     height = '90vh';
@@ -534,10 +561,12 @@ ui <- bslib::page_fluid(
                     margin-top:5vh;
                     background-color: transparent;
                     border: 2px solid #270075;",
+            
             leafletOutput("mapBuild",
                           height = "90vh")
           )
         ),
+        
         
         ### Text (scrolling) -----
         scrolly_sections(
@@ -565,14 +594,14 @@ ui <- bslib::page_fluid(
               padding-right: 1rem;
               padding-top:.1rem;
               padding-bottom:.1rem;
-              background-image: 
+              background-image:
               linear-gradient(transparent, transparent),
               linear-gradient(transparent, transparent),
-              linear-gradient(to right, 
+              linear-gradient(to right,
               #0D0887, #47039F, #7301A8, #9C179E, #BD3786,
               #D8576B, #ED7953, #FA9E3B, #FDC926, #F0F921);'>
               high
-              to 
+              to
               <span style = '
               color: black;'>
               low
@@ -585,7 +614,7 @@ ui <- bslib::page_fluid(
               </p>"
             ),
             
-           
+            
             div(
               class = "mx-auto",
               align = "center",
@@ -650,15 +679,17 @@ ui <- bslib::page_fluid(
                 height = "2rem"
               )
             ),
-            HTML("<p align = 'center'>
+            HTML(
+              "<p align = 'center'>
                  When all of our priorities are equally important,
                  areas on the south and west sides rank highest.
-                 On the south side, Englewood and South Shore stand out. 
-                 On the west side, Austin, Garfield Park, and North Lawndale 
+                 On the south side, Englewood and South Shore stand out.
+                 On the west side, Austin, Garfield Park, and North Lawndale
                  rank highest.
                  Meanwhile, much of the north side ranks low,
                  between the 25th and 50th percentile.
-                 </p>")
+                 </p>"
+            )
           ),
           
           # ...2: disabilities ------
@@ -748,8 +779,8 @@ ui <- bslib::page_fluid(
               "<p align = 'center'>
               Though similar to the map where all priorities are weighted equally,
               there are some notable differences: the north side ranks significantly lower (
-              in the 10th percentile or less), and high-ranking areas on the South Side are 
-              clustered around Englewood rather than neighborhoods farther west (e.g., Chicago Lawn, 
+              in the 10th percentile or less), and high-ranking areas on the South Side are
+              clustered around Englewood rather than neighborhoods farther west (e.g., Chicago Lawn,
               West Englewood).
               </p>"
             )
@@ -831,7 +862,10 @@ ui <- bslib::page_fluid(
               )
             ),
             br(),
-            br()
+            br(),
+            HTML("<p align = 'center'>
+
+            </p>")
           ),
           
           # ...4: try it ---------
@@ -857,22 +891,24 @@ ui <- bslib::page_fluid(
               s_sno,
               s_vac
             ),
-            div(class = "row p-0 mx-auto mt-5",
-                align = "center",
-                icon("chevron-down", lib = "glyphicon",
-                     style = "font-size:2rem; color:#abb8c3"),
-                p("Scroll down to keep reading"),
-                br(),
-                br(),
-                br(),
-                br(),
-                br(),
-                br(),
-                br(),
-                br(),
-                br(),
-                br()
-          ))
+            div(
+              class = "row p-0 mx-auto mt-5",
+              align = "center",
+              icon("chevron-down", lib = "glyphicon",
+                   style = "font-size:2rem; color:#abb8c3"),
+              p("Scroll down to keep reading"),
+              br(),
+              br(),
+              br(),
+              br(),
+              br(),
+              br(),
+              br(),
+              br(),
+              br(),
+              br()
+            )
+          )
         )
       ),
       
@@ -887,9 +923,11 @@ ui <- bslib::page_fluid(
           how these zones are drawn.</p>"
         ),
         
-        p("Our first requirement is about size: we want the pilot zones to 
-        be large enough to test the scalability of sidewalk plowing, but small enough that we can 
-        create four zones, benefiting four distinct communities, within our $750,000 budget:"),
+        p(
+          "Our first requirement is about size: we want the pilot zones to
+        be large enough to test the scalability of sidewalk plowing, but small enough that we can
+        create four zones, benefiting four distinct communities, within our $750,000 budget:"
+        ),
         
         # ...all zones: ----
         div(class = "row",
@@ -907,7 +945,7 @@ ui <- bslib::page_fluid(
                 ),
                 HTML(
                   glue::glue(
-                    "<p style = 'font-size:1.2rem;'>
+                    "<p align = 'center' style = 'font-size:1.2rem;'>
                      {fontawesome::fa('chart-area',
                             fill = '#270075',
                             height = '1.6rem')}
@@ -918,8 +956,9 @@ ui <- bslib::page_fluid(
             )),
         HTML(
           "<p>
-          These additional cutoffs are set at the <b>75th percentile</b> for each measure, compared across
-          all Chicago census tracts.
+          Our remaining requirements will hold the city accountable to drawing pilot zones
+          in such a way that the people and communities who stand to benefit most from
+          municipal sidwealk clearing will test the
           In other words, if our pilot zones were ranked against all Chicago census tracts,
           it would rank in the <b>top 25 percent.</b></p>"
         ),
@@ -988,6 +1027,26 @@ ui <- bslib::page_fluid(
               )
             )
           )
+        ),
+        
+        div(
+          class = "row mt-5",
+          h3("Try it yourself"),
+          HTML("<p>
+              Check out the <u style='color:#270075;'>"),
+          
+          span("next page", onclick = "fakeClick('Suggest a pilot zone')"),
+          
+          HTML(
+            glue::glue(
+              "<sup>{fontawesome::fa('arrow-up-right-from-square',
+          title = 'More info',
+          fill = '#270075',
+          height = '0.75rem')}</sup></u>
+          to explore the map in more detail, develop your own importance scheme for the priorities
+              we've laid out here, and suggest your own pilot zone.</p>"
+            )
+          )
         )
       )
     ),
@@ -1004,6 +1063,7 @@ ui <- bslib::page_fluid(
         
         navs_tab_card(
           id = "toolnav",
+          
           
           #...weights ----
           nav(
@@ -1022,55 +1082,55 @@ ui <- bslib::page_fluid(
             ),
             
             HTML("<p><b>Use our pre-set weights: </b></p>"),
-            layout_column_wrap(width = 1 / 2,
-                               card(
-                                 card_body_fill(
-                                   style = "margin-left: 0px; margin-right: 0px; padding: 5px",
-                                   tags$button(
-                                     type = "button",
-                                     id = "disability_button",
-                                     HTML(
-                                       fontawesome::fa(
-                                         "wheelchair-move",
-                                         height = "2rem",
-                                         title = "People with ambulatory disabilities",
-                                         fill = "#FFF"
-                                       ),
-                                       "Disability mix"
-                                     ),
-                                     style = "color:#FFF;
+            div(
+              class = "row mt-0 p-0",
+              column(
+                6,
+                style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                tags$button(
+                  type = "button",
+                  id = "disability_button",
+                  HTML(
+                    fontawesome::fa(
+                      "wheelchair-move",
+                      height = "2rem",
+                      title = "People with ambulatory disabilities",
+                      fill = "#FFF"
+                    ),
+                    "Disability mix"
+                  ),
+                  style = "color:#FFF;
                           width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #9b51e0",
-                                     class = "btn action-button shiny-bound-input"
-                                   )
-                                 )
-                               ),
-                               card(
-                                 card_body_fill(
-                                   style = "margin-left: 0px; margin-right: 0px; padding: 5px",
-                                   tags$button(
-                                     type = "button",
-                                     id = "density_button",
-                                     HTML(
-                                       fontawesome::fa(
-                                         "city",
-                                         title = "Population density",
-                                         height = "2rem",
-                                         fill = "#FFF"
-                                       ),
-                                       "Density mix"
-                                     ),
-                                     style = "color:#FFF;
+                  class = "btn action-button shiny-bound-input"
+                )
+              ),
+              column(
+                6,
+                style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                tags$button(
+                  type = "button",
+                  id = "density_button",
+                  HTML(
+                    fontawesome::fa(
+                      "city",
+                      title = "Population density",
+                      height = "2rem",
+                      fill = "#FFF"
+                    ),
+                    "Density mix"
+                  ),
+                  style = "color:#FFF;
                          width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
                          background-color: #9b51e0",
-                                     class = "btn action-button shiny-bound-input"
-                                   )
-                                 )
-                               )),
+                  class = "btn action-button shiny-bound-input"
+                )
+              )
+            ),
             HTML("<p><b>Or create a custom set of weights:</b></p>"),
             div(
               class = "label-left",
@@ -1289,7 +1349,7 @@ ui <- bslib::page_fluid(
               Data sources and methods
               </h3>"),
         HTML(
-          "<p><b>Data sources.</b>
+          "<p id = 'data_sources'><b>Data sources.</b>
           We relied on a mix of publicly-available data for this project.
           The <a href = 'https://www.census.gov/data/developers/data-sets/acs-5year.html'>
           Census' American Community Survey (ACS)</a>,
@@ -1312,21 +1372,26 @@ ui <- bslib::page_fluid(
           </a> filtering to sidewalk snow and ice reports and vacant building reports, December 2018 to present.
           </p>"
         ),
+        
         HTML(
-          "<p>
+          "<p id = 'data_standardization'>
           <b>Data standardization.</b>
           To enable easier comparison across variables
           with very different scales, we have
           we have <b>standardized</b> all our measures to
-          <b>rank-percentiles</b> that range from 0 to 100. A neighborhood
+          <b><span id = 'standardization'>rank-percentiles</span></b> that range from 0 to 100. A neighborhood
           that ranks in the
           99th percentile for the share of people older than 65,
           for example, corresponds to a half-mile square area that
           ranks higher than 99% of the other half-mile square areas in Chicago
-          for that measure.</p>"
+          for that measure. We also standardized the
+          <b>weighted scores</b> that aggregate multiple measures into a single value;
+          a weighted score of 95 corresponds to an area of Chicago that performed better than 95%
+          of the other areas in Chicago for the measures selected, and
+          according to the importance values chosen for each measure.</p>"
         ),
         HTML(
-          "<p>
+          "<p id = 'map_boundaries'>
           <b>Map boundaries.</b>
             To help identify pilot zone areas
               that cross political, census, or other
@@ -1354,13 +1419,10 @@ ui <- bslib::page_fluid(
           height = '1.2rem')}
           </a></p>"
           )
-        )
-      ),
-      
-      ## Weighting -----
-      div(
-        class = "row",
-        HTML("<h3>About weighted scores</h3>"),
+        ),
+        
+        ## Weighting -----
+        HTML("<h3 id = 'weighting'>About weighted scores</h3>"),
         HTML(
           "<p><b>
               Weighting</b>
@@ -1379,7 +1441,7 @@ ui <- bslib::page_fluid(
              then rank our half-square-mile areas according to their overall weighted scores for these
              measures."
         )
-      ),
+      )
     )
     
     
