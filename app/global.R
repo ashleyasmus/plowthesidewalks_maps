@@ -108,38 +108,47 @@ vars <- list(
 
 
 # initialize weights as equal to start -----
-first_weights <- list(
-  # Demographics:
-  "vis_w" =  1 / length(vars),
-  "amb_w" =  1 / length(vars),
-  "old_w" =  1 / length(vars),
-  "kid_w" =  1 / length(vars),
-  "zca_w" =  1 / length(vars),
-  "inc_w" =  1 / length(vars),
-  "cta_w" =  1 / length(vars),
-  "den_w" =  1 / length(vars),
-  "sno_w" =  1 / length(vars),
-  "vac_w" =  1 / length(vars)
+equal_weights <- list(
+  "vis_w" =  1/length(vars),
+  "amb_w" =  1/length(vars),
+  "old_w" =  1/length(vars),
+  "kid_w" =  1/length(vars),
+  "zca_w" =  1/length(vars),
+  "inc_w" =  1/length(vars),
+  "cta_w" =  1/length(vars),
+  "den_w" =  1/length(vars),
+  "sno_w" =  1/length(vars),
+  "vac_w" =  1/length(vars)
+)
+
+zero_weights <- list(
+  "vis_w" =  0,
+  "amb_w" =  0,
+  "old_w" =  0,
+  "kid_w" =  0,
+  "zca_w" =  0,
+  "inc_w" =  0,
+  "cta_w" =  0,
+  "den_w" =  0,
+  "sno_w" =  0,
+  "vac_w" =  0
 )
 
 # Create sliders -----------
-sliders <- unlist(lapply(vars, function(x) {
-  paste0("s_", x)
-}))
-
-
 create_slider <-
   function(slider_id, icon_name, icon_title = NULL) {
     sliderInput(
       slider_id,
-      label = fontawesome::fa(icon_name,
-        fill = "#270075",
-        height = "2rem",
-        title = icon_title
-      ),
+      label = 
+        HTML(
+          glue::glue(
+            "<p>{fontawesome::fa(icon_name,
+        fill = '#270075',
+        width = '1.5rem',
+        title = icon_title)}</p>")),
       min = 0,
       max = 100,
-      value = 100,
+      value = 0,
       step = 1,
       width = "100%",
       ticks = FALSE,
@@ -248,19 +257,16 @@ s_vac2 <- create_slider(
 
 
 # Create filters -----------
-sliders <- unlist(lapply(vars, function(x) {
-  paste0("s_", x)
-}))
-
-
 create_filter <-
   function(filter_id, icon_name, icon_title = NULL) {
     sliderInput(
       filter_id,
-      label = fontawesome::fa(icon_name,
-        fill = "#270075",
-        height = "2rem"
-      ),
+      HTML(
+        glue::glue(
+          "<p>{fontawesome::fa(icon_name,
+        fill = '#270075',
+        width = '1.5rem',
+        title = icon_title)}</p>")),
       min = 0,
       max = 100,
       value = c(0, 100),
@@ -366,7 +372,8 @@ update_scores <-
     scores
   }
 
-first_scores <- update_scores(first_weights, master)
+equal_scores <- update_scores(equal_weights, master)
+zero_scores <- update_scores(zero_weights, master)
 
 # Table of priorities -----
 priorities_df <-
