@@ -860,26 +860,36 @@ ui <- bslib::page_fluid(
             div(class = "row p-0 mx-auto mt-5",
                 align = "center",
                 icon("chevron-down", lib = "glyphicon",
-                     style = "font-size:5rem; color:#270075"),
-                icon("chevron-down", lib = "glyphicon",
-                     style = "font-size:7.5rem; color:#270075"),
-                icon("chevron-down", lib = "glyphicon",
-                     style = "font-size:10rem; color:#270075"))
-            
-          )
+                     style = "font-size:2rem; color:#abb8c3"),
+                p("Scroll down to keep reading"),
+                br(),
+                br(),
+                br(),
+                br(),
+                br(),
+                br(),
+                br(),
+                br(),
+                br(),
+                br()
+          ))
         )
       ),
       
       # Zone rules  -----
       div(
         class = "row",
-        HTML("<h3>From exploring neighborhoods to drawing zones</h3>"),
+        HTML("<h3>Our requirements for pilot zones</h3>"),
         HTML(
           "<p>Now that we can see some broad areas of the city that
           meet our criteria, the next step is to draw some potential pilot zones.
           Our draft ordinance has some extra rules about the
           how these zones are drawn.</p>"
         ),
+        
+        p("Our first requirement is about size: we want the pilot zones to 
+        be large enough to test the scalability of sidewalk plowing, but small enough that we can 
+        create four zones, benefiting four distinct communities, within our $750,000 budget:"),
         
         # ...all zones: ----
         div(class = "row",
