@@ -649,16 +649,25 @@ ui <- bslib::page_fluid(
                 fill = "#270075",
                 height = "2rem"
               )
-            )
+            ),
+            HTML("<p align = 'center'>
+                 When all of our priorities are equally important,
+                 areas on the south and west sides rank highest.
+                 On the south side, Englewood and South Shore stand out. 
+                 On the west side, Austin, Garfield Park, and North Lawndale 
+                 rank highest.
+                 Meanwhile, much of the north side ranks low,
+                 between the 25th and 50th percentile.
+                 </p>")
           ),
           
           # ...2: disabilities ------
           scrolly_section(
             id = "disabilities",
             HTML(
-              "<p>
+              "<p align = 'center'>
               Now the map shows areas that score highly for
-              the percentage of people with disabilities and elders,
+              the percentage of people with disabilities,
               with less weight given to elders, children, transit activity,
               zero-car households and low-income households. Vacant building reports and
               snow removal reports are also in this mix, but are assigned
@@ -734,14 +743,23 @@ ui <- bslib::page_fluid(
               )
             ),
             br(),
-            br()
+            br(),
+            HTML(
+              "<p align = 'center'>
+              Though similar to the map where all priorities are weighted equally,
+              there are some notable differences: the north side ranks significantly lower (
+              in the 10th percentile or less), and high-ranking areas on the South Side are 
+              clustered around Englewood rather than neighborhoods farther west (e.g., Chicago Lawn, 
+              West Englewood).
+              </p>"
+            )
           ),
           
           # ...3: transit ------
           scrolly_section(
             id = "transit",
             HTML(
-              "<p>
+              "<p align = 'center'>
               Finally, this map shows the areas with a
               high percentage of children, zero-car households,
               and transit activity, with less importance
