@@ -1,5 +1,6 @@
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
+  
   #  render scrollytell --------
   output$scr <- renderScrollytell({
     scrollytell()
@@ -547,7 +548,7 @@ server <- function(input, output, session) {
   })
 
   # update weights ------
-  weights <- reactiveVal(first_weights)
+  weights <- reactiveVal(equal_weights)
 
   observe({
     total <- sum(
@@ -580,7 +581,7 @@ server <- function(input, output, session) {
   })
 
   # second set of weights for drawing map ------
-  weights2 <- reactiveVal(first_weights)
+  weights2 <- reactiveVal(zero_weights)
 
   observe({
     total <- sum(
@@ -618,7 +619,20 @@ server <- function(input, output, session) {
     ignoreInit = T,
     {
       if (input$scr == "equal") {
-        weights(first_weights)
+        new_weights <- list(
+          "den_w" = 1/length(vars),
+          "vis_w" = 1/length(vars),
+          "amb_w" = 1/length(vars),
+          "old_w" = 1/length(vars),
+          "kid_w" = 1/length(vars),
+          "zca_w" = 1/length(vars),
+          "inc_w" = 1/length(vars),
+          "cta_w" = 1/length(vars),
+          "sno_w" = 1/length(vars),
+          "vac_w" = 1/length(vars)
+        )
+        
+        weights(new_weights)
       }
 
       if (input$scr == "disabilities") {
@@ -791,7 +805,7 @@ server <- function(input, output, session) {
   })
 
   # update scores -----
-  scores <- reactiveVal(first_scores)
+  scores <- reactiveVal(equal_scores)
 
   observe({
     updated_scores <- update_scores(
@@ -803,7 +817,7 @@ server <- function(input, output, session) {
   })
 
   # second set of scores ----------
-  scores2 <- reactiveVal(first_scores)
+  scores2 <- reactiveVal(zero_scores)
 
   observe({
     updated_scores <- update_scores(
@@ -814,37 +828,37 @@ server <- function(input, output, session) {
     scores2(updated_scores)
   })
 
-  # filter master -----
-  master_filtered <- reactiveVal()
-  observe({
-    master_f_new <-
-      master %>%
-      left_join(scores2()) %>%
-      filter(score_p_rank >= input$f_score[1] &
-        score_p_rank <= input$f_score[2]) %>%
-      filter(amb_pctile >= input$f_amb[1] / 100 &
-        amb_pctile <= input$f_amb[2] / 100) %>%
-      filter(vis_pctile >= input$f_vis[1] / 100 &
-        vis_pctile <= input$f_vis[2] / 100) %>%
-      filter(old_pctile >= input$f_old[1] / 100 &
-        old_pctile <= input$f_old[2] / 100) %>%
-      filter(kid_pctile >= input$f_kid[1] / 100 &
-        kid_pctile <= input$f_kid[2] / 100) %>%
-      filter(zca_pctile >= input$f_zca[1] / 100 &
-        zca_pctile <= input$f_zca[2] / 100) %>%
-      filter(inc_pctile >= input$f_inc[1] / 100 &
-        inc_pctile <= input$f_inc[2] / 100) %>%
-      filter(n_cta_pctile >= input$f_cta[1] / 100 &
-        n_cta_pctile <= input$f_cta[2] / 100) %>%
-      filter(n_vac_pctile >= input$f_vac[1] / 100 &
-        n_vac_pctile <= input$f_vac[2] / 100) %>%
-      filter(n_ppl_pctile >= input$f_den[1] / 100 &
-        n_ppl_pctile <= input$f_den[2] / 100) %>%
-      filter(n_sno_pctile >= input$f_sno[1] / 100 &
-        n_sno_pctile <= input$f_sno[2] / 100)
-
-    master_filtered(master_f_new)
-  })
+  # # filter master -----
+  # master_filtered <- reactiveVal()
+  # observe({
+  #   master_f_new <-
+  #     master %>%
+  #     left_join(scores2()) %>%
+  #     filter(score_p_rank >= input$f_score[1] &
+  #       score_p_rank <= input$f_score[2]) %>%
+  #     filter(amb_pctile >= input$f_amb[1] / 100 &
+  #       amb_pctile <= input$f_amb[2] / 100) %>%
+  #     filter(vis_pctile >= input$f_vis[1] / 100 &
+  #       vis_pctile <= input$f_vis[2] / 100) %>%
+  #     filter(old_pctile >= input$f_old[1] / 100 &
+  #       old_pctile <= input$f_old[2] / 100) %>%
+  #     filter(kid_pctile >= input$f_kid[1] / 100 &
+  #       kid_pctile <= input$f_kid[2] / 100) %>%
+  #     filter(zca_pctile >= input$f_zca[1] / 100 &
+  #       zca_pctile <= input$f_zca[2] / 100) %>%
+  #     filter(inc_pctile >= input$f_inc[1] / 100 &
+  #       inc_pctile <= input$f_inc[2] / 100) %>%
+  #     filter(n_cta_pctile >= input$f_cta[1] / 100 &
+  #       n_cta_pctile <= input$f_cta[2] / 100) %>%
+  #     filter(n_vac_pctile >= input$f_vac[1] / 100 &
+  #       n_vac_pctile <= input$f_vac[2] / 100) %>%
+  #     filter(n_ppl_pctile >= input$f_den[1] / 100 &
+  #       n_ppl_pctile <= input$f_den[2] / 100) %>%
+  #     filter(n_sno_pctile >= input$f_sno[1] / 100 &
+  #       n_sno_pctile <= input$f_sno[2] / 100)
+  # 
+  #   master_filtered(master_f_new)
+  # })
 
 
 
@@ -955,7 +969,7 @@ server <- function(input, output, session) {
   # draw map--------------
   output$mapDraw <- renderLeaflet({
     map_data <- master %>%
-      left_join(first_scores) %>%
+      left_join(zero_scores) %>%
       mutate(
         score_bin =
           case_when(
@@ -1109,7 +1123,8 @@ server <- function(input, output, session) {
 
   # update draw map with new scores ----
   observe({
-    map_data <- master_filtered() %>%
+    # map_data <- master_filtered() %>%
+    map_data <- master %>%
       left_join(scores2()) %>%
       mutate(
         score_bin =
@@ -1294,8 +1309,57 @@ server <- function(input, output, session) {
     runjs("document.getElementById('density_button').style.backgroundColor = '#9b51e0';")
   })
 
-
-
+  
+  onclick("s_amb2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
+  onclick("s_vis2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
+  onclick("s_old2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
+  onclick("s_kid2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
+  onclick("s_zca2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
+  onclick("s_inc2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
+  onclick("s_cta2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
+  onclick("s_vac2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
+  onclick("s_den2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
+  onclick("s_sno2", function(){
+    runjs("document.getElementById('disability_button').style.backgroundColor = '#979797';")
+    runjs("document.getElementById('density_button').style.backgroundColor = '#979797';")
+  })
+  
 
   # react to polygon draw button -------
   observeEvent(input$polygon_button, {
@@ -1406,7 +1470,7 @@ server <- function(input, output, session) {
     wkt_poly <-
       poly_summary() %>%
       select(-total_area, -X_leaflet_id, -do.union) %>%
-      cbind(data.frame(first_weights)) %>%
+      cbind(data.frame(equal_weights)) %>%
       mutate(timestamp = Sys.time()) %>%
       mutate(wkt_col = st_as_text(geometry)) %>%
       st_drop_geometry()
