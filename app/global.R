@@ -359,7 +359,8 @@ update_scores <-
             weighted.mean(x = pctile, w = weight))
       ) %>%
       ungroup() %>%
-      mutate(score_p_rank = round(100 * percent_rank(wtd_score))) %>%
+      mutate(score_p_rank = round(100 * 
+                                    percent_rank(wtd_score))) %>%
       arrange(desc(score_p_rank), hexid)
 
     scores
@@ -370,6 +371,17 @@ first_scores <- update_scores(first_weights, master)
 # Table of priorities -----
 priorities_df <-
   data.frame(
+    icon_2 = 
+      c(
+        "person-walking-with-cane",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "snowplow"
+      ),
     icon =
       c(
         "wheelchair-move",
@@ -411,6 +423,9 @@ priorities_tab <-
     height = "3rem",
     palette = rep(pal$access_purple, nrow(priorities_df))
   ) %>%
+  gtExtras::gt_fa_column(icon_2,
+                         height = "3rem",
+                         palette = rep(pal$access_purple, 2)) %>%
   gt::tab_options(
     column_labels.hidden = TRUE,
     table.background.color = "transparent",
