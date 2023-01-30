@@ -1078,22 +1078,22 @@ ui <- bslib::page_fluid(
             id = "sliders",
             
             HTML(
-              "<h4 style = 'font-size:1.2rem; margin-top:1px;'>Color the map according to your priorities</h4>"
+              "<h4 style = 'font-size:1rem; margin-top:1px;'>Color the map according to your priorities</h4>"
             ),
             
-            HTML("<p><b>Use our pre-set weights: </b></p>"),
+            HTML("<p style = 'margin-bottom: 0.1rem;'>Use our pre-set weights, or create your own custom mix by moving the sliders below.</p>"),
             div(
-              class = "row mt-0 p-0",
+              class = "row mx-0 p-0",
               column(
                 6,
-                style = "margin-left: 0px; margin-right: 0px; padding: 5px",
+                style = "margin-left: 0px; margin-right: 0px; margin-top:0px; margin-bottom: 0px; padding: 5px",
                 tags$button(
                   type = "button",
                   id = "disability_button",
                   HTML(
                     fontawesome::fa(
                       "wheelchair-move",
-                      height = "2rem",
+                      height = "1rem",
                       title = "People with ambulatory disabilities",
                       fill = "#FFF"
                     ),
@@ -1103,7 +1103,7 @@ ui <- bslib::page_fluid(
                           width:100%;
                          font-family: Poppins, sans-serif;
                          font-weight: bold;
-                         background-color: #9b51e0",
+                         background-color: #979797",
                   class = "btn action-button shiny-bound-input"
                 )
               ),
@@ -1117,7 +1117,7 @@ ui <- bslib::page_fluid(
                     fontawesome::fa(
                       "city",
                       title = "Population density",
-                      height = "2rem",
+                      height = "1rem",
                       fill = "#FFF"
                     ),
                     "Density mix"
@@ -1125,15 +1125,16 @@ ui <- bslib::page_fluid(
                   style = "color:#FFF;
                          width:100%;
                          font-family: Poppins, sans-serif;
+                         font-size: 1rem;
                          font-weight: bold;
-                         background-color: #9b51e0",
+                         background-color: #979797",
                   class = "btn action-button shiny-bound-input"
                 )
               )
             ),
-            HTML("<p><b>Or create a custom set of weights:</b></p>"),
             div(
               class = "label-left",
+              style = "margin-top: 1rem;",
               s_amb2,
               s_vis2,
               s_old2,
