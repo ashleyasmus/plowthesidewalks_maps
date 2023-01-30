@@ -936,8 +936,10 @@ server <- function(input, output, session) {
         data = map_data,
         layerId = ~hexid,
         label = ~tooltips,
-        stroke = FALSE,
+        stroke = TRUE,
+        weight = 1,
         fillOpacity = 0.7,
+        color = my_pal(color_data),
         fillColor = my_pal(color_data)
       ) %>%
       addLegend(
@@ -945,7 +947,7 @@ server <- function(input, output, session) {
         pal = my_pal,
         group = "score_tiles",
         values = unique(color_data),
-        title = "Weighted score<br>(rank percentile)"
+        title = "Weighted score"
       )
   })
 
